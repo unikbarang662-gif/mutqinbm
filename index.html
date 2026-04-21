@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mutqin BM - Cloud Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Sama Seperti Sebelumnya */
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0d3d22 0%, #1a5f3a 100%); min-height: 100vh; }
+        .font-arabic { font-family: 'Amiri', serif; }
+        .islamic-pattern { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L35.4 16.8H52.8L39.6 27.6L44.4 44.4L30 33.6L15.6 44.4L20.4 27.6L7.2 16.8H24.6L30 0Z' fill-opacity='0.05' fill='%23ffffff'/%3E%3C/svg%3E"); }
+        .card-islamic { background: rgba(255, 255, 255, 0.98); border: 2px solid #d4af37; border-radius: 16px; box-shadow: 0 8px 32px rgba(13, 61, 34, 0.3); }
+        .btn-gold { background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%); color: #0d3d22; font-weight: 700; transition: all 0.3s ease; }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4); }
+        .status-lulus { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+        .status-proses { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; }
+        .status-belum { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+        .gradient-text { background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .checkbox-custom { width: 24px; height: 24px; cursor: pointer; accent-color: #10b981; }
+        .badge-selesai { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
+        .sidebar-item { transition: all 0.3s ease; }
+        .sidebar-item:hover, .sidebar-item.active { background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%); color: #0d3d22; font-weight: 700; }
+        .fade-in { animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Loading Spinner */
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #d4af37; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="islamic-pattern">
+
+    <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-70 z-[60] flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl text-center">
+            <div class="loader"></div>
+            <span class="text-gray-800 font-semibold">Memuat Data dari Cloud...</span>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="min-h-screen flex items-center justify-center p-4">
+        <div class="card-islamic w-full max-w-md p-8 fade-in">
+            <div class="text-center mb-8">
+                <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-700 to-green-900 flex items-center justify-center border-4 border-yellow-500">
+                    <i class="fas fa-quran text-4xl text-yellow-400"></i>
+                </div>
+                <h1 class="text-3xl font-bold gradient-text mb-2 font-arabic">Mutqin BM</h1>
+                <p class="text-gray-600 text-sm">Standar Kelulusan Ponpes Bahrul Maghfiroh</p>
+                <p class="text-xs text-blue-600 mt-2"><i class="fas fa-cloud"></i> Connected to Cloud Database</p>
+            </div>
+
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="username" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:outline-none" placeholder="admin" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="password" id="password" class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:outline-none" placeholder="admin" required>
+                    </div>
+                </div>
+                <button type="submit" class="w-full btn-gold py-3 rounded-lg font-bold text-lg">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboardPage" class="hidden min-h-screen">
+        <!-- Sidebar -->
+        <div class="fixed left-0 top-0 h-full w-64 bg-green-950 text-white p-6 shadow-2xl z-50 overflow-y-auto">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 mx-auto mb-2 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
+                    <i class="fas fa-award text-2xl text-green-900"></i>
+                </div>
+                <h2 class="text-xl font-bold text-yellow-400 font-arabic">Mutqin BM</h2>
+                <p class="text-xs text-gray-400">Cloud Version</p>
+            </div>
+            <nav class="space-y-2">
+                <button onclick="showSection('dashboard')" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left" id="menu-dashboard"><i class="fas fa-home w-5"></i> Dashboard</button>
+                <button onclick="showSection('santri')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left" id="menu-santri"><i class="fas fa-users w-5"></i> Data Santri</button>
+                <button onclick="showSection('hafalan')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left" id="menu-hafalan"><i class="fas fa-book-open w-5"></i> Input Hafalan</button>
+                <button onclick="showSection('laporan')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left" id="menu-laporan"><i class="fas fa-chart-bar w-5"></i> Laporan</button>
+                <button onclick="showSection('sertifikat')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left" id="menu-sertifikat"><i class="fas fa-certificate w-5"></i> Sertifikat</button>
+            </nav>
+            <div class="absolute bottom-6 left-6 right-6">
+                <button onclick="logout()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg text-sm transition"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="ml-64 p-8">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-white mb-2" id="pageTitle">Dashboard</h1>
+                    <p class="text-gray-300">Assalamu'alaikum, Ust. Abdul Malik!</p>
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="loadDataFromCloud()" class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sections (Same structure as before, logic changed) -->
+            <div id="section-dashboard" class="section-content fade-in">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="card-islamic p-6">
+                        <div class="flex items-center justify-between">
+                            <div><p class="text-gray-600 text-sm font-semibold">Total Santri</p><p class="text-3xl font-bold text-green-800 mt-1" id="totalSantri">0</p></div>
+                            <i class="fas fa-users text-3xl text-green-600"></i>
+                        </div>
+                    </div>
+                    <div class="card-islamic p-6">
+                        <div class="flex items-center justify-between">
+                            <div><p class="text-gray-600 text-sm font-semibold">Sudah Lulus</p><p class="text-3xl font-bold text-green-600 mt-1" id="totalLulus">0</p></div>
+                            <i class="fas fa-check-circle text-3xl text-green-500"></i>
+                        </div>
+                    </div>
+                    <div class="card-islamic p-6">
+                        <div class="flex items-center justify-between">
+                            <div><p class="text-gray-600 text-sm font-semibold">Sedang Proses</p><p class="text-3xl font-bold text-yellow-600 mt-1" id="totalProses">0</p></div>
+                            <i class="fas fa-clock text-3xl text-yellow-500"></i>
+                        </div>
+                    </div>
+                    <div class="card-islamic p-6">
+                        <div class="flex items-center justify-between">
+                            <div><p class="text-gray-600 text-sm font-semibold">Belum Mulai</p><p class="text-3xl font-bold text-red-600 mt-1" id="totalBelum">0</p></div>
+                            <i class="fas fa-times-circle text-3xl text-red-500"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="card-islamic p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Progres Hafalan Santri</h3>
+                        <canvas id="progressChart" height="250"></canvas>
+                    </div>
+                    <div class="card-islamic p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Statistik Kelulusan</h3>
+                        <div id="statistikList" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Santri Section -->
+            <div id="section-santri" class="section-content hidden fade-in">
+                <div class="card-islamic p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-bold text-gray-800">Data Santri</h3>
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="searchSantri" onkeyup="searchSantri()" placeholder="Cari santri..." class="pl-10 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:outline-none">
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b-2 border-gray-200">
+                                    <th class="text-left py-3 px-4 text-gray-700 font-semibold">No</th>
+                                    <th class="text-left py-3 px-4 text-gray-700 font-semibold">Nama Santri</th>
+                                    <th class="text-left py-3 px-4 text-gray-700 font-semibold">Kelas</th>
+                                    <th class="text-left py-3 px-4 text-gray-700 font-semibold">Status</th>
+                                    <th class="text-left py-3 px-4 text-gray-700 font-semibold">Progress</th>
+                                    <th class="text-left py-3 px-4 text-gray-700 font-semibold">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelSantri"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Hafalan Section -->
+            <div id="section-hafalan" class="section-content hidden fade-in">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="card-islamic p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Pilih Santri</h3>
+                        <select id="selectSantriHafalan" onchange="loadHafalanSantri()" class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:outline-none mb-4">
+                            <option value="">-- Pilih Santri --</option>
+                        </select>
+                        <div id="infoSantri" class="hidden bg-green-50 p-4 rounded-lg mb-4">
+                            <p class="font-semibold text-gray-800" id="infoNama"></p>
+                            <p class="text-sm text-gray-600" id="infoKelas"></p>
+                            <div class="mt-2">
+                                <div class="flex justify-between text-sm mb-1"><span>Progress</span><span id="infoProgress" class="font-semibold"></span></div>
+                                <div class="w-full bg-gray-200 rounded-full h-2"><div id="infoProgressBar" class="bg-green-600 h-2 rounded-full progress-bar" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 card-islamic p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">Input Hafalan & Praktik</h3>
+                            <span id="autoSaveStatus" class="text-sm text-green-600 hidden"><i class="fas fa-check-circle mr-1"></i> Tersimpan ke Cloud</span>
+                        </div>
+
+                        <div id="formHafalan" class="space-y-6">
+                            <!-- Items sama seperti sebelumnya -->
+                             <div class="hafalan-item p-4 border-2 border-gray-200 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="check_yaasin" class="checkbox-custom" onchange="toggleHafalan('yaasin')">
+                                        <label for="check_yaasin" class="font-semibold text-gray-800 cursor-pointer">1. Hafal Surat Yaasin, Waqiah, Al Mulk</label>
+                                    </div>
+                                    <span id="badge_yaasin" class="badge-selesai hidden">SELESAI</span>
+                                </div>
+                                <select id="nilai_yaasin" onchange="saveNilai('yaasin')" class="ml-7 p-2 border border-gray-300 rounded text-sm w-48" disabled>
+                                    <option value="">Pilih Nilai</option>
+                                    <option value="Mumtaz">Mumtaz (95)</option>
+                                    <option value="Jayyid Jiddan">Jayyid Jiddan (90)</option>
+                                    <option value="Jayyid">Jayyid (85)</option>
+                                    <option value="Ahsan">Ahsan (80)</option>
+                                </select>
+                            </div>
+                            <!-- ... Copy item lainnya dari kode sebelumnya ... -->
+                             <div class="hafalan-item p-4 border-2 border-gray-200 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="check_tawasul" class="checkbox-custom" onchange="toggleHafalan('tawasul')">
+                                        <label for="check_tawasul" class="font-semibold text-gray-800 cursor-pointer">2. Hafal Tawasul, Tahlil, Istighosah, Doa</label>
+                                    </div>
+                                    <span id="badge_tawasul" class="badge-selesai hidden">SELESAI</span>
+                                </div>
+                                <select id="nilai_tawasul" onchange="saveNilai('tawasul')" class="ml-7 p-2 border border-gray-300 rounded text-sm w-48" disabled>
+                                    <option value="">Pilih Nilai</option>
+                                    <option value="Mumtaz">Mumtaz (95)</option>
+                                    <option value="Jayyid Jiddan">Jayyid Jiddan (90)</option>
+                                    <option value="Jayyid">Jayyid (85)</option>
+                                    <option value="Ahsan">Ahsan (80)</option>
+                                </select>
+                            </div>
+                             <div class="hafalan-item p-4 border-2 border-gray-200 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="check_sholat" class="checkbox-custom" onchange="toggleHafalan('sholat')">
+                                        <label for="check_sholat" class="font-semibold text-gray-800 cursor-pointer">3. Praktik Sholat & Pengurusan Jenazah</label>
+                                    </div>
+                                    <span id="badge_sholat" class="badge-selesai hidden">SELESAI</span>
+                                </div>
+                                <select id="nilai_sholat" onchange="saveNilai('sholat')" class="ml-7 p-2 border border-gray-300 rounded text-sm w-48" disabled>
+                                    <option value="">Pilih Nilai</option>
+                                    <option value="Lulus">Lulus (100)</option>
+                                    <option value="Jayyid">Jayyid (85)</option>
+                                    <option value="Ahsan">Ahsan (80)</option>
+                                </select>
+                            </div>
+                             <div class="hafalan-item p-4 border-2 border-gray-200 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="check_juz30" class="checkbox-custom" onchange="toggleHafalan('juz30')">
+                                        <label for="check_juz30" class="font-semibold text-gray-800 cursor-pointer">4. Hafal Juz 30</label>
+                                    </div>
+                                    <span id="badge_juz30" class="badge-selesai hidden">SELESAI</span>
+                                </div>
+                                <select id="nilai_juz30" onchange="saveNilai('juz30')" class="ml-7 p-2 border border-gray-300 rounded text-sm w-48" disabled>
+                                    <option value="">Pilih Nilai</option>
+                                    <option value="Mumtaz">Mumtaz (95)</option>
+                                    <option value="Jayyid Jiddan">Jayyid Jiddan (90)</option>
+                                    <option value="Jayyid">Jayyid (85)</option>
+                                    <option value="Ahsan">Ahsan (80)</option>
+                                </select>
+                            </div>
+                             <div class="hafalan-item p-4 border-2 border-gray-200 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="check_khotib" class="checkbox-custom" onchange="toggleHafalan('khotib')">
+                                        <label for="check_khotib" class="font-semibold text-gray-800 cursor-pointer">5. Praktik Khotib & Bilal</label>
+                                    </div>
+                                    <span id="badge_khotib" class="badge-selesai hidden">SELESAI</span>
+                                </div>
+                                <select id="nilai_khotib" onchange="saveNilai('khotib')" class="ml-7 p-2 border border-gray-300 rounded text-sm w-48" disabled>
+                                    <option value="">Pilih Nilai</option>
+                                    <option value="Lulus">Lulus (100)</option>
+                                    <option value="Jayyid">Jayyid (85)</option>
+                                    <option value="Ahsan">Ahsan (80)</option>
+                                </select>
+                            </div>
+                             <div class="hafalan-item p-4 border-2 border-gray-200 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="check_madin_ula" class="checkbox-custom" onchange="toggleHafalan('madin_ula')">
+                                        <label for="check_madin_ula" class="font-semibold text-gray-800 cursor-pointer">6. Lulus Madin Ula</label>
+                                    </div>
+                                    <span id="badge_madin_ula" class="badge-selesai hidden">SELESAI</span>
+                                </div>
+                            </div>
+                             <div class="hafalan-item p-4 border-2 border-gray-200 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <input type="checkbox" id="check_madin_wusto" class="checkbox-custom" onchange="toggleHafalan('madin_wusto')">
+                                        <label for="check_madin_wusto" class="font-semibold text-gray-800 cursor-pointer">7. Lulus Madin Wusto</label>
+                                    </div>
+                                    <span id="badge_madin_wusto" class="badge-selesai hidden">SELESAI</span>
+                                </div>
+                            </div>
+                             <div class="hafalan-item p-4 border-2 border-gray-200 rounded-lg">
+                                <div class="flex items-center justify-between mb-3">
+                                    <label class="font-semibold text-gray-800">8. Sikap dan Adab (Sholat 5 waktu, Madin, Sekolah)</label>
+                                </div>
+                                <div class="ml-7">
+                                    <input type="range" id="nilai_adab" min="0" max="100" value="0" oninput="document.getElementById('adabValue').textContent = this.value; saveNilai('adab')" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                    <div class="flex justify-between mt-2">
+                                        <span class="text-sm text-gray-600">0%</span>
+                                        <span id="adabValue" class="text-sm font-bold text-green-600">0</span>
+                                        <span class="text-sm text-gray-600">100%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 p-4 bg-green-50 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <div><p class="text-sm text-gray-600">Total Nilai</p><p class="text-3xl font-bold text-green-700" id="totalNilai">0</p></div>
+                                <div class="text-right"><p class="text-sm text-gray-600">Status</p><span id="statusKelulusan" class="px-4 py-2 rounded-full font-bold text-white status-belum">BELUM LULUS</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Laporan & Sertifikat Sections (Sama seperti sebelumnya, logika data diambil dari global variable) -->
+             <div id="section-laporan" class="section-content hidden fade-in">
+                <div class="card-islamic p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-6">Laporan & Ranking</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 p-6 rounded-lg text-white">
+                            <h4 class="font-bold text-lg mb-2"><i class="fas fa-trophy mr-2"></i>Santri Terbaik</h4>
+                            <div id="rankingList" class="space-y-2"></div>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-600 to-green-800 p-6 rounded-lg text-white">
+                            <h4 class="font-bold text-lg mb-2"><i class="fas fa-chart-line mr-2"></i>Statistik Overall</h4>
+                            <canvas id="overallChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-sertifikat" class="section-content hidden fade-in">
+                <div class="card-islamic p-6 mb-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Generate Sertifikat</h3>
+                    <select id="selectSantriSertifikat" class="w-full md:w-96 p-3 border-2 border-gray-200 rounded-lg focus:border-green-600 focus:outline-none">
+                        <option value="">-- Pilih Santri --</option>
+                    </select>
+                    <button onclick="generateSertifikat()" class="mt-4 btn-gold px-6 py-3 rounded-lg"><i class="fas fa-certificate mr-2"></i>Generate & Download PDF</button>
+                </div>
+                <div id="sertifikatContainer" class="hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- KONFIGURASI DATABASE ---
+        // GANTI URL INI DENGAN URL WEB APP DARI GOOGLE SHEETS ANDA
+        const GOOGLE_SCRIPT_URL = 'MASUKKAN_URL_WEB_APP_GOOGLE_SHEET_DISINI'; 
+
+        let santriData = [];
+        let currentSantriId = null;
+        let progressChart = null;
+        let overallChart = null;
+
+        // --- INIT ---
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if(document.getElementById('username').value && document.getElementById('password').value) {
+                showDashboard();
+                loadDataFromCloud(); // Load data saat login
+            }
+        });
+
+        function showDashboard() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('dashboardPage').classList.remove('hidden');
+        }
+
+        function logout() { location.reload(); }
+
+        function showSection(section) {
+            document.querySelectorAll('.section-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`section-${section}`).classList.remove('hidden');
+            document.getElementById(`menu-${section}`).classList.add('active');
+            
+            const titles = {'dashboard': 'Dashboard', 'santri': 'Data Santri', 'hafalan': 'Input Hafalan', 'laporan': 'Laporan & Ranking', 'sertifikat': 'Sertifikat Kelulusan'};
+            document.getElementById('pageTitle').textContent = titles[section];
+
+            if (section === 'laporan') updateLaporan();
+            if (section === 'sertifikat') updateSelectSantri();
+        }
+
+        // --- DATABASE FUNCTIONS ---
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
+        }
+
+        async function loadDataFromCloud() {
+            showLoading(true);
+            try {
+                // Fetch data from Google Sheets via Web App
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                const data = await response.json();
+                
+                // Map data from sheet to our format
+                santriData = data.map(row => ({
+                    id: row.id || Date.now(), // Use ID from sheet or generate new
+                    nama: row.nama,
+                    kelas: row.kelas,
+                    // Store raw values for hafalan
+                    _raw: row 
+                }));
+
+                renderAll();
+                alert('Data berhasil dimuat dari Cloud!');
+            } catch (error) {
+                console.error(error);
+                alert('Gagal memuat data. Pastikan URL Google Script sudah benar dan dipublish sebagai "Anyone".');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function saveToCloud(santriId) {
+            showLoading(true);
+            const santri = santriData.find(s => s.id == santriId);
+            if (!santri) return;
+
+            const h = getHafalanValues(santriId); // Get current form values
+            
+            // Prepare payload for Google Sheets
+            const payload = new URLSearchParams();
+            payload.append('id', santri.id);
+            payload.append('nama', santri.nama);
+            payload.append('kelas', santri.kelas);
+            payload.append('hafalan_yaasin', h.check_yaasin ? '1' : '0');
+            payload.append('nilai_yaasin', h.nilai_yaasin || '');
+            payload.append('hafalan_tawasul', h.check_tawasul ? '1' : '0');
+            payload.append('nilai_tawasul', h.nilai_tawasul || '');
+            payload.append('hafalan_sholat', h.check_sholat ? '1' : '0');
+            payload.append('nilai_sholat', h.nilai_sholat || '');
+            payload.append('hafalan_juz30', h.check_juz30 ? '1' : '0');
+            payload.append('nilai_juz30', h.nilai_juz30 || '');
+            payload.append('hafalan_khotib', h.check_khotib ? '1' : '0');
+            payload.append('nilai_khotib', h.nilai_khotib || '');
+            payload.append('madin_ula', h.check_madin_ula ? '1' : '0');
+            payload.append('madin_wusto', h.check_madin_wusto ? '1' : '0');
+            payload.append('adab', h.nilai_adab || '0');
+
+            try {
+                // Send POST request to Google Sheets
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: payload
+                });
+                
+                document.getElementById('autoSaveStatus').classList.remove('hidden');
+                setTimeout(() => document.getElementById('autoSaveStatus').classList.add('hidden'), 2000);
+                
+                // Refresh data to ensure consistency
+                // loadDataFromCloud(); 
+            } catch (error) {
+                alert('Gagal menyimpan ke Cloud! Cek koneksi internet.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // --- LOGIC HELPERS ---
+        function getHafalanValues(id) {
+            // In a real app with cloud, we might fetch specific row, but here we assume 
+            // the user is editing the currently loaded form state which reflects the DB
+            // For simplicity in this single-file demo, we read from DOM inputs if currentSantriId matches
+            if (currentSantriId != id) return {}; // Should not happen in this flow
+
+            return {
+                check_yaasin: document.getElementById('check_yaasin').checked,
+                nilai_yaasin: document.getElementById('nilai_yaasin').value,
+                check_tawasul: document.getElementById('check_tawasul').checked,
+                nilai_tawasul: document.getElementById('nilai_tawasul').value,
+                check_sholat: document.getElementById('check_sholat').checked,
+                nilai_sholat: document.getElementById('nilai_sholat').value,
+                check_juz30: document.getElementById('check_juz30').checked,
+                nilai_juz30: document.getElementById('nilai_juz30').value,
+                check_khotib: document.getElementById('check_khotib').checked,
+                nilai_khotib: document.getElementById('nilai_khotib').value,
+                check_madin_ula: document.getElementById('check_madin_ula').checked,
+                check_madin_wusto: document.getElementById('check_madin_wusto').checked,
+                nilai_adab: document.getElementById('nilai_adab').value
+            };
+        }
+
+        function calculateTotalNilai(h) {
+            const nilaiMap = { 'Mumtaz': 95, 'Jayyid Jiddan': 90, 'Jayyid': 85, 'Ahsan': 80, 'Lulus': 100 };
+            let total = 0;
+            let count = 0;
+
+            ['yaasin', 'tawasul', 'juz30'].forEach(key => {
+                if (h[`check_${key}`]) {
+                    total += nilaiMap[h[`nilai_${key}`]] || 0;
+                    count++;
+                }
+            });
+            ['sholat', 'khotib'].forEach(key => {
+                if (h[`check_${key}`]) {
+                    total += nilaiMap[h[`nilai_${key}`]] || 0;
+                    count++;
+                }
+            });
+            if (h['check_madin_ula']) { total += 100; count++; }
+            if (h['check_madin_wusto']) { total += 100; count++; }
+            if (h['nilai_adab']) { total += parseInt(h['nilai_adab']); count++; }
+
+            return count > 0 ? Math.round(total / count) : 0;
+        }
+
+        function getStatusSantri(id) {
+            // We need to reconstruct the hafalan object from the raw data loaded from sheets
+            const santri = santriData.find(s => s.id == id);
+            if(!santri || !santri._raw) return 'Belum';
+            
+            const r = santri._raw;
+            const h = {
+                check_yaasin: r.hafalan_yaasin == '1',
+                nilai_yaasin: r.nilai_yaasin,
+                check_tawasul: r.hafalan_tawasul == '1',
+                nilai_tawasul: r.nilai_tawasul,
+                check_sholat: r.hafalan_sholat == '1',
+                nilai_sholat: r.nilai_sholat,
+                check_juz30: r.hafalan_juz30 == '1',
+                nilai_juz30: r.nilai_juz30,
+                check_khotib: r.hafalan_khotib == '1',
+                nilai_khotib: r.nilai_khotib,
+                check_madin_ula: r.madin_ula == '1',
+                check_madin_wusto: r.madin_wusto == '1',
+                nilai_adab: r.adab
+            };
+            
+            const total = calculateTotalNilai(h);
+            if (total >= 85) return 'Lulus';
+            if (total >= 70) return 'Proses';
+            return 'Belum';
+        }
+
+        // --- UI RENDERING ---
+        function renderAll() {
+            updateStats();
+            renderTabelSantri();
+            updateSelectSantri();
+        }
+
+        function updateStats() {
+            const total = santriData.length;
+            let lulus = 0, proses = 0, belum = 0;
+            santriData.forEach(s => {
+                const status = getStatusSantri(s.id);
+                if (status === 'Lulus') lulus++;
+                else if (status === 'Proses') proses++;
+                else belum++;
+            });
+            document.getElementById('totalSantri').textContent = total;
+            document.getElementById('totalLulus').textContent = lulus;
+            document.getElementById('totalProses').textContent = proses;
+            document.getElementById('totalBelum').textContent = belum;
+            updateChart(lulus, proses, belum);
+            updateStatistikList();
+        }
+
+        function updateChart(lulus, proses, belum) {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            if (progressChart) progressChart.destroy();
+            progressChart = new Chart(ctx, {
+                type: 'doughnut',
+                 { labels: ['Lulus', 'Proses', 'Belum'], datasets: [{  [lulus, proses, belum], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function updateStatistikList() {
+            const container = document.getElementById('statistikList');
+            const topSantri = santriData.map(s => {
+                const status = getStatusSantri(s.id);
+                // Recalculate score for display
+                const r = s._raw || {};
+                const h = {
+                     check_yaasin: r.hafalan_yaasin == '1', nilai_yaasin: r.nilai_yaasin,
+                     check_tawasul: r.hafalan_tawasul == '1', nilai_tawasul: r.nilai_tawasul,
+                     check_sholat: r.hafalan_sholat == '1', nilai_sholat: r.nilai_sholat,
+                     check_juz30: r.hafalan_juz30 == '1', nilai_juz30: r.nilai_juz30,
+                     check_khotib: r.hafalan_khotib == '1', nilai_khotib: r.nilai_khotib,
+                     check_madin_ula: r.madin_ula == '1', check_madin_wusto: r.madin_wusto == '1',
+                     nilai_adab: r.adab
+                };
+                const nilai = calculateTotalNilai(h);
+                return { ...s, nilai, status };
+            }).sort((a, b) => b.nilai - a.nilai).slice(0, 5);
+
+            container.innerHTML = topSantri.map(s => `
+                <div class="flex items-center justify-between p-4 bg-${s.status === 'Lulus' ? 'green' : s.status === 'Proses' ? 'yellow' : 'red'}-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-${s.status === 'Lulus' ? 'check' : s.status === 'Proses' ? 'clock' : 'times'}-circle text-${s.status === 'Lulus' ? 'green' : s.status === 'Proses' ? 'yellow' : 'red'}-600"></i>
+                        <div><p class="font-semibold text-gray-800">${s.nama}</p><p class="text-sm text-gray-600">${s.kelas}</p></div>
+                    </div>
+                    <span class="text-2xl font-bold text-${s.status === 'Lulus' ? 'green' : s.status === 'Proses' ? 'yellow' : 'red'}-600">${s.nilai}%</span>
+                </div>
+            `).join('');
+        }
+
+        function renderTabelSantri() {
+            const tbody = document.getElementById('tabelSantri');
+            tbody.innerHTML = santriData.map((s, index) => {
+                const r = s._raw || {};
+                const h = {
+                     check_yaasin: r.hafalan_yaasin == '1', nilai_yaasin: r.nilai_yaasin,
+                     check_tawasul: r.hafalan_tawasul == '1', nilai_tawasul: r.nilai_tawasul,
+                     check_sholat: r.hafalan_sholat == '1', nilai_sholat: r.nilai_sholat,
+                     check_juz30: r.hafalan_juz30 == '1', nilai_juz30: r.nilai_juz30,
+                     check_khotib: r.hafalan_khotib == '1', nilai_khotib: r.nilai_khotib,
+                     check_madin_ula: r.madin_ula == '1', check_madin_wusto: r.madin_wusto == '1',
+                     nilai_adab: r.adab
+                };
+                const nilai = calculateTotalNilai(h);
+                const status = getStatusSantri(s.id);
+                const statusClass = status === 'Lulus' ? 'status-lulus' : status === 'Proses' ? 'status-proses' : 'status-belum';
+                
+                return `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50">
+                        <td class="py-3 px-4">${index + 1}</td>
+                        <td class="py-3 px-4 font-semibold text-gray-800">${s.nama}</td>
+                        <td class="py-3 px-4 text-gray-600">${s.kelas}</td>
+                        <td class="py-3 px-4"><span class="px-3 py-1 rounded-full text-xs font-semibold text-white ${statusClass}">${status}</span></td>
+                        <td class="py-3 px-4">
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 bg-gray-200 rounded-full h-2 w-24"><div class="bg-green-600 h-2 rounded-full progress-bar" style="width: ${nilai}%"></div></div>
+                                <span class="text-sm font-semibold text-gray-700">${nilai}%</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4">
+                            <button onclick="alert('Edit via Google Sheets langsung lebih mudah!')" class="text-blue-600 hover:text-blue-800 mr-3"><i class="fas fa-edit"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateSelectSantri() {
+            const selects = ['selectSantriHafalan', 'selectSantriSertifikat'];
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                select.innerHTML = '<option value="">-- Pilih Santri --</option>' +
+                    santriData.map(s => `<option value="${s.id}">${s.nama} - ${s.kelas}</option>`).join('');
+            });
+        }
+
+        // --- INPUT HAFALAN LOGIC ---
+        function toggleHafalan(key) {
+            if (!currentSantriId) { alert('Pilih santri terlebih dahulu!'); return; }
+            
+            const checkbox = document.getElementById(`check_${key}`);
+            const select = document.getElementById(`nilai_${key}`);
+            const badge = document.getElementById(`badge_${key}`);
+            const item = checkbox.closest('.hafalan-item');
+
+            if (checkbox.checked) {
+                if (select) select.disabled = false;
+                if (badge) badge.classList.remove('hidden');
+                item.classList.add('completed');
+            } else {
+                if (select) { select.disabled = true; select.value = ''; }
+                if (badge) badge.classList.add('hidden');
+                item.classList.remove('completed');
+            }
+            
+            // Auto Save to Cloud
+            saveToCloud(currentSantriId);
+            updateInfoSantri();
+            updateStats(); // Re-calc stats
+        }
+
+        function saveNilai(key) {
+            if (!currentSantriId) return;
+            // Auto Save to Cloud
+            saveToCloud(currentSantriId);
+            updateInfoSantri();
+            updateStats();
+        }
+
+        function loadHafalanSantri() {
+            const id = document.getElementById('selectSantriHafalan').value;
+            if (!id) {
+                currentSantriId = null;
+                document.getElementById('infoSantri').classList.add('hidden');
+                resetFormHafalan();
+                return;
+            }
+
+            currentSantriId = id;
+            const santri = santriData.find(s => s.id == id);
+            const r = santri._raw || {};
+
+            document.getElementById('infoNama').textContent = santri.nama;
+            document.getElementById('infoKelas').textContent = santri.kelas;
+            document.getElementById('infoSantri').classList.remove('hidden');
+
+            // Populate Form
+            ['yaasin', 'tawasul', 'sholat', 'juz30', 'khotib'].forEach(key => {
+                const checkbox = document.getElementById(`check_${key}`);
+                const select = document.getElementById(`nilai_${key}`);
+                const badge = document.getElementById(`badge_${key}`);
+                const item = checkbox.closest('.hafalan-item');
+
+                const isChecked = r[`hafalan_${key}`] == '1';
+                checkbox.checked = isChecked;
+                
+                if (isChecked) {
+                    if (select) { select.disabled = false; select.value = r[`nilai_${key}`] || ''; }
+                    if (badge) badge.classList.remove('hidden');
+                    item.classList.add('completed');
+                } else {
+                    if (select) { select.disabled = true; select.value = ''; }
+                    if (badge) badge.classList.add('hidden');
+                    item.classList.remove('completed');
+                }
+            });
+
+            ['madin_ula', 'madin_wusto'].forEach(key => {
+                const checkbox = document.getElementById(`check_${key}`);
+                const badge = document.getElementById(`badge_${key}`);
+                const item = checkbox.closest('.hafalan-item');
+                const isChecked = r[key] == '1';
+                checkbox.checked = isChecked;
+                if(isChecked) { badge.classList.remove('hidden'); item.classList.add('completed'); }
+                else { badge.classList.add('hidden'); item.classList.remove('completed'); }
+            });
+
+            const adabVal = r.adab || 0;
+            document.getElementById('nilai_adab').value = adabVal;
+            document.getElementById('adabValue').textContent = adabVal;
+
+            updateInfoSantri();
+        }
+
+        function resetFormHafalan() {
+             ['yaasin', 'tawasul', 'sholat', 'juz30', 'khotib', 'madin_ula', 'madin_wusto'].forEach(key => {
+                document.getElementById(`check_${key}`).checked = false;
+                const select = document.getElementById(`nilai_${key}`);
+                if (select) { select.disabled = true; select.value = ''; }
+                document.getElementById(`badge_${key}`).classList.add('hidden');
+                document.querySelector(`#check_${key}`).closest('.hafalan-item').classList.remove('completed');
+            });
+            document.getElementById('nilai_adab').value = 0;
+            document.getElementById('adabValue').textContent = '0';
+        }
+
+        function updateInfoSantri() {
+            if (!currentSantriId) return;
+            const h = getHafalanValues(currentSantriId);
+            const total = calculateTotalNilai(h);
+            const status = total >= 85 ? 'Lulus' : total >= 70 ? 'Proses' : 'Belum';
+
+            document.getElementById('infoProgress').textContent = `${total}%`;
+            document.getElementById('infoProgressBar').style.width = `${total}%`;
+            document.getElementById('totalNilai').textContent = total;
+
+            const statusEl = document.getElementById('statusKelulusan');
+            statusEl.textContent = status.toUpperCase();
+            statusEl.className = `px-4 py-2 rounded-full font-bold text-white ${status === 'Lulus' ? 'status-lulus' : status === 'Proses' ? 'status-proses' : 'status-belum'}`;
+        }
+
+        // --- LAPORAN & SERTIFIKAT (Sama seperti sebelumnya, hanya ambil data dari santriData) ---
+        function updateLaporan() {
+             const ranking = santriData.map(s => {
+                const r = s._raw || {};
+                const h = {
+                     check_yaasin: r.hafalan_yaasin == '1', nilai_yaasin: r.nilai_yaasin,
+                     check_tawasul: r.hafalan_tawasul == '1', nilai_tawasul: r.nilai_tawasul,
+                     check_sholat: r.hafalan_sholat == '1', nilai_sholat: r.nilai_sholat,
+                     check_juz30: r.hafalan_juz30 == '1', nilai_juz30: r.nilai_juz30,
+                     check_khotib: r.hafalan_khotib == '1', nilai_khotib: r.nilai_khotib,
+                     check_madin_ula: r.madin_ula == '1', check_madin_wusto: r.madin_wusto == '1',
+                     nilai_adab: r.adab
+                };
+                return { ...s, nilai: calculateTotalNilai(h) };
+            }).sort((a, b) => b.nilai - a.nilai).slice(0, 5);
+
+            document.getElementById('rankingList').innerHTML = ranking.map((s, i) => `
+                <div class="flex items-center justify-between bg-white bg-opacity-20 p-3 rounded">
+                    <div class="flex items-center gap-3"><span class="text-2xl font-bold">${i + 1}</span><div><p class="font-semibold">${s.nama}</p><p class="text-sm opacity-80">${s.kelas}</p></div></div>
+                    <span class="text-xl font-bold">${s.nilai}%</span>
+                </div>
+            `).join('');
+
+            const ctx = document.getElementById('overallChart').getContext('2d');
+            if (overallChart) overallChart.destroy();
+            const lulus = santriData.filter(s => getStatusSantri(s.id) === 'Lulus').length;
+            const proses = santriData.filter(s => getStatusSantri(s.id) === 'Proses').length;
+            const belum = santriData.filter(s => getStatusSantri(s.id) === 'Belum').length;
+
+            overallChart = new Chart(ctx, {
+                type: 'bar',
+                 { labels: ['Lulus', 'Proses', 'Belum'], datasets: [{ label: 'Jumlah Santri',  [lulus, proses, belum], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'] }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { color: 'white' } }, x: { ticks: { color: 'white' } } }, plugins: { legend: { display: false } } }
+            });
+        }
+
+        function generateSertifikat() {
+            const id = document.getElementById('selectSantriSertifikat').value;
+            if (!id) { alert('Pilih santri terlebih dahulu!'); return; }
+
+            const santri = santriData.find(s => s.id == id);
+            const r = santri._raw || {};
+            
+            // Reconstruct h for PDF
+            const h = {
+                 check_yaasin: r.hafalan_yaasin == '1', nilai_yaasin: r.nilai_yaasin,
+                 check_tawasul: r.hafalan_tawasul == '1', nilai_tawasul: r.nilai_tawasul,
+                 check_sholat: r.hafalan_sholat == '1', nilai_sholat: r.nilai_sholat,
+                 check_juz30: r.hafalan_juz30 == '1', nilai_juz30: r.nilai_juz30,
+                 check_khotib: r.hafalan_khotib == '1', nilai_khotib: r.nilai_khotib,
+                 check_madin_ula: r.madin_ula == '1', check_madin_wusto: r.madin_wusto == '1',
+                 nilai_adab: r.adab
+            };
+
+            const total = calculateTotalNilai(h);
+            const status = total >= 85 ? 'LULUS' : total >= 70 ? 'LULUS BERSYARAT' : 'BELUM LULUS';
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.setFillColor(245, 240, 225); pdf.rect(0, 0, 210, 297, 'F');
+            pdf.setDrawColor(212, 175, 55); pdf.setLineWidth(2); pdf.rect(10, 10, 190, 277);
+            pdf.setFillColor(26, 95, 58); pdf.roundedRect(50, 20, 110, 35, 3, 3, 'F');
+            pdf.setTextColor(255, 255, 255); pdf.setFontSize(10); pdf.text('PONDOK PESANTREN', 105, 30, { align: 'center' });
+            pdf.setFontSize(14); pdf.setFont(undefined, 'bold'); pdf.text('BAHRUL MAGHFIROH', 105, 40, { align: 'center' });
+            pdf.setTextColor(26, 95, 58); pdf.setFontSize(24); pdf.text('Sertifikat Kelulusan', 105, 75, { align: 'center' });
+            pdf.setTextColor(0, 0, 0); pdf.setFontSize(20); pdf.text(santri.nama, 105, 95, { align: 'center' });
+            pdf.setFontSize(11); pdf.text('Dinyatakan telah MENYELESAIKAN MUTQIN BM', 105, 105, { align: 'center' });
+            pdf.setFillColor(26, 95, 58); pdf.roundedRect(75, 120, 60, 12, 2, 2, 'F');
+            pdf.setTextColor(212, 175, 55); pdf.setFontSize(14); pdf.text(status, 105, 128, { align: 'center' });
+
+            const tableData = [];
+            if (h.check_yaasin) tableData.push(['Hafal Surat Yaasin, Waqiah, Al Mulk', h.nilai_yaasin || '-']);
+            if (h.check_tawasul) tableData.push(['Hafal Tawasul, Tahlil, Istighosah, Doa', h.nilai_tawasul || '-']);
+            if (h.check_sholat) tableData.push(['Praktik Sholat & Pengurusan Jenazah', h.nilai_sholat || '-']);
+            if (h.check_juz30) tableData.push(['Hafal Juz 30', h.nilai_juz30 || '-']);
+            if (h.check_khotib) tableData.push(['Praktik Khotib & Bilal', h.nilai_khotib || '-']);
+            if (h.check_madin_ula) tableData.push(['Lulus Madin Ula', '✓']);
+            if (h.check_madin_wusto) tableData.push(['Lulus Madin Wusto', '✓']);
+            tableData.push(['Sikap dan Adab', `${h.nilai_adab || 0}%`]);
+
+            pdf.autoTable({ startY: 145, head: [['Kriteria Penilaian', 'Nilai']], body: tableData, theme: 'grid', headStyles: { fillColor: [26, 95, 58], textColor: 255 }, margin: { left: 25, right: 25 } });
+            
+            const finalY = pdf.lastAutoTable.finalY + 15;
+            pdf.setFillColor(212, 175, 55); pdf.roundedRect(80, finalY, 50, 12, 2, 2, 'F');
+            pdf.setTextColor(26, 95, 58); pdf.setFontSize(14); pdf.text(`${total}%`, 105, finalY + 8, { align: 'center' });
+            
+            const signY = finalY + 40;
+            pdf.setTextColor(0, 0, 0); pdf.setFontSize(10);
+            pdf.text('Ust. Drs. H. Abbul Malik, Lc., M.M.Pd.', 50, signY, { align: 'center' }); pdf.text('Pengasuh', 50, signY + 5, { align: 'center' });
+            pdf.text('Ust. H. Muhammad Amin', 160, signY, { align: 'center' }); pdf.text('Kepala Dewan Tahfizh', 160, signY + 5, { align: 'center' });
+            
+            pdf.save(`Sertifikat_${santri.nama.replace(/\s+/g, '_')}.pdf`);
+        }
+
+        function searchSantri() {
+            const term = document.getElementById('searchSantri').value.toLowerCase();
+            const rows = document.querySelectorAll('#tabelSantri tr');
+            rows.forEach(row => { row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none'; });
+        }
+    </script>
+</body>
+</html>
