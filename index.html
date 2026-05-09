@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -108,7 +109,6 @@
           <h1 class="text-xl md:text-2xl font-bold text-gray-800 mb-4">Penilaian Hafalan</h1>
           <div class="bg-white rounded-xl p-4 shadow mb-4"><label class="font-semibold">Pilih Santri:</label><input type="text" id="searchSantriHafalan" placeholder="Cari nama..." class="w-full mt-1 p-2 border rounded-lg mb-2" oninput="filterSantriHafalan()"><select id="selSantri" class="w-full p-2 border rounded-lg" onchange="loadHafalan()"></select></div>
           <div id="hafalanContent" class="space-y-4 hidden">
-            <!-- 6 Kategori Penilaian -->
             <div class="bg-white rounded-xl p-4 shadow"><h3 class="font-bold text-green-700">1. Surat Pilihan</h3><div class="space-y-2 mt-2"><label class="flex justify-between"><span>Surat Yasin</span><input type="checkbox" id="chk_yasin"></label><label class="flex justify-between"><span>Surat Al-Waqiah</span><input type="checkbox" id="chk_waqiah"></label><label class="flex justify-between"><span>Surat Al-Mulk</span><input type="checkbox" id="chk_mulk"></label></div><div class="mt-2 flex gap-4 items-center"><label>Nilai:</label><select id="nilai_pilihan" class="border rounded p-1"><option>Mumtaz</option><option>Jayyid Jiddan</option><option>Jayyid</option></select></div><button onclick="saveHafalan()" class="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg text-sm">Simpan</button></div>
             <div class="bg-white rounded-xl p-4 shadow"><h3 class="font-bold text-green-700">2. Aurad & Wirid</h3><div id="auradList"></div><select id="nilai_aurad" class="border rounded p-1 mt-2"><option>Mumtaz</option><option>Jayyid Jiddan</option><option>Jayyid</option></select><button onclick="saveHafalan()" class="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg text-sm">Simpan</button></div>
             <div class="bg-white rounded-xl p-4 shadow"><h3 class="font-bold text-green-700">3. Juz 30 (Juz Amma)</h3><div id="juz30List" class="grid grid-cols-2 md:grid-cols-4 gap-2"></div><select id="nilai_juz30" class="border rounded p-1 mt-2"><option>Mumtaz</option><option>Jayyid Jiddan</option><option>Jayyid</option></select><button onclick="saveHafalan()" class="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg text-sm">Simpan</button></div>
@@ -122,7 +122,7 @@
         <div id="page-sertifikat" class="p-4 md:p-6 fade-in hidden">
           <h1 class="text-xl font-bold mb-4">Sertifikat Kelulusan</h1>
           <div class="bg-white rounded-xl p-4 shadow"><label>Pilih Santri Lulus:</label><select id="selSertifikat" class="w-full p-2 border rounded-lg mt-1"></select><button onclick="generateSertifikat()" class="mt-3 bg-green-700 text-white px-5 py-2 rounded-lg">Generate Sertifikat</button></div>
-          <div id="sertifikatPreview" class="hidden mt-6 max-w-3xl mx-auto"><div id="sertifikatContent" class="bg-white border-4 border-green-800 p-8 text-center rounded-lg shadow-xl" style="font-family:'Plus Jakarta Sans'"><h2 class="text-2xl text-green-800">PONDOK PESANTREN BAHRUL MAGHFIROH</h2><p class="text-gray-600 mt-4">SERTIFIKAT KELULUSAN</p><div class="border-t-2 border-green-600 w-24 mx-auto my-4"></div><p class="mt-4">Diberikan kepada:</p><h3 id="certNama" class="text-3xl font-bold text-green-700 my-3 uppercase"></h3><p>Telah menyelesaikan program tahfidz dan memenuhi standar kelulusan.</p><div class="bg-green-100 p-3 my-4 inline-block px-8 rounded-full"><span class="font-bold text-green-800">LULUS</span></div><div class="grid grid-cols-2 gap-8 mt-8"><div><div class="border-t border-gray-400 pt-2">Pengasuh</div></div><div><div class="border-t border-gray-400 pt-2">Kepala Pendidikan</div></div></div></div><button onclick="downloadSertifikat()" class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg w-full md:w-auto">Download Sertifikat (PNG)</button></div>
+          <div id="sertifikatPreview" class="hidden mt-6 max-w-3xl mx-auto"><div id="sertifikatContent" class="bg-white border-4 border-green-800 p-8 text-center rounded-lg shadow-xl"><h2 class="text-2xl text-green-800">PONDOK PESANTREN BAHRUL MAGHFIROH</h2><p class="text-gray-600 mt-4">SERTIFIKAT KELULUSAN</p><div class="border-t-2 border-green-600 w-24 mx-auto my-4"></div><p class="mt-4">Diberikan kepada:</p><h3 id="certNama" class="text-3xl font-bold text-green-700 my-3 uppercase"></h3><p>Telah menyelesaikan program tahfidz dan memenuhi standar kelulusan.</p><div class="bg-green-100 p-3 my-4 inline-block px-8 rounded-full"><span class="font-bold text-green-800">LULUS</span></div><div class="grid grid-cols-2 gap-8 mt-8"><div><div class="border-t border-gray-400 pt-2">Pengasuh</div></div><div><div class="border-t border-gray-400 pt-2">Kepala Pendidikan</div></div></div></div><button onclick="downloadSertifikat()" class="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg w-full md:w-auto">Download Sertifikat (PNG)</button></div>
         </div>
 
         <!-- Laporan -->
@@ -138,113 +138,404 @@
   </div>
 
   <script>
-    // ======================== SHEETDB API CONFIG (Ganti dengan API Key milikmu) ========================
-    const SHEETDB_URL = 'https://sheetdb.io/api/v1/2wgzc0zue5a9k';
-    // Untuk keperluan demo, gunakan endpoint publik. Jika ingin private, registrasi di sheetdb.io dan ganti URL.
+    // ======================== MENGGUNAKAN LOCALSTORAGE SEBAGAI PENYIMPANAN (TANPA API EKSTERNAL) ========================
+    // Data tersimpan di browser dan bisa diakses dari PC/HP yang sama (selama browser sama)
+    // Untuk sinkronisasi antar perangkat, bisa ditambahkan fitur export/import nanti
     
     let allSantri = [];
     let currentUser = null;
     let charts = {};
 
-    function showToast(msg, type='success') { let t=document.createElement('div'); t.className=`toast toast-${type}`; t.innerText=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
-    function showLoading(show) { document.getElementById('loadingOverlay').classList.toggle('hidden', !show); }
-
-    async function fetchData() {
-      showLoading(true);
-      try {
-        const res = await fetch(SHEETDB_URL);
-        if(!res.ok) throw new Error('Gagal fetch data');
-        let data = await res.json();
-        if(Array.isArray(data)) allSantri = data.filter(d => d.type === 'santri').map(d => ({...d, __backendId: d.id || Math.random()}));
-        else allSantri = [];
-        renderSantriTable(); updateDashboard(); if(document.getElementById('page-laporan').classList.contains('hidden')===false) renderLaporan();
-      } catch(e) { console.error(e); showToast('Gagal sync data', 'error'); }
-      finally { showLoading(false); }
+    function showToast(msg, type='success') { 
+      let t=document.createElement('div'); 
+      t.className=`toast toast-${type}`; 
+      t.innerText=msg; 
+      document.body.appendChild(t); 
+      setTimeout(()=>t.remove(),3000); 
+    }
+    
+    function showLoading(show) { 
+      document.getElementById('loadingOverlay').classList.toggle('hidden', !show); 
     }
 
-    async function syncData() { await fetchData(); showToast('Data berhasil disinkronkan!'); }
-
-    async function addSantri() {
-      let nama = document.getElementById('inputNama').value.trim(), kelas = document.getElementById('inputKelas').value;
-      if(!nama || !kelas) return showToast('Isi nama dan kelas', 'error');
-      let newSantri = { type:'santri', name:nama, kelas, createdAt:new Date().toISOString(), surat_yasin:'0', surat_waqiah:'0', surat_mulk:'0', juz30_progress:Array(37).fill('0').join(','), praktik_shalat:'0', praktik_jenazah:'0', praktik_khotib:'0', madin_ula:'0', madin_wustho:'0', shalat_jamaah:'0', aktif_madin:'0', aktif_formal:'0', nilai_pilihan:'', nilai_aurad:'', nilai_juz30:'', nilai_praktik:'', wirid_shalat:'0', doa_shalat:'0', tahlil_ringkas:'0', tahlil_lengkap:'0', doa_tahlil:'0', tawasul:'0' };
-      showLoading(true);
+    // Simpan data ke localStorage
+    function saveToLocalStorage() {
       try {
-        await fetch(SHEETDB_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(newSantri) });
-        await fetchData();
-        document.getElementById('inputNama').value = '';
-        showToast('Santri ditambahkan');
-      } catch(e) { showToast('Gagal tambah', 'error'); } finally { showLoading(false); }
+        localStorage.setItem('mutqin_santri', JSON.stringify(allSantri));
+        console.log('Data tersimpan ke localStorage, total santri:', allSantri.length);
+        return true;
+      } catch(e) {
+        console.error('Gagal simpan ke localStorage:', e);
+        showToast('Gagal menyimpan data', 'error');
+        return false;
+      }
     }
 
-    async function addSantriMassal() {
-      let text = document.getElementById('textareaSantri').value.trim();
-      if(!text) return showToast('Isi data terlebih dahulu', 'error');
-      let lines = text.split('\n');
-      let added=0;
-      showLoading(true);
-      for(let line of lines) {
-        let parts = line.split(','); if(parts.length<2) continue;
-        let nama=parts[0].trim(), kelas=parts[1].trim();
-        if(nama && kelas) {
-          let newSantri = { type:'santri', name:nama, kelas, createdAt:new Date().toISOString(), surat_yasin:'0', surat_waqiah:'0', surat_mulk:'0', juz30_progress:Array(37).fill('0').join(','), praktik_shalat:'0', praktik_jenazah:'0', praktik_khotib:'0', madin_ula:'0', madin_wustho:'0', shalat_jamaah:'0', aktif_madin:'0', aktif_formal:'0', nilai_pilihan:'', nilai_aurad:'', nilai_juz30:'', nilai_praktik:'', wirid_shalat:'0', doa_shalat:'0', tahlil_ringkas:'0', tahlil_lengkap:'0', doa_tahlil:'0', tawasul:'0' };
-          await fetch(SHEETDB_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(newSantri) });
-          added++;
+    // Load data dari localStorage
+    function loadFromLocalStorage() {
+      try {
+        const saved = localStorage.getItem('mutqin_santri');
+        if(saved) {
+          allSantri = JSON.parse(saved);
+          console.log('Data dimuat dari localStorage, total santri:', allSantri.length);
+        } else {
+          // Data contoh jika kosong
+          allSantri = [];
+          console.log('Tidak ada data tersimpan, memulai dengan data kosong');
+        }
+        return true;
+      } catch(e) {
+        console.error('Gagal load dari localStorage:', e);
+        allSantri = [];
+        return false;
+      }
+    }
+
+    // Sinkronisasi (sebenarnya hanya reload dari localStorage)
+    async function syncData() { 
+      loadFromLocalStorage();
+      renderAllViews(); 
+      showToast('Data berhasil disinkronkan!'); 
+    }
+
+    // Render semua view yang membutuhkan data
+    function renderAllViews() {
+      renderSantriTable();
+      updateDashboard();
+      populateSantriSelect();
+      if(document.getElementById('page-laporan') && !document.getElementById('page-laporan').classList.contains('hidden')) {
+        renderLaporan();
+      }
+      if(document.getElementById('page-sertifikat') && !document.getElementById('page-sertifikat').classList.contains('hidden')) {
+        let lulusan = allSantri.filter(s=>getStatus(s)==='Lulus');
+        let selSertif = document.getElementById('selSertifikat');
+        if(selSertif) {
+          selSertif.innerHTML = '<option value="">Pilih Santri Lulus</option>' + lulusan.map(s=>`<option value="${s.__backendId}">${s.name}</option>`).join('');
         }
       }
-      await fetchData();
-      showToast(`${added} santri ditambahkan`);
+    }
+
+    // Tambah santri (fix - menggunakan localStorage)
+    async function addSantri() {
+      let nama = document.getElementById('inputNama').value.trim();
+      let kelas = document.getElementById('inputKelas').value;
+      
+      if(!nama) {
+        showToast('Nama santri harus diisi!', 'error');
+        return;
+      }
+      if(!kelas) {
+        showToast('Pilih kelas terlebih dahulu!', 'error');
+        return;
+      }
+      
+      showLoading(true);
+      
+      try {
+        // Generate ID unik
+        const newId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        let newSantri = {
+          __backendId: newId,
+          id: newId,
+          type: 'santri',
+          name: nama,
+          kelas: kelas,
+          createdAt: new Date().toISOString(),
+          surat_yasin: '0',
+          surat_waqiah: '0',
+          surat_mulk: '0',
+          wirid_shalat: '0',
+          doa_shalat: '0',
+          tahlil_ringkas: '0',
+          tahlil_lengkap: '0',
+          doa_tahlil: '0',
+          tawasul: '0',
+          juz30_progress: Array(37).fill('0').join(','),
+          praktik_shalat: '0',
+          praktik_jenazah: '0',
+          praktik_khotib: '0',
+          madin_ula: '0',
+          madin_wustho: '0',
+          shalat_jamaah: '0',
+          aktif_madin: '0',
+          aktif_formal: '0',
+          nilai_pilihan: '',
+          nilai_aurad: '',
+          nilai_juz30: '',
+          nilai_praktik: ''
+        };
+        
+        allSantri.push(newSantri);
+        
+        if(saveToLocalStorage()) {
+          renderAllViews();
+          document.getElementById('inputNama').value = '';
+          document.getElementById('inputKelas').value = '';
+          showToast(`Santri ${nama} berhasil ditambahkan!`, 'success');
+        } else {
+          // Rollback jika gagal simpan
+          allSantri.pop();
+          showToast('Gagal menyimpan data', 'error');
+        }
+      } catch(e) {
+        console.error('Error add santri:', e);
+        showToast('Terjadi kesalahan', 'error');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // Tambah massal
+    async function addSantriMassal() {
+      let text = document.getElementById('textareaSantri').value.trim();
+      if(!text) {
+        showToast('Isi data terlebih dahulu!', 'error');
+        return;
+      }
+      
+      let lines = text.split('\n');
+      let added = 0;
+      let errors = [];
+      
+      showLoading(true);
+      
+      for(let line of lines) {
+        line = line.trim();
+        if(!line) continue;
+        
+        let parts = line.split(',');
+        if(parts.length < 2) {
+          errors.push(`Baris tidak valid: ${line}`);
+          continue;
+        }
+        
+        let nama = parts[0].trim();
+        let kelas = parts[1].trim();
+        
+        if(nama && kelas) {
+          const newId = Date.now() + '_' + Math.random().toString(36).substr(2, 9) + '_' + added;
+          let newSantri = {
+            __backendId: newId,
+            id: newId,
+            type: 'santri',
+            name: nama,
+            kelas: kelas,
+            createdAt: new Date().toISOString(),
+            surat_yasin: '0',
+            surat_waqiah: '0',
+            surat_mulk: '0',
+            wirid_shalat: '0',
+            doa_shalat: '0',
+            tahlil_ringkas: '0',
+            tahlil_lengkap: '0',
+            doa_tahlil: '0',
+            tawasul: '0',
+            juz30_progress: Array(37).fill('0').join(','),
+            praktik_shalat: '0',
+            praktik_jenazah: '0',
+            praktik_khotib: '0',
+            madin_ula: '0',
+            madin_wustho: '0',
+            shalat_jamaah: '0',
+            aktif_madin: '0',
+            aktif_formal: '0',
+            nilai_pilihan: '',
+            nilai_aurad: '',
+            nilai_juz30: '',
+            nilai_praktik: ''
+          };
+          allSantri.push(newSantri);
+          added++;
+        } else {
+          errors.push(`Format salah: ${line}`);
+        }
+      }
+      
+      if(added > 0) {
+        if(saveToLocalStorage()) {
+          renderAllViews();
+          showToast(`${added} santri berhasil ditambahkan!${errors.length ? ' (' + errors.length + ' gagal)' : ''}`, 'success');
+        } else {
+          showToast('Gagal menyimpan data', 'error');
+        }
+      } else {
+        showToast('Tidak ada data valid yang ditambahkan', 'error');
+      }
+      
       document.getElementById('textareaSantri').value = '';
       showLoading(false);
     }
 
+    // Hapus santri
+    async function deleteSantri(id) {
+      if(confirm('Yakin ingin menghapus santri ini?')) {
+        const index = allSantri.findIndex(x => x.__backendId == id);
+        if(index !== -1) {
+          allSantri.splice(index, 1);
+          if(saveToLocalStorage()) {
+            renderAllViews();
+            showToast('Santri berhasil dihapus', 'success');
+          } else {
+            showToast('Gagal menghapus', 'error');
+          }
+        }
+      }
+    }
+
+    // Get status kelulusan
     function getStatus(s) {
       let fields = ['surat_yasin','surat_waqiah','surat_mulk','wirid_shalat','doa_shalat','tahlil_ringkas','tahlil_lengkap','doa_tahlil','tawasul','praktik_shalat','praktik_jenazah','praktik_khotib','madin_ula','shalat_jamaah','aktif_madin','aktif_formal'];
       let done = fields.filter(f => s[f] === '1').length;
-      let juzDone = (s.juz30_progress || '').split(',').filter(x=>x==='1').length;
+      let juzProgress = (s.juz30_progress || '').split(',');
+      let juzDone = juzProgress.filter(x => x === '1').length;
+      
       if(done === fields.length && juzDone === 37) return 'Lulus';
       if(done > 0 || juzDone > 0) return 'Proses';
       return 'Belum';
     }
 
+    // Render tabel santri
     function renderSantriTable() {
       let container = document.getElementById('santriByKelas');
+      if(!container) return;
+      
       let query = (document.getElementById('searchSantri')?.value || '').toLowerCase();
       let filtered = allSantri.filter(s => s.name.toLowerCase().includes(query));
-      if(!filtered.length) { container.innerHTML = '<div class="text-center p-4">Tidak ada data</div>'; return; }
+      
+      if(!filtered.length) {
+        container.innerHTML = '<div class="text-center p-8 text-gray-500">Belum ada data santri. Silakan tambahkan santri baru.</div>';
+        return;
+      }
+      
       let grouped = {};
-      filtered.forEach(s => { if(!grouped[s.kelas]) grouped[s.kelas]=[]; grouped[s.kelas].push(s); });
+      filtered.forEach(s => {
+        if(!grouped[s.kelas]) grouped[s.kelas] = [];
+        grouped[s.kelas].push(s);
+      });
+      
+      let sortedKelas = Object.keys(grouped).sort((a,b) => {
+        let numA = parseInt(a.replace(/\D/g,'')) || 0;
+        let numB = parseInt(b.replace(/\D/g,'')) || 0;
+        return numA - numB;
+      });
+      
       let html = '';
-      for(let kelas in grouped) {
-        html += `<div class="border-b"><div class="bg-green-600 text-white p-2 font-semibold">${kelas}</div><table class="w-full text-sm"><tbody>`;
-        grouped[kelas].forEach((s,i) => { html += `<tr class="border-b"><td class="p-2">${i+1}</td><td>${s.name}</td><td><span class="px-2 py-1 rounded text-xs ${getStatus(s)==='Lulus'?'bg-green-100 text-green-700':'bg-gray-100'}">${getStatus(s)}</span></td><td><button onclick="deleteSantri('${s.__backendId}')" class="text-red-500 text-xs">Hapus</button></td></tr>`; });
+      for(let kelas of sortedKelas) {
+        html += `<div class="border-b last:border-b-0">
+          <div class="bg-green-600 text-white p-3 font-semibold sticky top-0">${kelas} (${grouped[kelas].length} santri)</div>
+          <table class="w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr><th class="p-2 text-left">No</th><th class="p-2 text-left">Nama</th><th class="p-2 text-left">Status</th><th class="p-2 text-left">Aksi</th></tr>
+            </thead>
+            <tbody>`;
+        
+        grouped[kelas].forEach((s, i) => {
+          let status = getStatus(s);
+          let statusColor = status === 'Lulus' ? 'bg-green-100 text-green-700' : (status === 'Proses' ? 'bg-orange-100 text-orange-700' : 'bg-red-100 text-red-700');
+          html += `<tr class="border-b hover:bg-gray-50">
+            <td class="p-2">${i+1}</td>
+            <td class="p-2 font-medium">${escapeHtml(s.name)}</td>
+            <td class="p-2"><span class="px-2 py-1 rounded text-xs ${statusColor}">${status}</span></td>
+            <td class="p-2"><button onclick="deleteSantri('${s.__backendId}')" class="text-red-500 hover:text-red-700 text-xs">Hapus</button></td>
+          </tr>`;
+        });
+        
         html += `</tbody></table></div>`;
       }
+      
       container.innerHTML = html;
     }
 
-    window.deleteSantri = async (id) => {
-      let s = allSantri.find(x=>x.__backendId==id);
-      if(!s) return;
-      showLoading(true);
-      try { await fetch(`${SHEETDB_URL}/id/${s.id || id}`, { method:'DELETE' }); await fetchData(); showToast('Terhapus'); } catch(e){ showToast('Gagal hapus','error'); } finally { showLoading(false); }
-    };
-
-    function updateDashboard() {
-      let lulus=0, proses=0, belum=0, mumtaz=0, jayyid=0;
-      allSantri.forEach(s=>{ let st=getStatus(s); if(st==='Lulus') lulus++; else if(st==='Proses') proses++; else belum++; if(s.nilai_pilihan==='Mumtaz') mumtaz++; if(s.nilai_pilihan==='Jayyid Jiddan') jayyid++; });
-      document.getElementById('statTotal').innerText=allSantri.length;
-      document.getElementById('statLulus').innerText=lulus; document.getElementById('statProses').innerText=proses; document.getElementById('statBelum').innerText=belum;
-      if(window.Chart) { if(charts.nilai) charts.nilai.destroy(); if(charts.status) charts.status.destroy(); let ctx1=document.getElementById('chartNilai').getContext('2d'); charts.nilai=new Chart(ctx1,{type:'bar',data:{labels:['Mumtaz','Jayyid Jiddan','Jayyid'],datasets:[{label:'Jumlah Santri',data:[mumtaz,jayyid,0],backgroundColor:'#4CAF50'}]}}); let ctx2=document.getElementById('chartStatusDash').getContext('2d'); charts.status=new Chart(ctx2,{type:'doughnut',data:{labels:['Lulus','Proses','Belum'],datasets:[{data:[lulus,proses,belum],backgroundColor:['#10B981','#F59E0B','#EF4444']}]}}); }
+    function escapeHtml(text) {
+      if(!text) return '';
+      return text.replace(/[&<>]/g, function(m) {
+        if(m === '&') return '&amp;';
+        if(m === '<') return '&lt;';
+        if(m === '>') return '&gt;';
+        return m;
+      });
     }
 
-    function populateSantriSelect() { let sel=document.getElementById('selSantri'); sel.innerHTML='<option value="">-- Pilih Santri --</option>'+allSantri.map(s=>`<option value="${s.__backendId}">${s.name} (${s.kelas})</option>`).join(''); }
-    function filterSantriHafalan() { let q=document.getElementById('searchSantriHafalan').value.toLowerCase(); let sel=document.getElementById('selSantri'); Array.from(sel.options).forEach(opt=>{ if(opt.value && !opt.text.toLowerCase().includes(q)) opt.style.display='none'; else opt.style.display='block'; }); }
+    function filterSantri() {
+      renderSantriTable();
+    }
+
+    // Update dashboard
+    function updateDashboard() {
+      let lulus = 0, proses = 0, belum = 0;
+      let mumtaz = 0, jayyidJiddan = 0, jayyid = 0;
+      
+      allSantri.forEach(s => {
+        let st = getStatus(s);
+        if(st === 'Lulus') lulus++;
+        else if(st === 'Proses') proses++;
+        else belum++;
+        
+        if(s.nilai_pilihan === 'Mumtaz') mumtaz++;
+        else if(s.nilai_pilihan === 'Jayyid Jiddan') jayyidJiddan++;
+        else if(s.nilai_pilihan === 'Jayyid') jayyid++;
+      });
+      
+      document.getElementById('statTotal').innerText = allSantri.length;
+      document.getElementById('statLulus').innerText = lulus;
+      document.getElementById('statProses').innerText = proses;
+      document.getElementById('statBelum').innerText = belum;
+      
+      // Update charts
+      if(window.Chart) {
+        if(charts.nilai) charts.nilai.destroy();
+        if(charts.status) charts.status.destroy();
+        
+        let ctx1 = document.getElementById('chartNilai')?.getContext('2d');
+        if(ctx1) {
+          charts.nilai = new Chart(ctx1, {
+            type: 'bar',
+            data: { labels: ['Mumtaz', 'Jayyid Jiddan', 'Jayyid'], datasets: [{ label: 'Jumlah Santri', data: [mumtaz, jayyidJiddan, jayyid], backgroundColor: '#4CAF50' }] }
+          });
+        }
+        
+        let ctx2 = document.getElementById('chartStatusDash')?.getContext('2d');
+        if(ctx2) {
+          charts.status = new Chart(ctx2, {
+            type: 'doughnut',
+            data: { labels: ['Lulus', 'Proses', 'Belum'], datasets: [{ data: [lulus, proses, belum], backgroundColor: ['#10B981', '#F59E0B', '#EF4444'] }] }
+          });
+        }
+      }
+    }
+
+    // Hafalan functions
+    function populateSantriSelect() {
+      let sel = document.getElementById('selSantri');
+      if(!sel) return;
+      sel.innerHTML = '<option value="">-- Pilih Santri --</option>' + allSantri.map(s => `<option value="${s.__backendId}">${s.name} (${s.kelas})</option>`).join('');
+    }
+
+    function filterSantriHafalan() {
+      let q = document.getElementById('searchSantriHafalan')?.value.toLowerCase() || '';
+      let sel = document.getElementById('selSantri');
+      if(!sel) return;
+      Array.from(sel.options).forEach(opt => {
+        if(opt.value && !opt.text.toLowerCase().includes(q)) opt.style.display = 'none';
+        else opt.style.display = 'block';
+      });
+    }
 
     function loadHafalan() {
-      let id=document.getElementById('selSantri').value; let s=allSantri.find(x=>x.__backendId==id); if(!s) { document.getElementById('hafalanContent').classList.add('hidden'); return; }
-      document.getElementById('hafalanContent').classList.remove('hidden');
-      ['chk_yasin','chk_waqiah','chk_mulk'].forEach((id,i)=>{ document.getElementById(id).checked = s[['surat_yasin','surat_waqiah','surat_mulk'][i]] === '1'; });
+      let id = document.getElementById('selSantri')?.value;
+      let s = allSantri.find(x => x.__backendId == id);
+      if(!s) {
+        document.getElementById('hafalanContent')?.classList.add('hidden');
+        return;
+      }
+      
+      document.getElementById('hafalanContent')?.classList.remove('hidden');
+      
+      // Load checkbox values
+      document.getElementById('chk_yasin').checked = s.surat_yasin === '1';
+      document.getElementById('chk_waqiah').checked = s.surat_waqiah === '1';
+      document.getElementById('chk_mulk').checked = s.surat_mulk === '1';
       document.getElementById('chk_praktik_shalat').checked = s.praktik_shalat === '1';
       document.getElementById('chk_jenazah').checked = s.praktik_jenazah === '1';
       document.getElementById('chk_khotib').checked = s.praktik_khotib === '1';
@@ -253,49 +544,221 @@
       document.getElementById('chk_jamaah').checked = s.shalat_jamaah === '1';
       document.getElementById('chk_aktif_madin').checked = s.aktif_madin === '1';
       document.getElementById('chk_aktif_formal').checked = s.aktif_formal === '1';
+      
       if(s.nilai_pilihan) document.getElementById('nilai_pilihan').value = s.nilai_pilihan;
       if(s.nilai_aurad) document.getElementById('nilai_aurad').value = s.nilai_aurad;
       if(s.nilai_juz30) document.getElementById('nilai_juz30').value = s.nilai_juz30;
       if(s.nilai_praktik) document.getElementById('nilai_praktik').value = s.nilai_praktik;
+      
       let juz = (s.juz30_progress || '').split(',');
-      for(let i=0;i<37;i++) { let cb = document.getElementById(`juz_cb_${i}`); if(cb) cb.checked = juz[i] === '1'; }
+      for(let i = 0; i < 37; i++) {
+        let cb = document.getElementById(`juz_cb_${i}`);
+        if(cb) cb.checked = juz[i] === '1';
+      }
+      
+      let kelasNum = parseInt(s.kelas.replace(/\D/g,'')) || 6;
+      let wusthoRow = document.getElementById('madinWusthoRow');
+      if(wusthoRow) wusthoRow.style.display = kelasNum >= 4 ? 'flex' : 'none';
     }
 
     async function saveHafalan() {
-      let id=document.getElementById('selSantri').value; let s=allSantri.find(x=>x.__backendId==id); if(!s) return;
-      let juzArr = []; for(let i=0;i<37;i++) juzArr.push(document.getElementById(`juz_cb_${i}`)?.checked ? '1' : '0');
-      let updated = { ...s, surat_yasin:document.getElementById('chk_yasin').checked?'1':'0', surat_waqiah:document.getElementById('chk_waqiah').checked?'1':'0', surat_mulk:document.getElementById('chk_mulk').checked?'1':'0', praktik_shalat:document.getElementById('chk_praktik_shalat').checked?'1':'0', praktik_jenazah:document.getElementById('chk_jenazah').checked?'1':'0', praktik_khotib:document.getElementById('chk_khotib').checked?'1':'0', madin_ula:document.getElementById('chk_madin_ula').checked?'1':'0', madin_wustho:document.getElementById('chk_madin_wustho').checked?'1':'0', shalat_jamaah:document.getElementById('chk_jamaah').checked?'1':'0', aktif_madin:document.getElementById('chk_aktif_madin').checked?'1':'0', aktif_formal:document.getElementById('chk_aktif_formal').checked?'1':'0', nilai_pilihan:document.getElementById('nilai_pilihan').value, nilai_aurad:document.getElementById('nilai_aurad').value, nilai_juz30:document.getElementById('nilai_juz30').value, nilai_praktik:document.getElementById('nilai_praktik').value, juz30_progress:juzArr.join(',') };
-      showLoading(true);
-      try { await fetch(`${SHEETDB_URL}/id/${s.id || s.__backendId}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(updated) }); await fetchData(); showToast('Hafalan tersimpan'); } catch(e){ showToast('Gagal simpan','error'); } finally { showLoading(false); }
+      let id = document.getElementById('selSantri')?.value;
+      let index = allSantri.findIndex(x => x.__backendId == id);
+      if(index === -1) {
+        showToast('Pilih santri terlebih dahulu', 'error');
+        return;
+      }
+      
+      let juzArr = [];
+      for(let i = 0; i < 37; i++) {
+        let cb = document.getElementById(`juz_cb_${i}`);
+        juzArr.push(cb?.checked ? '1' : '0');
+      }
+      
+      let updated = { ...allSantri[index] };
+      updated.surat_yasin = document.getElementById('chk_yasin').checked ? '1' : '0';
+      updated.surat_waqiah = document.getElementById('chk_waqiah').checked ? '1' : '0';
+      updated.surat_mulk = document.getElementById('chk_mulk').checked ? '1' : '0';
+      updated.praktik_shalat = document.getElementById('chk_praktik_shalat').checked ? '1' : '0';
+      updated.praktik_jenazah = document.getElementById('chk_jenazah').checked ? '1' : '0';
+      updated.praktik_khotib = document.getElementById('chk_khotib').checked ? '1' : '0';
+      updated.madin_ula = document.getElementById('chk_madin_ula').checked ? '1' : '0';
+      updated.madin_wustho = document.getElementById('chk_madin_wustho').checked ? '1' : '0';
+      updated.shalat_jamaah = document.getElementById('chk_jamaah').checked ? '1' : '0';
+      updated.aktif_madin = document.getElementById('chk_aktif_madin').checked ? '1' : '0';
+      updated.aktif_formal = document.getElementById('chk_aktif_formal').checked ? '1' : '0';
+      updated.nilai_pilihan = document.getElementById('nilai_pilihan').value;
+      updated.nilai_aurad = document.getElementById('nilai_aurad').value;
+      updated.nilai_juz30 = document.getElementById('nilai_juz30').value;
+      updated.nilai_praktik = document.getElementById('nilai_praktik').value;
+      updated.juz30_progress = juzArr.join(',');
+      
+      allSantri[index] = updated;
+      
+      if(saveToLocalStorage()) {
+        renderAllViews();
+        showToast('Data hafalan berhasil disimpan!', 'success');
+      } else {
+        showToast('Gagal menyimpan', 'error');
+      }
     }
 
+    // Generate Juz 30 checkboxes
     function generateJuzCheckboxes() {
       let surats = ['An-Naba','An-Nazi\'at','Abasa','At-Takwir','Al-Infitar','Al-Mutaffifin','Al-Insyiqaq','Al-Buruj','At-Tariq','Al-A\'la','Al-Ghasyiyah','Al-Fajr','Al-Balad','Asy-Syams','Al-Lail','Ad-Duha','Asy-Syarh','At-Tin','Al-Alaq','Al-Qadr','Al-Bayyinah','Az-Zalzalah','Al-Adiyat','Al-Qari\'ah','At-Takasur','Al-Asr','Al-Humazah','Al-Fil','Quraisy','Al-Ma\'un','Al-Kausar','Al-Kafirun','An-Nasr','Al-Lahab','Al-Ikhlas','Al-Falaq','An-Nas'];
       let container = document.getElementById('juz30List');
-      container.innerHTML = surats.map((s,i)=>`<label class="flex justify-between text-sm border-b py-1"><span>${s}</span><input type="checkbox" id="juz_cb_${i}"></label>`).join('');
+      if(container) {
+        container.innerHTML = surats.map((s,i) => `<label class="flex justify-between text-sm border-b py-1"><span>${s}</span><input type="checkbox" id="juz_cb_${i}"></label>`).join('');
+      }
     }
+    
+    function generateAurad() {
+      let items = ['Wirid setelah shalat','Doa setelah shalat','Tahlil ringkas','Tahlil lengkap','Doa tahlil','Tawasul & Istighotsah'];
+      let container = document.getElementById('auradList');
+      if(container) {
+        container.innerHTML = items.map(t => `<label class="flex justify-between py-1"><span>${t}</span><input type="checkbox" id="chk_${t.replace(/[ &]/g,'_')}"></label>`).join('');
+      }
+    }
+
+    // Laporan
+    function renderLaporan() {
+      let tbody = document.getElementById('laporanTbody');
+      if(!tbody) return;
+      
+      let lulus = 0, proses = 0, belum = 0;
+      allSantri.forEach(s => {
+        let st = getStatus(s);
+        if(st === 'Lulus') lulus++;
+        else if(st === 'Proses') proses++;
+        else belum++;
+      });
+      
+      document.getElementById('reportTotal').innerText = allSantri.length;
+      document.getElementById('reportLulus').innerText = lulus;
+      document.getElementById('reportProses').innerText = proses;
+      document.getElementById('reportBelum').innerText = belum;
+      
+      tbody.innerHTML = allSantri.map(s => {
+        let status = getStatus(s);
+        let statusClass = status === 'Lulus' ? 'text-green-600 font-semibold' : (status === 'Proses' ? 'text-orange-600' : 'text-red-600');
+        return `<tr class="border-b hover:bg-gray-50"><td class="p-2">${escapeHtml(s.name)}</td><td class="p-2">${s.kelas}</td><td class="p-2 ${statusClass}">${status}</td></tr>`;
+      }).join('');
+    }
+
+    function exportToPDF() {
+      let win = window.open();
+      win.document.write(`<html><head><title>Laporan Mutqin BM</title><style>body{font-family:sans-serif;padding:20px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px}th{background:#1B5E20;color:#fff}</style></head><body><h1>Laporan Hafalan Santri</h1><p>Total Santri: ${allSantri.length}</p><p>Tanggal: ${new Date().toLocaleDateString()}</p><table><thead><tr><th>Nama</th><th>Kelas</th><th>Status</th></tr></thead><tbody>${allSantri.map(s => `<tr><td>${escapeHtml(s.name)}</td><td>${s.kelas}</td><td>${getStatus(s)}</td></tr>`).join('')}</tbody></table></body></html>`);
+      win.document.close();
+      win.print();
+    }
+
+    // Sertifikat
+    function generateSertifikat() {
+      let sel = document.getElementById('selSertifikat');
+      let id = sel?.value;
+      let s = allSantri.find(x => x.__backendId == id);
+      if(!s || getStatus(s) !== 'Lulus') {
+        showToast('Pilih santri yang sudah LULUS!', 'error');
+        return;
+      }
+      document.getElementById('certNama').innerText = s.name;
+      document.getElementById('sertifikatPreview').classList.remove('hidden');
+    }
+
+    function downloadSertifikat() {
+      let node = document.getElementById('sertifikatContent');
+      html2canvas(node, { scale: 2 }).then(canvas => {
+        let link = document.createElement('a');
+        link.download = 'sertifikat_' + Date.now() + '.png';
+        link.href = canvas.toDataURL();
+        link.click();
+        showToast('Sertifikat berhasil diunduh!', 'success');
+      }).catch(() => {
+        showToast('Gagal generate sertifikat', 'error');
+      });
+    }
+
+    // Navigation & UI
+    function showPage(page) {
+      document.querySelectorAll('[id^="page-"]').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`page-${page}`).classList.remove('hidden');
+      
+      if(page === 'laporan') renderLaporan();
+      if(page === 'sertifikat') {
+        let lulusan = allSantri.filter(s => getStatus(s) === 'Lulus');
+        let selSertif = document.getElementById('selSertifikat');
+        if(selSertif) {
+          selSertif.innerHTML = '<option value="">Pilih Santri Lulus</option>' + lulusan.map(s => `<option value="${s.__backendId}">${s.name}</option>`).join('');
+        }
+      }
+      if(page === 'hafalan') populateSantriSelect();
+      if(window.innerWidth < 768) document.getElementById('sidebar')?.classList.add('hidden');
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('hidden');
+    }
+
+    function handleResize() {
+      let isMobile = window.innerWidth < 768;
+      let mobileHeader = document.getElementById('mobileHeader');
+      if(mobileHeader) {
+        mobileHeader.classList.toggle('hidden', !isMobile);
+        mobileHeader.classList.toggle('flex', isMobile);
+      }
+      if(isMobile) {
+        document.getElementById('sidebar')?.classList.add('hidden');
+      } else {
+        document.getElementById('sidebar')?.classList.remove('hidden');
+      }
+    }
+
+    // Login
+    function doLogin() {
+      let u = document.getElementById('loginUser').value;
+      let p = document.getElementById('loginPass').value;
+      if((u === 'admin' && p === 'admin123') || (u === 'guru' && p === 'guru123')) {
+        currentUser = { role: u === 'admin' ? 'Admin' : 'Guru' };
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        document.getElementById('userRole').innerText = currentUser.role;
+        
+        // Load data dari localStorage
+        loadFromLocalStorage();
+        renderAllViews();
+        
+        lucide.createIcons();
+        handleResize();
+      } else {
+        document.getElementById('loginError').innerText = 'Username/Password salah!';
+        document.getElementById('loginError').classList.remove('hidden');
+      }
+    }
+
+    function doLogout() {
+      currentUser = null;
+      document.getElementById('mainApp').classList.add('hidden');
+      document.getElementById('loginPage').classList.remove('hidden');
+    }
+
+    function saveProfil() {
+      let nama = document.getElementById('profilNama').value;
+      localStorage.setItem('mutqin_profil_nama', nama);
+      showToast('Profil disimpan', 'success');
+    }
+
+    // Load profil
+    let savedProfil = localStorage.getItem('mutqin_profil_nama');
+    if(savedProfil) document.getElementById('profilNama').value = savedProfil;
+
+    // Initialize
     generateJuzCheckboxes();
-    function generateAurad() { let items=['Wirid setelah shalat','Doa setelah shalat','Tahlil ringkas','Tahlil lengkap','Doa tahlil','Tawasul & Istighotsah']; document.getElementById('auradList').innerHTML = items.map(t=>`<label class="flex justify-between py-1"><span>${t}</span><input type="checkbox" id="chk_${t.replace(/ /g,'_')}"></label>`).join(''); } generateAurad();
-
-    function renderLaporan() { let tbody=document.getElementById('laporanTbody'); let lulus=0,proses=0,belum=0; allSantri.forEach(s=>{ let st=getStatus(s); if(st==='Lulus') lulus++; else if(st==='Proses') proses++; else belum++; }); document.getElementById('reportTotal').innerText=allSantri.length; document.getElementById('reportLulus').innerText=lulus; document.getElementById('reportProses').innerText=proses; document.getElementById('reportBelum').innerText=belum; tbody.innerHTML=allSantri.map(s=>`<tr class="border-b"><td class="p-2">${s.name}</td><td>${s.kelas}</td><td>${getStatus(s)}</td></tr>`).join(''); }
-
-    function exportToPDF() { let win=window.open(); win.document.write(`<html><head><title>Laporan Mutqin BM</title><style>body{font-family:sans-serif;padding:20px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px}th{background:#1B5E20;color:#fff}</style></head><body><h1>Laporan Hafalan Santri</h1><p>Total Santri: ${allSantri.length}</p><table><tr><th>Nama</th><th>Kelas</th><th>Status</th></tr>${allSantri.map(s=>`<tr><td>${s.name}</td><td>${s.kelas}</td><td>${getStatus(s)}</td></tr>`).join('')}</table></body></html>`); win.document.close(); win.print(); }
-
-    function generateSertifikat() { let sel=document.getElementById('selSertifikat'); let id = sel.value; let s=allSantri.find(x=>x.__backendId==id); if(!s || getStatus(s)!=='Lulus') return showToast('Pilih santri yang sudah LULUS','error'); document.getElementById('certNama').innerText=s.name; document.getElementById('sertifikatPreview').classList.remove('hidden'); }
-    function downloadSertifikat() { let node = document.getElementById('sertifikatContent'); html2canvas?.(node).then(canvas=>{ let link=document.createElement('a'); link.download='sertifikat.png'; link.href=canvas.toDataURL(); link.click(); }).catch(()=>showToast('Gagal generate','error')); if(!window.html2canvas){ showToast('Tunggu sebentar, memuat library...','info'); let script=document.createElement('script'); script.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'; script.onload=()=>downloadSertifikat(); document.head.appendChild(script); } }
-
-    function showPage(page) { document.querySelectorAll('[id^="page-"]').forEach(p=>p.classList.add('hidden')); document.getElementById(`page-${page}`).classList.remove('hidden'); if(page==='laporan') renderLaporan(); if(page==='sertifikat') { let lulusan=allSantri.filter(s=>getStatus(s)==='Lulus'); document.getElementById('selSertifikat').innerHTML='<option value="">Pilih Santri Lulus</option>'+lulusan.map(s=>`<option value="${s.__backendId}">${s.name}</option>`).join(''); } if(page==='hafalan') populateSantriSelect(); if(window.innerWidth<768) document.getElementById('sidebar')?.classList.add('hidden'); }
-
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden'); }
-    function handleResize() { let isMobile=window.innerWidth<768; document.getElementById('mobileHeader').classList.toggle('hidden',!isMobile); document.getElementById('mobileHeader').classList.toggle('flex',isMobile); if(isMobile) document.getElementById('sidebar').classList.add('hidden'); else document.getElementById('sidebar').classList.remove('hidden'); }
-
-    function doLogin() { let u=document.getElementById('loginUser').value, p=document.getElementById('loginPass').value; if((u==='admin' && p==='admin123') || (u==='guru' && p==='guru123')) { currentUser={role:u==='admin'?'Admin':'Guru'}; document.getElementById('loginPage').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden'); document.getElementById('userRole').innerText=currentUser.role; fetchData(); lucide.createIcons(); handleResize(); } else { document.getElementById('loginError').innerText='Username/Password salah!'; document.getElementById('loginError').classList.remove('hidden'); } }
-    function doLogout() { currentUser=null; document.getElementById('mainApp').classList.add('hidden'); document.getElementById('loginPage').classList.remove('hidden'); }
-    function saveProfil() { localStorage.setItem('profil_nama', document.getElementById('profilNama').value); showToast('Profil disimpan'); }
-    document.getElementById('profilNama').value = localStorage.getItem('profil_nama') || 'Ponpes Bahrul Maghfiroh';
-
-    window.addEventListener('resize',handleResize);
-    window.filterSantri = ()=>renderSantriTable();
+    generateAurad();
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Expose functions globally
+    window.filterSantri = filterSantri;
     window.exportToPDF = exportToPDF;
     window.generateSertifikat = generateSertifikat;
     window.downloadSertifikat = downloadSertifikat;
@@ -309,8 +772,12 @@
     window.saveProfil = saveProfil;
     window.addSantri = addSantri;
     window.addSantriMassal = addSantriMassal;
+    window.deleteSantri = deleteSantri;
     window.filterSantriHafalan = filterSantriHafalan;
+    
     lucide.createIcons();
+    
+    console.log('Aplikasi siap, menggunakan localStorage untuk penyimpanan data');
   </script>
 </body>
 </html>
