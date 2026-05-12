@@ -145,9 +145,9 @@
                     </div>
                 </div>
 
-                <!-- DATA SANTRI - Group by Kelas -->
+                <!-- DATA SANTRI -->
                 <div id="pageSantri" class="page hidden">
-                    <div class="mb-6 md:mb-8"><h2 class="text-xl md:text-2xl font-bold text-gray-800">Data Santri</h2><p class="text-gray-500 mt-1 text-sm">Data santri dikelompokkan berdasarkan kelas</p></div>
+                    <div class="mb-6 md:mb-8"><h2 class="text-xl md:text-2xl font-bold text-gray-800">Data Santri</h2><p class="text-gray-500 mt-1 text-sm">Data santri dikelompokkan berdasarkan kelas (1A, 1B, 2A, dst)</p></div>
                     <div class="flex gap-3 mb-6 flex-wrap"><button onclick="openModal('tambahModal')" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Santri</button><button onclick="openModal('massalModal')" class="btn btn-outline"><i class="fas fa-upload"></i> Import Massal</button></div>
                     <div class="bg-white rounded-2xl p-4 shadow-sm border mb-6"><div class="relative"><i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i><input type="text" id="searchSantri" placeholder="🔍 Cari santri berdasarkan nama atau kelas..." class="w-full pl-12" onkeyup="renderSantri()"></div></div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden" id="santriListContainer"></div>
@@ -194,7 +194,7 @@
                         <div class="mb-5 text-center"><label class="block text-sm font-medium text-gray-700 mb-2">Logo Pesantren</label><div class="flex flex-col items-center gap-3"><div class="w-28 h-28 md:w-32 md:h-32 rounded-2xl border-2 border-dashed border-emerald-300 flex items-center justify-center overflow-hidden bg-gray-50" id="logoPreviewContainer"><i class="fas fa-cloud-upload-alt text-emerald-400 text-3xl md:text-4xl" id="logoPreviewIcon"></i><img id="logoPreviewImg" class="hidden w-full h-full object-cover" alt="Preview"></div><input type="file" id="logoUpload" accept="image/*" class="hidden" onchange="previewLogo(this)"><button onclick="document.getElementById('logoUpload').click()" class="btn btn-outline btn-sm"><i class="fas fa-upload"></i> Upload Logo</button><button onclick="clearLogo()" class="btn btn-outline btn-sm text-red-500"><i class="fas fa-trash"></i> Hapus Logo</button></div></div>
                         <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-mosque mr-2 text-emerald-600"></i>Nama Pesantren</label><input type="text" id="profilNama" class="w-full" value="Pondok Pesantren Bahrul Maghfiroh"></div>
                         <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-user-tie mr-2 text-emerald-600"></i>Nama Pengasuh</label><input type="text" id="profilPengasuh" class="w-full" placeholder="KH. Nama Pengasuh"></div>
-                        <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-user-graduate mr-2 text-emerald-600"></i>Nama Kepala Pendidikan</label><input type="text" id="profilKapendik" class="w-full" placeholder="Nama Kepala Pendidikan"></div>
+                        <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-building mr-2 text-emerald-600"></i>Nama Kepala Pondok</label><input type="text" id="profilKapondok" class="w-full" placeholder="Nama Kepala Pondok"></div>
                         <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-map-marker-alt mr-2 text-emerald-600"></i>Alamat</label><textarea id="profilAlamat" rows="2" class="w-full" placeholder="Alamat lengkap pesantren"></textarea></div>
                         <button onclick="saveProfil()" class="btn btn-primary w-full justify-center"><i class="fas fa-save"></i> Simpan Profil</button>
                     </div>
@@ -205,11 +205,11 @@
 </div>
 
 <!-- MODALS -->
-<div id="tambahModal" class="modal hidden" onclick="closeModal(event,'tambahModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-5 md:p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-lg md:text-xl font-bold"><i class="fas fa-user-plus text-emerald-600 mr-2"></i>Tambah Santri</h3><button onclick="closeModal(null,'tambahModal')"><i class="fas fa-times"></i></button></div><div class="p-5 md:p-6 space-y-4 md:space-y-5"><input type="text" id="tambahNama" placeholder="Nama Lengkap" class="w-full"><select id="tambahKelas" class="w-full"><option value="">Pilih Kelas</option><option>Kelas 1</option><option>Kelas 2</option><option>Kelas 3</option><option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option></select></div><div class="p-5 md:p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'tambahModal')" class="btn btn-outline">Batal</button><button onclick="tambahSantri()" class="btn btn-primary">Simpan</button></div></div></div>
+<div id="tambahModal" class="modal hidden" onclick="closeModal(event,'tambahModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-5 md:p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-lg md:text-xl font-bold"><i class="fas fa-user-plus text-emerald-600 mr-2"></i>Tambah Santri</h3><button onclick="closeModal(null,'tambahModal')"><i class="fas fa-times"></i></button></div><div class="p-5 md:p-6 space-y-4 md:space-y-5"><input type="text" id="tambahNama" placeholder="Nama Lengkap" class="w-full"><select id="tambahKelas" class="w-full"><option value="">Pilih Kelas</option><option>Kelas 1A</option><option>Kelas 1B</option><option>Kelas 2A</option><option>Kelas 2B</option><option>Kelas 3A</option><option>Kelas 3B</option><option>Kelas 4A</option><option>Kelas 4B</option><option>Kelas 5A</option><option>Kelas 5B</option><option>Kelas 6A</option><option>Kelas 6B</option></select></div><div class="p-5 md:p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'tambahModal')" class="btn btn-outline">Batal</button><button onclick="tambahSantri()" class="btn btn-primary">Simpan</button></div></div></div>
 
-<div id="editModal" class="modal hidden" onclick="closeModal(event,'editModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-5 md:p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-lg md:text-xl font-bold"><i class="fas fa-edit text-emerald-600 mr-2"></i>Edit Santri</h3><button onclick="closeModal(null,'editModal')"><i class="fas fa-times"></i></button></div><div class="p-5 md:p-6 space-y-4 md:space-y-5"><input type="hidden" id="editId"><input type="text" id="editNama" class="w-full"><select id="editKelas" class="w-full"><option>Kelas 1</option><option>Kelas 2</option><option>Kelas 3</option><option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option></select></div><div class="p-5 md:p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'editModal')" class="btn btn-outline">Batal</button><button onclick="updateSantri()" class="btn btn-primary">Update</button></div></div></div>
+<div id="editModal" class="modal hidden" onclick="closeModal(event,'editModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-5 md:p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-lg md:text-xl font-bold"><i class="fas fa-edit text-emerald-600 mr-2"></i>Edit Santri</h3><button onclick="closeModal(null,'editModal')"><i class="fas fa-times"></i></button></div><div class="p-5 md:p-6 space-y-4 md:space-y-5"><input type="hidden" id="editId"><input type="text" id="editNama" class="w-full"><select id="editKelas" class="w-full"><option>Kelas 1A</option><option>Kelas 1B</option><option>Kelas 2A</option><option>Kelas 2B</option><option>Kelas 3A</option><option>Kelas 3B</option><option>Kelas 4A</option><option>Kelas 4B</option><option>Kelas 5A</option><option>Kelas 5B</option><option>Kelas 6A</option><option>Kelas 6B</option></select></div><div class="p-5 md:p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'editModal')" class="btn btn-outline">Batal</button><button onclick="updateSantri()" class="btn btn-primary">Update</button></div></div></div>
 
-<div id="massalModal" class="modal hidden" onclick="closeModal(event,'massalModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-5 md:p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-lg md:text-xl font-bold"><i class="fas fa-layer-group text-emerald-600 mr-2"></i>Import Massal</h3><button onclick="closeModal(null,'massalModal')"><i class="fas fa-times"></i></button></div><div class="p-5 md:p-6"><div class="bg-blue-50 p-3 rounded-xl text-sm mb-4"><i class="fas fa-info-circle"></i> Format: Nama,Kelas<br>Contoh: Ahmad Maulana,Kelas 1</div><textarea id="massalData" rows="6" class="w-full font-mono text-sm" placeholder="Ahmad Maulana,Kelas 1&#10;Fatimah Azzahra,Kelas 2"></textarea></div><div class="p-5 md:p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'massalModal')" class="btn btn-outline">Batal</button><button onclick="importMassal()" class="btn btn-primary">Import</button></div></div></div>
+<div id="massalModal" class="modal hidden" onclick="closeModal(event,'massalModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-5 md:p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-lg md:text-xl font-bold"><i class="fas fa-layer-group text-emerald-600 mr-2"></i>Import Massal</h3><button onclick="closeModal(null,'massalModal')"><i class="fas fa-times"></i></button></div><div class="p-5 md:p-6"><div class="bg-blue-50 p-3 rounded-xl text-sm mb-4"><i class="fas fa-info-circle"></i> Format: Nama,Kelas<br>Contoh: Ahmad Maulana,Kelas 1A<br>Fatimah Azzahra,Kelas 2B<br>Muhammad Rizki,Kelas 3A</div><textarea id="massalData" rows="6" class="w-full font-mono text-sm" placeholder="Ahmad Maulana,Kelas 1A&#10;Fatimah Azzahra,Kelas 2B&#10;Muhammad Rizki,Kelas 3A"></textarea></div><div class="p-5 md:p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'massalModal')" class="btn btn-outline">Batal</button><button onclick="importMassal()" class="btn btn-primary">Import</button></div></div></div>
 
 <script>
 // ==================== DATA STORAGE ====================
@@ -219,11 +219,14 @@ let currentSantriId = null;
 let statusChart = null, nilaiChart = null, laporanChart = null, laporanPieChart = null;
 let logoBase64 = null;
 
+// Daftar kelas yang valid - format dengan huruf (1A, 1B, 2A, dst)
+const validKelas = ['Kelas 1A', 'Kelas 1B', 'Kelas 2A', 'Kelas 2B', 'Kelas 3A', 'Kelas 3B', 'Kelas 4A', 'Kelas 4B', 'Kelas 5A', 'Kelas 5B', 'Kelas 6A', 'Kelas 6B'];
+
 // Profil data
 let profilData = {
     nama: 'Pondok Pesantren Bahrul Maghfiroh',
     pengasuh: '',
-    kapendik: '',
+    kapondok: '',
     alamat: ''
 };
 
@@ -282,15 +285,15 @@ function getStatus(s) {
     return 'Belum';
 }
 
-// Load Data from localStorage
+// Load Data from localStorage (data akan tetap ada di PC/HP lain jika menggunakan browser yang sama)
 function loadData() {
-    let saved = localStorage.getItem('mutqin_santri_v8');
+    let saved = localStorage.getItem('mutqin_santri_v9');
     if (saved) { try { santri = JSON.parse(saved); } catch(e) { santri = []; } }
     if (!santri.length) {
         santri = [
-            { id: 1, nama: 'Ahmad Maulana', kelas: 'Kelas 3', hafalan_yasin: true, hafalan_waqiah: true, hafalan_mulk: true, aurad_wirid: true, aurad_doa: true, aurad_tahlil_ringkas: true, aurad_tahlil_lengkap: true, aurad_doa_tahlil: true, aurad_tawasul: true, juz30: Array(37).fill(true), praktik_shalat: true, praktik_jenazah: true, praktik_khotib: true, madin_ula: true, madin_wustho: true, sikap_jamaah: true, sikap_aktif_madin: true, sikap_aktif_formal: true, nilai_hafalan: 'Mumtaz', nilai_aurad: 'Mumtaz', nilai_juz30: 'Mumtaz', nilai_praktik: 'Mumtaz' },
-            { id: 2, nama: 'Fatimah Azzahra', kelas: 'Kelas 2', hafalan_yasin: true, nilai_hafalan: 'Jayyid Jiddan' },
-            { id: 3, nama: 'Muhammad Rizki', kelas: 'Kelas 1' }
+            { id: 1, nama: 'Ahmad Maulana', kelas: 'Kelas 3A', hafalan_yasin: true, hafalan_waqiah: true, hafalan_mulk: true, aurad_wirid: true, aurad_doa: true, aurad_tahlil_ringkas: true, aurad_tahlil_lengkap: true, aurad_doa_tahlil: true, aurad_tawasul: true, juz30: Array(37).fill(true), praktik_shalat: true, praktik_jenazah: true, praktik_khotib: true, madin_ula: true, madin_wustho: true, sikap_jamaah: true, sikap_aktif_madin: true, sikap_aktif_formal: true, nilai_hafalan: 'Mumtaz', nilai_aurad: 'Mumtaz', nilai_juz30: 'Mumtaz', nilai_praktik: 'Mumtaz' },
+            { id: 2, nama: 'Fatimah Azzahra', kelas: 'Kelas 2B', hafalan_yasin: true, nilai_hafalan: 'Jayyid Jiddan' },
+            { id: 3, nama: 'Muhammad Rizki', kelas: 'Kelas 1A' }
         ];
     }
     
@@ -301,27 +304,27 @@ function loadData() {
             let p = JSON.parse(savedProfil);
             profilData.nama = p.nama || 'Pondok Pesantren Bahrul Maghfiroh';
             profilData.pengasuh = p.pengasuh || '';
-            profilData.kapendik = p.kapendik || '';
+            profilData.kapondok = p.kapondok || '';
             profilData.alamat = p.alamat || '';
         } catch(e) {}
     }
     document.getElementById('profilNama').value = profilData.nama;
     document.getElementById('profilPengasuh').value = profilData.pengasuh;
-    document.getElementById('profilKapendik').value = profilData.kapendik;
+    document.getElementById('profilKapondok').value = profilData.kapondok;
     document.getElementById('profilAlamat').value = profilData.alamat;
     
     refreshAll();
 }
 
 function saveData() { 
-    localStorage.setItem('mutqin_santri_v8', JSON.stringify(santri)); 
+    localStorage.setItem('mutqin_santri_v9', JSON.stringify(santri)); 
     refreshAll(); 
 }
 
-function saveProfilData() {
+function saveProfil() {
     profilData.nama = document.getElementById('profilNama').value;
     profilData.pengasuh = document.getElementById('profilPengasuh').value;
-    profilData.kapendik = document.getElementById('profilKapendik').value;
+    profilData.kapondok = document.getElementById('profilKapondok').value;
     profilData.alamat = document.getElementById('profilAlamat').value;
     localStorage.setItem('mutqin_profil_data', JSON.stringify(profilData));
     showToast('✅ Profil berhasil disimpan');
@@ -417,17 +420,19 @@ function importMassal() {
         let parts = line.split(',');
         if (parts.length < 2) continue;
         let nama = parts[0].trim(), kelas = parts[1].trim();
-        if (nama && kelas && (kelas === 'Kelas 1' || kelas === 'Kelas 2' || kelas === 'Kelas 3' || kelas === 'Kelas 4' || kelas === 'Kelas 5' || kelas === 'Kelas 6')) {
+        if (nama && validKelas.includes(kelas)) {
             let newSantri = getDefaultSantri(); 
             newSantri.id = Date.now() + added; 
             newSantri.nama = nama; 
             newSantri.kelas = kelas; 
             santri.push(newSantri); 
             added++;
+        } else if (nama && kelas) {
+            showToast(`Kelas "${kelas}" tidak valid. Gunakan format: Kelas 1A, Kelas 1B, dst`, 'error');
         }
     }
     if (added > 0) { saveData(); showToast(`✅ ${added} santri diimport`); closeModal(null, 'massalModal'); document.getElementById('massalData').value = ''; }
-    else showToast('Tidak ada data valid. Format: Nama,Kelas (contoh: Ahmad,Kelas 1)', 'error');
+    else if (added === 0) showToast('Tidak ada data valid. Format: Nama,Kelas 1A', 'error');
 }
 
 function renderSantri() {
@@ -437,12 +442,22 @@ function renderSantri() {
     if (!container) return;
     if (filtered.length === 0) { container.innerHTML = '<div class="text-center py-12 text-gray-400"><i class="fas fa-inbox text-5xl mb-3"></i><p>Belum ada data santri</p></div>'; return; }
     
-    // Group by kelas
+    // Group by kelas (urut berdasarkan angka dan huruf)
     let grouped = {};
     filtered.forEach(s => { if (!grouped[s.kelas]) grouped[s.kelas] = []; grouped[s.kelas].push(s); });
-    let kelasOrder = ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6'];
+    
+    // Urutkan kelas berdasarkan angka lalu huruf
+    let sortedKelas = Object.keys(grouped).sort((a, b) => {
+        let numA = parseInt(a.match(/\d+/)?.[0] || 0);
+        let numB = parseInt(b.match(/\d+/)?.[0] || 0);
+        if (numA !== numB) return numA - numB;
+        let letterA = a.match(/[A-Z]/)?.[0] || '';
+        let letterB = b.match(/[A-Z]/)?.[0] || '';
+        return letterA.localeCompare(letterB);
+    });
+    
     let html = '';
-    for (let kelas of kelasOrder) {
+    for (let kelas of sortedKelas) {
         if (grouped[kelas] && grouped[kelas].length > 0) {
             html += `<div class="border-b"><div class="bg-gradient-to-r from-emerald-50 to-white p-4 font-semibold text-emerald-800 flex justify-between"><span><i class="fas fa-graduation-cap mr-2"></i>${kelas}</span><span class="text-xs bg-emerald-100 px-3 py-1 rounded-full">${grouped[kelas].length} Santri</span></div><div class="divide-y">`;
             grouped[kelas].forEach((s, idx) => {
@@ -557,7 +572,9 @@ function loadHafalan() {
     let s = santri.find(x => x.id === currentSantriId);
     if (!s) return;
     
-    let kelasNum = parseInt(s.kelas.replace(/\D/g, '')) || 6;
+    // Ekstrak angka dari kelas untuk Madin (misal Kelas 3A -> 3)
+    let kelasNum = parseInt(s.kelas.match(/\d+/)?.[0] || 6);
+    
     let juzHtml = '<div class="flex justify-between items-center mb-3"><span class="text-sm font-medium">Centang Semua Juz 30</span><input type="checkbox" id="selectAllJuz30" onchange="checkAllJuz30()" class="w-5 h-5"></div><div class="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-60 overflow-y-auto p-2 bg-gray-50 rounded-xl">';
     juz30List.forEach((surat, i) => { juzHtml += `<label class="flex justify-between items-center p-2 bg-white rounded-lg border text-sm"><span class="truncate">${surat}</span><input type="checkbox" id="juz_cb_${i}" class="w-4 h-4" ${s.juz30 && s.juz30[i] ? 'checked' : ''}></label>`; });
     juzHtml += '</div>';
@@ -606,7 +623,7 @@ function loadHafalan() {
     `;
 }
 
-// Sertifikat dengan logo, pengasuh, kapendik dari profil
+// Sertifikat dengan logo, pengasuh, kepala pondok dari profil
 function generateSertifikat() {
     let id = document.getElementById('selectSertifikat').value;
     if (!id) { document.getElementById('sertifikatPreview').classList.add('hidden'); return; }
@@ -629,7 +646,7 @@ function generateSertifikat() {
                 <p class="text-xs text-gray-500 mt-2">Malang, ${today}</p>
                 <div class="grid grid-cols-2 gap-8 mt-6 pt-4 border-t border-gray-300">
                     <div><div class="border-t-2 border-gray-400 pt-2 text-sm font-medium">Pengasuh Pondok</div><div class="text-sm font-semibold mt-1">${profilData.pengasuh || '_________________'}</div></div>
-                    <div><div class="border-t-2 border-gray-400 pt-2 text-sm font-medium">Kepala Pendidikan</div><div class="text-sm font-semibold mt-1">${profilData.kapendik || '_________________'}</div></div>
+                    <div><div class="border-t-2 border-gray-400 pt-2 text-sm font-medium">Kepala Pondok</div><div class="text-sm font-semibold mt-1">${profilData.kapondok || '_________________'}</div></div>
                 </div>
             </div>
             <button onclick="downloadSertifikat()" class="btn btn-primary mt-6"><i class="fas fa-download"></i> Download Sertifikat (PNG)</button>
