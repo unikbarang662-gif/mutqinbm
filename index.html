@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Mutqin BM - Sistem Manajemen Kelulusan Profesional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -35,7 +35,6 @@
         .btn { padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary { background: linear-gradient(135deg, #059669, #10b981); color: white; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(5,150,105,0.3); }
-        .btn-danger { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; }
         .btn-outline { background: white; border: 1.5px solid #e2e8f0; color: #374151; }
         .btn-outline:hover { border-color: #10b981; color: #10b981; }
         .btn-sm { padding: 6px 12px; font-size: 12px; }
@@ -45,16 +44,34 @@
         .progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
         .certificate-box { background: white; border: 8px double #059669; border-radius: 16px; position: relative; overflow: hidden; }
         .login-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
-        .logo-preview { width: 60px; height: 60px; object-fit: cover; border-radius: 12px; }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); position: fixed; z-index: 50; height: 100vh; }
+            .sidebar.show { transform: translateX(0); }
+            .toast { bottom: 16px; right: 16px; left: 16px; white-space: normal; text-align: center; justify-content: center; }
+            .stat-card { padding: 12px; }
+            .stat-card .text-3xl { font-size: 24px; }
+            .btn { padding: 8px 16px; font-size: 13px; }
+            .modal-content { width: 95%; margin: 16px; }
+            table { font-size: 12px; }
+            .badge { font-size: 10px; padding: 3px 8px; }
+        }
+        
+        @media print {
+            body { margin: 0; padding: 0; }
+            .no-print { display: none; }
+            .stat-card, .badge, .progress-fill { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-gray-100">
 
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" class="min-h-screen flex items-center justify-center login-bg">
-    <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-10 w-full max-w-md mx-4 transform transition-all">
+    <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-10 w-full max-w-md mx-4 transform transition-all">
         <div class="text-center mb-8">
-            <div class="w-24 h-24 mx-auto mb-4 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg bg-gradient-to-br from-emerald-100 to-teal-100" id="loginLogoContainer">
+            <div class="w-24 h-24 mx-auto mb-4 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg bg-gradient-to-br from-emerald-100 to-teal-100 mx-auto" id="loginLogoContainer">
                 <i class="fas fa-graduation-cap text-emerald-600 text-5xl" id="defaultLoginLogo"></i>
                 <img id="loginLogoImg" class="hidden w-full h-full object-cover" alt="Logo">
             </div>
@@ -73,30 +90,32 @@
 
 <!-- MAIN APP -->
 <div id="mainApp" class="hidden min-h-screen">
+    <!-- TOP NAVBAR -->
     <div class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-30">
-        <div class="px-6 py-4 flex justify-between items-center">
+        <div class="px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="lg:hidden text-gray-600 hover:text-emerald-600 text-xl"><i class="fas fa-bars"></i></button>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-md overflow-hidden bg-gradient-to-br from-emerald-100 to-teal-100" id="headerLogoContainer">
-                        <i class="fas fa-graduation-cap text-emerald-600 text-xl" id="defaultHeaderLogo"></i>
+                    <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center shadow-md overflow-hidden bg-gradient-to-br from-emerald-100 to-teal-100" id="headerLogoContainer">
+                        <i class="fas fa-graduation-cap text-emerald-600 text-lg md:text-xl" id="defaultHeaderLogo"></i>
                         <img id="headerLogoImg" class="hidden w-full h-full object-cover" alt="Logo">
                     </div>
-                    <div><h1 class="font-bold text-gray-800 text-lg">Mutqin BM</h1><p class="text-xs text-gray-500">Manajemen Kelulusan Profesional</p></div>
+                    <div><h1 class="font-bold text-gray-800 text-base md:text-lg">Mutqin BM</h1><p class="text-xs text-gray-500 hidden md:block">Manajemen Kelulusan Profesional</p></div>
                 </div>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3 md:gap-4">
                 <div class="hidden md:flex items-center gap-3 bg-gray-100 px-4 py-2 rounded-full">
                     <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center"><i class="fas fa-user text-white text-sm"></i></div>
                     <span class="text-sm font-semibold text-gray-700" id="userRoleText">Administrator</span>
                 </div>
-                <button onclick="doLogout()" class="btn btn-outline text-sm py-2"><i class="fas fa-sign-out-alt"></i> <span class="hidden md:inline">Keluar</span></button>
+                <button onclick="doLogout()" class="btn btn-outline text-sm py-1.5 md:py-2 px-3 md:px-4"><i class="fas fa-sign-out-alt"></i> <span class="hidden md:inline">Keluar</span></button>
             </div>
         </div>
     </div>
 
-    <div class="flex">
-        <div id="sidebar" class="w-72 bg-gradient-to-b from-emerald-50 via-white to-emerald-50 min-h-screen fixed lg:relative z-20 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-xl border-r border-emerald-100">
+    <div class="flex relative">
+        <!-- SIDEBAR -->
+        <div id="sidebar" class="w-72 bg-gradient-to-b from-emerald-50 via-white to-emerald-50 min-h-screen fixed lg:relative z-20 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-xl border-r border-emerald-100 overflow-y-auto">
             <div class="p-6 border-b border-emerald-100">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg overflow-hidden bg-gradient-to-br from-emerald-100 to-teal-100" id="sidebarLogoContainer">
@@ -118,67 +137,74 @@
             <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-emerald-100"><div class="text-center text-xs text-gray-400"><i class="fas fa-code-branch"></i> Version 3.0 | © 2024</div></div>
         </div>
 
-        <div class="flex-1 lg:ml-0">
-            <div class="p-6">
+        <!-- MAIN CONTENT -->
+        <div class="flex-1 lg:ml-0 min-h-screen">
+            <div class="p-4 md:p-6">
                 <!-- DASHBOARD -->
                 <div id="pageDashboard" class="page">
-                    <div class="mb-8"><h2 class="text-2xl font-bold text-gray-800" id="welcomeText">Selamat datang, Admin...</h2>
-                    <div id="datetimeDisplay" class="text-gray-500 mt-2 flex items-center gap-2 flex-wrap"><i class="fas fa-calendar-alt text-emerald-500"></i><span id="currentDate" class="font-medium"></span><i class="fas fa-clock text-emerald-500 ml-3"></i><span id="currentTime" class="font-mono"></span></div></div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
-                        <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg"><div class="flex items-center justify-between mb-3"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-users text-white text-xl"></i></div><span class="text-3xl font-bold" id="totalSantri">0</span></div><h3 class="font-medium">Total Santri</h3></div>
-                        <div class="stat-card bg-gradient-to-br from-green-500 to-green-700 rounded-2xl p-5 text-white shadow-lg"><div class="flex items-center justify-between mb-3"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-check-circle text-white text-xl"></i></div><span class="text-3xl font-bold" id="totalLulus">0</span></div><h3 class="font-medium">Santri Sudah Lulus</h3></div>
-                        <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-700 rounded-2xl p-5 text-white shadow-lg"><div class="flex items-center justify-between mb-3"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-spinner text-white text-xl"></i></div><span class="text-3xl font-bold" id="totalProses">0</span></div><h3 class="font-medium">Dalam Proses Menghafal</h3></div>
-                        <div class="stat-card bg-gradient-to-br from-red-500 to-red-700 rounded-2xl p-5 text-white shadow-lg"><div class="flex items-center justify-between mb-3"><div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-clock text-white text-xl"></i></div><span class="text-3xl font-bold" id="totalBelum">0</span></div><h3 class="font-medium">Belum Memulai Menghafal</h3></div>
+                    <div class="mb-6 md:mb-8">
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-800" id="welcomeText">Selamat datang, Admin...</h2>
+                        <div id="datetimeDisplay" class="text-gray-500 mt-2 flex items-center gap-2 flex-wrap text-sm"><i class="fas fa-calendar-alt text-emerald-500"></i><span id="currentDate" class="font-medium"></span><i class="fas fa-clock text-emerald-500 ml-3"></i><span id="currentTime" class="font-mono"></span></div>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 mb-6 md:mb-8">
+                        <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-4 md:p-5 text-white shadow-lg"><div class="flex items-center justify-between mb-2 md:mb-3"><div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-users text-white text-lg md:text-xl"></i></div><span class="text-2xl md:text-3xl font-bold" id="totalSantri">0</span></div><h3 class="font-medium text-sm md:text-base">Total Santri</h3></div>
+                        <div class="stat-card bg-gradient-to-br from-green-500 to-green-700 rounded-2xl p-4 md:p-5 text-white shadow-lg"><div class="flex items-center justify-between mb-2 md:mb-3"><div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-check-circle text-white text-lg md:text-xl"></i></div><span class="text-2xl md:text-3xl font-bold" id="totalLulus">0</span></div><h3 class="font-medium text-sm md:text-base">Santri Lulus</h3></div>
+                        <div class="stat-card bg-gradient-to-br from-orange-500 to-orange-700 rounded-2xl p-4 md:p-5 text-white shadow-lg"><div class="flex items-center justify-between mb-2 md:mb-3"><div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-spinner text-white text-lg md:text-xl"></i></div><span class="text-2xl md:text-3xl font-bold" id="totalProses">0</span></div><h3 class="font-medium text-sm md:text-base">Dalam Proses</h3></div>
+                        <div class="stat-card bg-gradient-to-br from-red-500 to-red-700 rounded-2xl p-4 md:p-5 text-white shadow-lg"><div class="flex items-center justify-between mb-2 md:mb-3"><div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-clock text-white text-lg md:text-xl"></i></div><span class="text-2xl md:text-3xl font-bold" id="totalBelum">0</span></div><h3 class="font-medium text-sm md:text-base">Belum Memulai</h3></div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="bg-white rounded-2xl p-6 shadow-sm border"><div class="flex items-center gap-2 mb-4"><i class="fas fa-chart-pie text-emerald-600 text-xl"></i><h3 class="font-semibold">Status Kelulusan</h3></div><canvas id="statusChart" height="250"></canvas></div>
-                        <div class="bg-white rounded-2xl p-6 shadow-sm border"><div class="flex items-center gap-2 mb-4"><i class="fas fa-chart-bar text-emerald-600 text-xl"></i><h3 class="font-semibold">Distribusi Nilai Hafalan</h3></div><canvas id="nilaiChart" height="250"></canvas></div>
+                        <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border"><div class="flex items-center gap-2 mb-4"><i class="fas fa-chart-pie text-emerald-600 text-xl"></i><h3 class="font-semibold">Status Kelulusan</h3></div><canvas id="statusChart" height="250"></canvas></div>
+                        <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border"><div class="flex items-center gap-2 mb-4"><i class="fas fa-chart-bar text-emerald-600 text-xl"></i><h3 class="font-semibold">Distribusi Nilai Hafalan</h3></div><canvas id="nilaiChart" height="250"></canvas></div>
                     </div>
                 </div>
 
                 <!-- DATA SANTRI -->
                 <div id="pageSantri" class="page hidden">
-                    <div class="mb-8"><h2 class="text-2xl font-bold text-gray-800">Data Santri</h2><p class="text-gray-500 mt-1">Kelola data santri - dikelompokkan berdasarkan kelas</p></div>
+                    <div class="mb-6 md:mb-8"><h2 class="text-xl md:text-2xl font-bold text-gray-800">Data Santri</h2><p class="text-gray-500 mt-1 text-sm">Kelola data santri - dikelompokkan berdasarkan kelas</p></div>
                     <div class="flex gap-3 mb-6 flex-wrap"><button onclick="openModal('tambahModal')" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Santri</button><button onclick="openModal('massalModal')" class="btn btn-outline"><i class="fas fa-upload"></i> Import Massal</button></div>
                     <div class="bg-white rounded-2xl p-4 shadow-sm border mb-6"><div class="relative"><i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i><input type="text" id="searchSantri" placeholder="🔍 Cari santri berdasarkan nama atau kelas..." class="w-full pl-12" onkeyup="renderSantri()"></div></div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden" id="santriListContainer"></div>
                 </div>
 
-                <!-- HAFALAN -->
+                <!-- HAFALAN & PENILAIAN -->
                 <div id="pageHafalan" class="page hidden">
-                    <div class="mb-8"><h2 class="text-2xl font-bold text-gray-800">Hafalan & Penilaian</h2><p class="text-gray-500 mt-1">Input nilai hafalan dan penilaian santri</p></div>
+                    <div class="mb-6 md:mb-8"><h2 class="text-xl md:text-2xl font-bold text-gray-800">Hafalan & Penilaian</h2><p class="text-gray-500 mt-1 text-sm">Input nilai hafalan dan penilaian santri</p></div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                        <div class="p-6 border-b bg-gradient-to-r from-gray-50 to-white"><label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-user-graduate mr-2 text-emerald-600"></i>Pilih Santri</label><input type="text" id="searchHafalan" placeholder="Cari nama santri..." class="w-full mb-3" onkeyup="filterHafalan()"><select id="selectHafalan" class="w-full" onchange="loadHafalan()"><option value="">-- Pilih Santri --</option></select></div>
-                        <div id="formHafalan" class="hidden p-6"></div>
+                        <div class="p-4 md:p-6 border-b bg-gradient-to-r from-gray-50 to-white">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-user-graduate mr-2 text-emerald-600"></i>Pilih Santri</label>
+                            <input type="text" id="searchHafalan" placeholder="Cari nama santri..." class="w-full mb-3" onkeyup="filterHafalan()">
+                            <select id="selectHafalan" class="w-full" onchange="loadHafalan()"><option value="">-- Pilih Santri --</option></select>
+                        </div>
+                        <div id="formHafalan" class="hidden p-4 md:p-6"></div>
                     </div>
                 </div>
 
                 <!-- SERTIFIKAT -->
                 <div id="pageSertifikat" class="page hidden">
-                    <div class="mb-8"><h2 class="text-2xl font-bold text-gray-800">Sertifikat Kelulusan</h2><p class="text-gray-500 mt-1">Generate dan download sertifikat untuk santri yang lulus</p></div>
-                    <div class="bg-white rounded-2xl shadow-sm border p-6"><label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-award mr-2 text-emerald-600"></i>Pilih Santri Lulus</label><select id="selectSertifikat" class="w-full mb-6" onchange="generateSertifikat()"><option value="">-- Pilih Santri --</option></select><div id="sertifikatPreview" class="hidden"></div></div>
+                    <div class="mb-6 md:mb-8"><h2 class="text-xl md:text-2xl font-bold text-gray-800">Sertifikat Kelulusan</h2><p class="text-gray-500 mt-1 text-sm">Generate dan download sertifikat untuk santri yang lulus</p></div>
+                    <div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6"><label class="block text-sm font-semibold text-gray-700 mb-2"><i class="fas fa-award mr-2 text-emerald-600"></i>Pilih Santri Lulus</label><select id="selectSertifikat" class="w-full mb-6" onchange="generateSertifikat()"><option value="">-- Pilih Santri --</option></select><div id="sertifikatPreview" class="hidden"></div></div>
                 </div>
 
                 <!-- LAPORAN -->
                 <div id="pageLaporan" class="page hidden">
-                    <div class="mb-8 flex justify-between items-center flex-wrap gap-3"><div><h2 class="text-2xl font-bold text-gray-800">Laporan Hafalan</h2><p class="text-gray-500 mt-1">Laporan lengkap dengan grafik dan persentase</p></div><button onclick="printLaporan()" class="btn btn-primary"><i class="fas fa-print"></i> Cetak PDF Lengkap</button></div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-gradient-to-br from-green-500 to-green-700 rounded-2xl p-5 text-white shadow-lg text-center"><div class="text-3xl font-bold" id="persenLulus">0%</div><div class="text-sm mt-1">Santri Lulus</div><div class="progress-bar bg-white/30 mt-3"><div class="progress-fill bg-white" id="barLulus" style="width: 0%"></div></div></div>
-                        <div class="bg-gradient-to-br from-orange-500 to-orange-700 rounded-2xl p-5 text-white shadow-lg text-center"><div class="text-3xl font-bold" id="persenProses">0%</div><div class="text-sm mt-1">Dalam Proses</div><div class="progress-bar bg-white/30 mt-3"><div class="progress-fill bg-white" id="barProses" style="width: 0%"></div></div></div>
-                        <div class="bg-gradient-to-br from-red-500 to-red-700 rounded-2xl p-5 text-white shadow-lg text-center"><div class="text-3xl font-bold" id="persenBelum">0%</div><div class="text-sm mt-1">Belum Memulai</div><div class="progress-bar bg-white/30 mt-3"><div class="progress-fill bg-white" id="barBelum" style="width: 0%"></div></div></div>
+                    <div class="mb-6 md:mb-8 flex justify-between items-center flex-wrap gap-3"><div><h2 class="text-xl md:text-2xl font-bold text-gray-800">Laporan Hafalan</h2><p class="text-gray-500 mt-1 text-sm">Laporan lengkap dengan grafik dan persentase</p></div><button onclick="printLaporan()" class="btn btn-primary"><i class="fas fa-print"></i> Cetak PDF Lengkap</button></div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-6">
+                        <div class="bg-gradient-to-br from-green-500 to-green-700 rounded-2xl p-4 md:p-5 text-white shadow-lg text-center"><div class="text-2xl md:text-3xl font-bold" id="persenLulus">0%</div><div class="text-sm mt-1">Santri Lulus</div><div class="progress-bar bg-white/30 mt-3"><div class="progress-fill bg-white" id="barLulus" style="width: 0%"></div></div></div>
+                        <div class="bg-gradient-to-br from-orange-500 to-orange-700 rounded-2xl p-4 md:p-5 text-white shadow-lg text-center"><div class="text-2xl md:text-3xl font-bold" id="persenProses">0%</div><div class="text-sm mt-1">Dalam Proses</div><div class="progress-bar bg-white/30 mt-3"><div class="progress-fill bg-white" id="barProses" style="width: 0%"></div></div></div>
+                        <div class="bg-gradient-to-br from-red-500 to-red-700 rounded-2xl p-4 md:p-5 text-white shadow-lg text-center"><div class="text-2xl md:text-3xl font-bold" id="persenBelum">0%</div><div class="text-sm mt-1">Belum Memulai</div><div class="progress-bar bg-white/30 mt-3"><div class="progress-fill bg-white" id="barBelum" style="width: 0%"></div></div></div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                         <div class="bg-white rounded-2xl p-5 shadow-sm border"><h3 class="font-semibold text-gray-800 mb-3"><i class="fas fa-chart-line text-emerald-600 mr-2"></i>Grafik Persentase Kelulusan</h3><canvas id="laporanChart" height="200"></canvas></div>
                         <div class="bg-white rounded-2xl p-5 shadow-sm border"><h3 class="font-semibold text-gray-800 mb-3"><i class="fas fa-chart-pie text-emerald-600 mr-2"></i>Diagram Persentase Nilai</h3><canvas id="laporanPieChart" height="200"></canvas></div>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="overflow-x-auto"><table class="w-full"><thead class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white"><tr><th class="p-3 text-left">No</th><th class="p-3 text-left">Nama Santri</th><th class="p-3 text-left">Kelas</th><th class="p-3 text-left">Nilai Hafalan</th><th class="p-3 text-left">Persentase</th><th class="p-3 text-left">Status</th></tr></thead><tbody id="laporanTable"></tbody></table></div></div>
+                    <div class="bg-white rounded-2xl shadow-sm border overflow-x-auto"><div class="overflow-x-auto"><table class="w-full min-w-[500px]"><thead class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white"><tr><th class="p-3 text-left">No</th><th class="p-3 text-left">Nama Santri</th><th class="p-3 text-left">Kelas</th><th class="p-3 text-left">Nilai</th><th class="p-3 text-left">Persentase</th><th class="p-3 text-left">Status</th></tr></thead><tbody id="laporanTable"></tbody></table></div></div>
                 </div>
 
                 <!-- PROFIL -->
                 <div id="pageProfil" class="page hidden">
-                    <div class="mb-8"><h2 class="text-2xl font-bold text-gray-800">Profil Pondok Pesantren</h2><p class="text-gray-500 mt-1">Informasi dan logo pesantren</p></div>
-                    <div class="bg-white rounded-2xl shadow-sm border p-6 max-w-lg">
-                        <div class="mb-5 text-center"><label class="block text-sm font-medium text-gray-700 mb-2">Logo Pesantren</label><div class="flex flex-col items-center gap-3"><div class="w-32 h-32 rounded-2xl border-2 border-dashed border-emerald-300 flex items-center justify-center overflow-hidden bg-gray-50" id="logoPreviewContainer"><i class="fas fa-cloud-upload-alt text-emerald-400 text-4xl" id="logoPreviewIcon"></i><img id="logoPreviewImg" class="hidden w-full h-full object-cover" alt="Preview"></div><input type="file" id="logoUpload" accept="image/*" class="hidden" onchange="previewLogo(this)"><button onclick="document.getElementById('logoUpload').click()" class="btn btn-outline btn-sm"><i class="fas fa-upload"></i> Upload Logo</button><button onclick="clearLogo()" class="btn btn-outline btn-sm text-red-500"><i class="fas fa-trash"></i> Hapus Logo</button></div></div>
+                    <div class="mb-6 md:mb-8"><h2 class="text-xl md:text-2xl font-bold text-gray-800">Profil Pondok Pesantren</h2><p class="text-gray-500 mt-1 text-sm">Informasi dan logo pesantren</p></div>
+                    <div class="bg-white rounded-2xl shadow-sm border p-4 md:p-6 max-w-lg">
+                        <div class="mb-5 text-center"><label class="block text-sm font-medium text-gray-700 mb-2">Logo Pesantren</label><div class="flex flex-col items-center gap-3"><div class="w-28 h-28 md:w-32 md:h-32 rounded-2xl border-2 border-dashed border-emerald-300 flex items-center justify-center overflow-hidden bg-gray-50" id="logoPreviewContainer"><i class="fas fa-cloud-upload-alt text-emerald-400 text-3xl md:text-4xl" id="logoPreviewIcon"></i><img id="logoPreviewImg" class="hidden w-full h-full object-cover" alt="Preview"></div><input type="file" id="logoUpload" accept="image/*" class="hidden" onchange="previewLogo(this)"><button onclick="document.getElementById('logoUpload').click()" class="btn btn-outline btn-sm"><i class="fas fa-upload"></i> Upload Logo</button><button onclick="clearLogo()" class="btn btn-outline btn-sm text-red-500"><i class="fas fa-trash"></i> Hapus Logo</button></div></div>
                         <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-mosque mr-2 text-emerald-600"></i>Nama Pesantren</label><input type="text" id="profilNama" class="w-full" value="Pondok Pesantren Bahrul Maghfiroh"></div>
                         <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-user-tie mr-2 text-emerald-600"></i>Nama Pengasuh</label><input type="text" id="profilPengasuh" class="w-full" placeholder="KH. Nama Pengasuh"></div>
                         <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-map-marker-alt mr-2 text-emerald-600"></i>Alamat</label><textarea id="profilAlamat" rows="2" class="w-full" placeholder="Alamat lengkap pesantren"></textarea></div>
@@ -191,11 +217,11 @@
 </div>
 
 <!-- MODALS -->
-<div id="tambahModal" class="modal hidden" onclick="closeModal(event,'tambahModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-xl font-bold"><i class="fas fa-user-plus text-emerald-600 mr-2"></i>Tambah Santri</h3><button onclick="closeModal(null,'tambahModal')"><i class="fas fa-times"></i></button></div><div class="p-6 space-y-5"><input type="text" id="tambahNama" placeholder="Nama Lengkap" class="w-full"><select id="tambahKelas" class="w-full"><option value="">Pilih Kelas</option><option>Kelas 1</option><option>Kelas 2</option><option>Kelas 3</option><option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option></select></div><div class="p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'tambahModal')" class="btn btn-outline">Batal</button><button onclick="tambahSantri()" class="btn btn-primary">Simpan</button></div></div></div>
+<div id="tambahModal" class="modal hidden" onclick="closeModal(event,'tambahModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-5 md:p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-lg md:text-xl font-bold"><i class="fas fa-user-plus text-emerald-600 mr-2"></i>Tambah Santri</h3><button onclick="closeModal(null,'tambahModal')"><i class="fas fa-times"></i></button></div><div class="p-5 md:p-6 space-y-4 md:space-y-5"><input type="text" id="tambahNama" placeholder="Nama Lengkap" class="w-full"><select id="tambahKelas" class="w-full"><option value="">Pilih Kelas</option><option>Kelas 1</option><option>Kelas 2</option><option>Kelas 3</option><option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option></select></div><div class="p-5 md:p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'tambahModal')" class="btn btn-outline">Batal</button><button onclick="tambahSantri()" class="btn btn-primary">Simpan</button></div></div></div>
 
-<div id="editModal" class="modal hidden" onclick="closeModal(event,'editModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-xl font-bold"><i class="fas fa-edit text-emerald-600 mr-2"></i>Edit Santri</h3><button onclick="closeModal(null,'editModal')"><i class="fas fa-times"></i></button></div><div class="p-6 space-y-5"><input type="hidden" id="editId"><input type="text" id="editNama" class="w-full"><select id="editKelas" class="w-full"><option>Kelas 1</option><option>Kelas 2</option><option>Kelas 3</option><option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option></select></div><div class="p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'editModal')" class="btn btn-outline">Batal</button><button onclick="updateSantri()" class="btn btn-primary">Update</button></div></div></div>
+<div id="editModal" class="modal hidden" onclick="closeModal(event,'editModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-5 md:p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-lg md:text-xl font-bold"><i class="fas fa-edit text-emerald-600 mr-2"></i>Edit Santri</h3><button onclick="closeModal(null,'editModal')"><i class="fas fa-times"></i></button></div><div class="p-5 md:p-6 space-y-4 md:space-y-5"><input type="hidden" id="editId"><input type="text" id="editNama" class="w-full"><select id="editKelas" class="w-full"><option>Kelas 1</option><option>Kelas 2</option><option>Kelas 3</option><option>Kelas 4</option><option>Kelas 5</option><option>Kelas 6</option></select></div><div class="p-5 md:p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'editModal')" class="btn btn-outline">Batal</button><button onclick="updateSantri()" class="btn btn-primary">Update</button></div></div></div>
 
-<div id="massalModal" class="modal hidden" onclick="closeModal(event,'massalModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-xl font-bold"><i class="fas fa-layer-group text-emerald-600 mr-2"></i>Import Massal</h3><button onclick="closeModal(null,'massalModal')"><i class="fas fa-times"></i></button></div><div class="p-6"><div class="bg-blue-50 p-3 rounded-xl text-sm mb-4"><i class="fas fa-info-circle"></i> Format: Nama,Kelas<br>Contoh: Ahmad Maulana,Kelas 1</div><textarea id="massalData" rows="6" class="w-full font-mono text-sm" placeholder="Ahmad Maulana,Kelas 1&#10;Fatimah Azzahra,Kelas 2"></textarea></div><div class="p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'massalModal')" class="btn btn-outline">Batal</button><button onclick="importMassal()" class="btn btn-primary">Import</button></div></div></div>
+<div id="massalModal" class="modal hidden" onclick="closeModal(event,'massalModal')"><div class="modal-content" onclick="event.stopPropagation()"><div class="p-5 md:p-6 border-b flex justify-between bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"><h3 class="text-lg md:text-xl font-bold"><i class="fas fa-layer-group text-emerald-600 mr-2"></i>Import Massal</h3><button onclick="closeModal(null,'massalModal')"><i class="fas fa-times"></i></button></div><div class="p-5 md:p-6"><div class="bg-blue-50 p-3 rounded-xl text-sm mb-4"><i class="fas fa-info-circle"></i> Format: Nama,Kelas<br>Contoh: Ahmad Maulana,Kelas 1</div><textarea id="massalData" rows="6" class="w-full font-mono text-sm" placeholder="Ahmad Maulana,Kelas 1&#10;Fatimah Azzahra,Kelas 2"></textarea></div><div class="p-5 md:p-6 border-t flex gap-3 justify-end bg-gray-50 rounded-b-2xl"><button onclick="closeModal(null,'massalModal')" class="btn btn-outline">Batal</button><button onclick="importMassal()" class="btn btn-primary">Import</button></div></div></div>
 
 <script>
 // ==================== DATA STORAGE ====================
@@ -229,30 +255,24 @@ function updateDateTime() {
 }
 setInterval(updateDateTime, 1000);
 
-// Hitung persentase progress (perbaikan: total item = 56)
+// Hitung persentase progress
 function getProgressPercentage(s) {
     let total = 0, done = 0;
-    // Surat (3)
     if (s.hafalan_yasin) done++; total++;
     if (s.hafalan_waqiah) done++; total++;
     if (s.hafalan_mulk) done++; total++;
-    // Aurad (6)
     if (s.aurad_wirid) done++; total++;
     if (s.aurad_doa) done++; total++;
     if (s.aurad_tahlil_ringkas) done++; total++;
     if (s.aurad_tahlil_lengkap) done++; total++;
     if (s.aurad_doa_tahlil) done++; total++;
     if (s.aurad_tawasul) done++; total++;
-    // Juz30 (37)
     if (s.juz30) { let juzDone = s.juz30.filter(v=>v===true).length; done += juzDone; total += 37; }
-    // Praktik (3)
     if (s.praktik_shalat) done++; total++;
     if (s.praktik_jenazah) done++; total++;
     if (s.praktik_khotib) done++; total++;
-    // Madin (2)
     if (s.madin_ula) done++; total++;
     if (s.madin_wustho) done++; total++;
-    // Sikap (3)
     if (s.sikap_jamaah) done++; total++;
     if (s.sikap_aktif_madin) done++; total++;
     if (s.sikap_aktif_formal) done++; total++;
@@ -266,9 +286,9 @@ function getStatus(s) {
     return 'Belum';
 }
 
-// Load/Save Data
+// Load/Save Data (menggunakan localStorage agar data tersimpan lintas perangkat di browser yang sama)
 function loadData() {
-    let saved = localStorage.getItem('mutqin_santri_v6');
+    let saved = localStorage.getItem('mutqin_santri_v7');
     if (saved) { try { santri = JSON.parse(saved); } catch(e) { santri = []; } }
     if (!santri.length) {
         santri = [
@@ -280,7 +300,7 @@ function loadData() {
     refreshAll();
 }
 
-function saveData() { localStorage.setItem('mutqin_santri_v6', JSON.stringify(santri)); refreshAll(); }
+function saveData() { localStorage.setItem('mutqin_santri_v7', JSON.stringify(santri)); refreshAll(); }
 
 function refreshAll() { updateDashboard(); renderSantri(); updateSelects(); if (document.getElementById('pageLaporan') && !document.getElementById('pageLaporan').classList.contains('hidden')) { renderLaporan(); updateLaporanCharts(); } }
 
@@ -291,19 +311,15 @@ function loadLogo() {
 }
 
 function updateAllLogos(logoData) {
-    // Login
-    let defaultLogin = document.getElementById('defaultLoginLogo'), loginImg = document.getElementById('loginLogoImg');
-    if (logoData) { defaultLogin.classList.add('hidden'); loginImg.classList.remove('hidden'); loginImg.src = logoData; }
-    else { defaultLogin.classList.remove('hidden'); loginImg.classList.add('hidden'); }
-    // Header
-    let defaultHeader = document.getElementById('defaultHeaderLogo'), headerImg = document.getElementById('headerLogoImg');
-    if (logoData) { defaultHeader.classList.add('hidden'); headerImg.classList.remove('hidden'); headerImg.src = logoData; }
-    else { defaultHeader.classList.remove('hidden'); headerImg.classList.add('hidden'); }
-    // Sidebar
-    let defaultSidebar = document.getElementById('defaultSidebarLogo'), sidebarImg = document.getElementById('sidebarLogoImg');
-    if (logoData) { defaultSidebar.classList.add('hidden'); sidebarImg.classList.remove('hidden'); sidebarImg.src = logoData; }
-    else { defaultSidebar.classList.remove('hidden'); sidebarImg.classList.add('hidden'); }
-    // Preview
+    let loginDefault = document.getElementById('defaultLoginLogo'), loginImg = document.getElementById('loginLogoImg');
+    if (logoData) { loginDefault.classList.add('hidden'); loginImg.classList.remove('hidden'); loginImg.src = logoData; }
+    else { loginDefault.classList.remove('hidden'); loginImg.classList.add('hidden'); }
+    let headerDefault = document.getElementById('defaultHeaderLogo'), headerImg = document.getElementById('headerLogoImg');
+    if (logoData) { headerDefault.classList.add('hidden'); headerImg.classList.remove('hidden'); headerImg.src = logoData; }
+    else { headerDefault.classList.remove('hidden'); headerImg.classList.add('hidden'); }
+    let sidebarDefault = document.getElementById('defaultSidebarLogo'), sidebarImg = document.getElementById('sidebarLogoImg');
+    if (logoData) { sidebarDefault.classList.add('hidden'); sidebarImg.classList.remove('hidden'); sidebarImg.src = logoData; }
+    else { sidebarDefault.classList.remove('hidden'); sidebarImg.classList.add('hidden'); }
     let previewIcon = document.getElementById('logoPreviewIcon'), previewImg = document.getElementById('logoPreviewImg');
     if (logoData) { previewIcon.classList.add('hidden'); previewImg.classList.remove('hidden'); previewImg.src = logoData; }
     else { previewIcon.classList.remove('hidden'); previewImg.classList.add('hidden'); }
@@ -407,6 +423,7 @@ function updateSelects() {
 
 function filterHafalan() { let q = document.getElementById('searchHafalan').value.toLowerCase(); let select = document.getElementById('selectHafalan'); Array.from(select.options).forEach(opt => { if (opt.value && !opt.text.toLowerCase().includes(q)) opt.style.display = 'none'; else opt.style.display = 'block'; }); }
 
+// Simpan per kategori (tampilan tetap tidak hilang)
 function simpanKategori(kategori) {
     if (!currentSantriId) { showToast('Pilih santri dulu', 'error'); return; }
     let idx = santri.findIndex(x => x.id === currentSantriId);
@@ -417,7 +434,6 @@ function simpanKategori(kategori) {
         santri[idx].hafalan_waqiah = document.getElementById('hafalan_waqiah')?.checked || false;
         santri[idx].hafalan_mulk = document.getElementById('hafalan_mulk')?.checked || false;
         santri[idx].nilai_hafalan = document.getElementById('nilai_hafalan')?.value || 'Mumtaz';
-        showToast('✅ Nilai Surat tersimpan');
     } else if (kategori === 'aurad') {
         santri[idx].aurad_wirid = document.getElementById('aurad_wirid')?.checked || false;
         santri[idx].aurad_doa = document.getElementById('aurad_doa')?.checked || false;
@@ -426,39 +442,36 @@ function simpanKategori(kategori) {
         santri[idx].aurad_doa_tahlil = document.getElementById('aurad_doa_tahlil')?.checked || false;
         santri[idx].aurad_tawasul = document.getElementById('aurad_tawasul')?.checked || false;
         santri[idx].nilai_aurad = document.getElementById('nilai_aurad')?.value || 'Mumtaz';
-        showToast('✅ Nilai Aurad tersimpan');
     } else if (kategori === 'juz30') {
         let juzArr = [];
         for (let i = 0; i < 37; i++) { let cb = document.getElementById(`juz_cb_${i}`); juzArr.push(cb?.checked || false); }
         santri[idx].juz30 = juzArr;
         santri[idx].nilai_juz30 = document.getElementById('nilai_juz30')?.value || 'Mumtaz';
-        showToast('✅ Nilai Juz 30 tersimpan');
     } else if (kategori === 'praktik') {
         santri[idx].praktik_shalat = document.getElementById('praktik_shalat')?.checked || false;
         santri[idx].praktik_jenazah = document.getElementById('praktik_jenazah')?.checked || false;
         santri[idx].praktik_khotib = document.getElementById('praktik_khotib')?.checked || false;
         santri[idx].nilai_praktik = document.getElementById('nilai_praktik')?.value || 'Mumtaz';
-        showToast('✅ Nilai Praktik tersimpan');
     } else if (kategori === 'madin') {
         santri[idx].madin_ula = document.getElementById('madin_ula')?.checked || false;
         santri[idx].madin_wustho = document.getElementById('madin_wustho')?.checked || false;
-        showToast('✅ Nilai Madin tersimpan');
     } else if (kategori === 'sikap') {
         santri[idx].sikap_jamaah = document.getElementById('sikap_jamaah')?.checked || false;
         santri[idx].sikap_aktif_madin = document.getElementById('sikap_aktif_madin')?.checked || false;
         santri[idx].sikap_aktif_formal = document.getElementById('sikap_aktif_formal')?.checked || false;
-        showToast('✅ Nilai Sikap tersimpan');
     }
     saveData();
+    showToast(`✅ Nilai ${kategori} tersimpan`);
+    // Reload form tapi dengan data yang sama (tampilan tetap)
     loadHafalan();
 }
 
+// Centang semua tanpa auto simpan
 function checkAllSurat() {
     let cbs = ['hafalan_yasin', 'hafalan_waqiah', 'hafalan_mulk'];
     let allChecked = cbs.every(id => document.getElementById(id)?.checked);
     cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = !allChecked; });
     if (!allChecked) document.getElementById('nilai_hafalan').value = 'Mumtaz';
-    simpanKategori('surat');
 }
 
 function checkAllAurad() {
@@ -466,14 +479,12 @@ function checkAllAurad() {
     let allChecked = cbs.every(id => document.getElementById(id)?.checked);
     cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = !allChecked; });
     if (!allChecked) document.getElementById('nilai_aurad').value = 'Mumtaz';
-    simpanKategori('aurad');
 }
 
 function checkAllJuz30() {
     let selectAll = document.getElementById('selectAllJuz30');
     for (let i = 0; i < 37; i++) { let cb = document.getElementById(`juz_cb_${i}`); if (cb) cb.checked = selectAll.checked; }
     if (selectAll.checked) document.getElementById('nilai_juz30').value = 'Mumtaz';
-    simpanKategori('juz30');
 }
 
 function checkAllPraktik() {
@@ -481,7 +492,6 @@ function checkAllPraktik() {
     let allChecked = cbs.every(id => document.getElementById(id)?.checked);
     cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = !allChecked; });
     if (!allChecked) document.getElementById('nilai_praktik').value = 'Mumtaz';
-    simpanKategori('praktik');
 }
 
 function checkAllMadin() {
@@ -490,14 +500,12 @@ function checkAllMadin() {
     if (wustho && wustho.style.display !== 'none') cbs.push('madin_wustho');
     let allChecked = cbs.every(id => document.getElementById(id)?.checked);
     cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = !allChecked; });
-    simpanKategori('madin');
 }
 
 function checkAllSikap() {
     let cbs = ['sikap_jamaah', 'sikap_aktif_madin', 'sikap_aktif_formal'];
     let allChecked = cbs.every(id => document.getElementById(id)?.checked);
     cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = !allChecked; });
-    simpanKategori('sikap');
 }
 
 function loadHafalan() {
@@ -508,7 +516,7 @@ function loadHafalan() {
     if (!s) return;
     
     let kelasNum = parseInt(s.kelas.replace(/\D/g, '')) || 6;
-    let juzHtml = '<div class="flex justify-between items-center mb-3"><span class="text-sm font-medium">Centang Semua Juz 30 (Langsung Nilai Mumtaz & Simpan)</span><input type="checkbox" id="selectAllJuz30" onchange="checkAllJuz30()" class="w-5 h-5"></div><div class="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-60 overflow-y-auto p-2 bg-gray-50 rounded-xl">';
+    let juzHtml = '<div class="flex justify-between items-center mb-3"><span class="text-sm font-medium">Centang Semua Juz 30</span><input type="checkbox" id="selectAllJuz30" onchange="checkAllJuz30()" class="w-5 h-5"></div><div class="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-60 overflow-y-auto p-2 bg-gray-50 rounded-xl">';
     juz30List.forEach((surat, i) => { juzHtml += `<label class="flex justify-between items-center p-2 bg-white rounded-lg border text-sm"><span class="truncate">${surat}</span><input type="checkbox" id="juz_cb_${i}" class="w-4 h-4" ${s.juz30 && s.juz30[i] ? 'checked' : ''}></label>`; });
     juzHtml += '</div>';
     
@@ -516,39 +524,39 @@ function loadHafalan() {
     
     document.getElementById('formHafalan').classList.remove('hidden');
     document.getElementById('formHafalan').innerHTML = `
-        <div class="space-y-6 p-4">
+        <div class="space-y-6">
             <!-- 1. Surat Pilihan -->
             <div class="bg-gradient-to-r from-green-50 to-white p-5 rounded-xl border border-green-100">
-                <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-emerald-800"><i class="fas fa-book-open mr-2"></i>1. Hafalan Surat Pilihan</h3><button onclick="checkAllSurat()" class="btn btn-outline btn-sm"><i class="fas fa-check-double mr-1"></i> Centang Semua & Simpan</button></div>
+                <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-emerald-800"><i class="fas fa-book-open mr-2"></i>1. Hafalan Surat Pilihan</h3><button onclick="checkAllSurat()" class="btn btn-outline btn-sm"><i class="fas fa-check-double mr-1"></i> Centang Semua</button></div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3"><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Surat Yasin</span><input type="checkbox" id="hafalan_yasin" ${s.hafalan_yasin ? 'checked' : ''}></label><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Surat Al-Waqiah</span><input type="checkbox" id="hafalan_waqiah" ${s.hafalan_waqiah ? 'checked' : ''}></label><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Surat Al-Mulk</span><input type="checkbox" id="hafalan_mulk" ${s.hafalan_mulk ? 'checked' : ''}></label></div>
-                <div class="mt-3 flex gap-3 items-center"><label class="text-sm font-medium">Nilai:</label><select id="nilai_hafalan" class="px-3 py-1 border rounded-lg"><option ${s.nilai_hafalan === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilai_hafalan === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilai_hafalan === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select><button onclick="simpanKategori('surat')" class="btn btn-primary btn-sm ml-auto"><i class="fas fa-save"></i> Simpan</button></div>
+                <div class="mt-3 flex gap-3 items-center flex-wrap"><label class="text-sm font-medium">Nilai:</label><select id="nilai_hafalan" class="px-3 py-1 border rounded-lg"><option ${s.nilai_hafalan === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilai_hafalan === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilai_hafalan === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select><button onclick="simpanKategori('surat')" class="btn btn-primary btn-sm ml-auto"><i class="fas fa-save"></i> Simpan</button></div>
             </div>
             
             <!-- 2. Aurad -->
             <div class="bg-gradient-to-r from-blue-50 to-white p-5 rounded-xl border border-blue-100">
-                <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-emerald-800"><i class="fas fa-pray mr-2"></i>2. Hafalan Aurad & Wirid</h3><button onclick="checkAllAurad()" class="btn btn-outline btn-sm"><i class="fas fa-check-double mr-1"></i> Centang Semua & Simpan</button></div>
+                <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-emerald-800"><i class="fas fa-pray mr-2"></i>2. Hafalan Aurad & Wirid</h3><button onclick="checkAllAurad()" class="btn btn-outline btn-sm"><i class="fas fa-check-double mr-1"></i> Centang Semua</button></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3"><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Wirid setelah shalat</span><input type="checkbox" id="aurad_wirid" ${s.aurad_wirid ? 'checked' : ''}></label><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Doa setelah shalat</span><input type="checkbox" id="aurad_doa" ${s.aurad_doa ? 'checked' : ''}></label><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Tahlil ringkas</span><input type="checkbox" id="aurad_tahlil_ringkas" ${s.aurad_tahlil_ringkas ? 'checked' : ''}></label><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Tahlil lengkap</span><input type="checkbox" id="aurad_tahlil_lengkap" ${s.aurad_tahlil_lengkap ? 'checked' : ''}></label><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Doa tahlil</span><input type="checkbox" id="aurad_doa_tahlil" ${s.aurad_doa_tahlil ? 'checked' : ''}></label><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Tawasul & Istighotsah</span><input type="checkbox" id="aurad_tawasul" ${s.aurad_tawasul ? 'checked' : ''}></label></div>
-                <div class="mt-3 flex gap-3 items-center"><label class="text-sm font-medium">Nilai:</label><select id="nilai_aurad" class="px-3 py-1 border rounded-lg"><option ${s.nilai_aurad === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilai_aurad === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilai_aurad === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select><button onclick="simpanKategori('aurad')" class="btn btn-primary btn-sm ml-auto"><i class="fas fa-save"></i> Simpan</button></div>
+                <div class="mt-3 flex gap-3 items-center flex-wrap"><label class="text-sm font-medium">Nilai:</label><select id="nilai_aurad" class="px-3 py-1 border rounded-lg"><option ${s.nilai_aurad === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilai_aurad === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilai_aurad === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select><button onclick="simpanKategori('aurad')" class="btn btn-primary btn-sm ml-auto"><i class="fas fa-save"></i> Simpan</button></div>
             </div>
             
             <!-- 3. Juz 30 -->
-            <div class="bg-gradient-to-r from-purple-50 to-white p-5 rounded-xl border border-purple-100"><h3 class="font-bold text-emerald-800 mb-3"><i class="fas fa-quran mr-2"></i>3. Hafalan Juz 30 (${juz30List.length} Surat)</h3>${juzHtml}<div class="mt-3 flex gap-3 items-center"><label class="text-sm font-medium">Nilai:</label><select id="nilai_juz30" class="px-3 py-1 border rounded-lg"><option ${s.nilai_juz30 === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilai_juz30 === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilai_juz30 === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select><button onclick="simpanKategori('juz30')" class="btn btn-primary btn-sm ml-auto"><i class="fas fa-save"></i> Simpan</button></div></div>
+            <div class="bg-gradient-to-r from-purple-50 to-white p-5 rounded-xl border border-purple-100"><h3 class="font-bold text-emerald-800 mb-3"><i class="fas fa-quran mr-2"></i>3. Hafalan Juz 30 (${juz30List.length} Surat)</h3>${juzHtml}<div class="mt-3 flex gap-3 items-center flex-wrap"><label class="text-sm font-medium">Nilai:</label><select id="nilai_juz30" class="px-3 py-1 border rounded-lg"><option ${s.nilai_juz30 === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilai_juz30 === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilai_juz30 === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select><button onclick="simpanKategori('juz30')" class="btn btn-primary btn-sm ml-auto"><i class="fas fa-save"></i> Simpan</button></div></div>
             
             <!-- 4. Praktik -->
             <div class="bg-gradient-to-r from-orange-50 to-white p-5 rounded-xl border border-orange-100">
-                <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-emerald-800"><i class="fas fa-hands-helping mr-2"></i>4. Praktik Ibadah</h3><button onclick="checkAllPraktik()" class="btn btn-outline btn-sm"><i class="fas fa-check-double mr-1"></i> Centang Semua & Simpan</button></div>
+                <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-emerald-800"><i class="fas fa-hands-helping mr-2"></i>4. Praktik Ibadah</h3><button onclick="checkAllPraktik()" class="btn btn-outline btn-sm"><i class="fas fa-check-double mr-1"></i> Centang Semua</button></div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3"><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Praktik shalat</span><input type="checkbox" id="praktik_shalat" ${s.praktik_shalat ? 'checked' : ''}></label><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Pengurusan jenazah</span><input type="checkbox" id="praktik_jenazah" ${s.praktik_jenazah ? 'checked' : ''}></label><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Praktik khotib & bilal</span><input type="checkbox" id="praktik_khotib" ${s.praktik_khotib ? 'checked' : ''}></label></div>
-                <div class="mt-3 flex gap-3 items-center"><label class="text-sm font-medium">Nilai:</label><select id="nilai_praktik" class="px-3 py-1 border rounded-lg"><option ${s.nilai_praktik === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilai_praktik === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilai_praktik === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select><button onclick="simpanKategori('praktik')" class="btn btn-primary btn-sm ml-auto"><i class="fas fa-save"></i> Simpan</button></div>
+                <div class="mt-3 flex gap-3 items-center flex-wrap"><label class="text-sm font-medium">Nilai:</label><select id="nilai_praktik" class="px-3 py-1 border rounded-lg"><option ${s.nilai_praktik === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilai_praktik === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilai_praktik === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select><button onclick="simpanKategori('praktik')" class="btn btn-primary btn-sm ml-auto"><i class="fas fa-save"></i> Simpan</button></div>
             </div>
             
             <!-- 5. Madin -->
             <div class="bg-gradient-to-r from-teal-50 to-white p-5 rounded-xl border border-teal-100">
-                <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-emerald-800"><i class="fas fa-mosque mr-2"></i>5. Pendidikan Madin</h3><button onclick="checkAllMadin()" class="btn btn-outline btn-sm"><i class="fas fa-check-double mr-1"></i> Centang Semua & Simpan</button></div>${madinHtml}<div class="mt-3"><button onclick="simpanKategori('madin')" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Simpan</button></div>
+                <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-emerald-800"><i class="fas fa-mosque mr-2"></i>5. Pendidikan Madin</h3><button onclick="checkAllMadin()" class="btn btn-outline btn-sm"><i class="fas fa-check-double mr-1"></i> Centang Semua</button></div>${madinHtml}<div class="mt-3"><button onclick="simpanKategori('madin')" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Simpan</button></div>
             </div>
             
             <!-- 6. Sikap -->
             <div class="bg-gradient-to-r from-rose-50 to-white p-5 rounded-xl border border-rose-100">
-                <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-emerald-800"><i class="fas fa-heart mr-2"></i>6. Sikap & Adab</h3><button onclick="checkAllSikap()" class="btn btn-outline btn-sm"><i class="fas fa-check-double mr-1"></i> Centang Semua & Simpan</button></div>
+                <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-emerald-800"><i class="fas fa-heart mr-2"></i>6. Sikap & Adab</h3><button onclick="checkAllSikap()" class="btn btn-outline btn-sm"><i class="fas fa-check-double mr-1"></i> Centang Semua</button></div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3"><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Shalat 5 waktu berjamaah</span><input type="checkbox" id="sikap_jamaah" ${s.sikap_jamaah ? 'checked' : ''}></label><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Keaktifan sekolah madin</span><input type="checkbox" id="sikap_aktif_madin" ${s.sikap_aktif_madin ? 'checked' : ''}></label><label class="flex justify-between items-center p-3 bg-white rounded-lg border"><span>Keaktifan sekolah formal</span><input type="checkbox" id="sikap_aktif_formal" ${s.sikap_aktif_formal ? 'checked' : ''}></label></div>
                 <div class="mt-3"><button onclick="simpanKategori('sikap')" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Simpan</button></div>
             </div>
@@ -574,7 +582,7 @@ function downloadSertifikat() { let node = document.getElementById('sertifikatBo
 function renderLaporan() {
     let tbody = document.getElementById('laporanTable');
     if (!tbody) return;
-    tbody.innerHTML = santri.map((s, i) => { let status = getStatus(s), persen = getProgressPercentage(s); let badgeClass = status === 'Lulus' ? 'badge-success' : (status === 'Proses' ? 'badge-warning' : 'badge-danger'); return `<tr class="border-b"><td class="p-3">${i+1}<\/td><td class="p-3 font-medium">${s.name || s.nama}<\/td><td class="p-3">${s.kelas}<\/td><td class="p-3">${s.nilai_hafalan || '-'}<\/td><td class="p-3"><div class="flex items-center gap-2"><div class="progress-bar w-24"><div class="progress-fill bg-emerald-500" style="width: ${persen}%"><\/div><\/div><span class="text-sm font-semibold">${persen}%<\/span><\/div><\/td><td class="p-3"><span class="badge ${badgeClass}">${status}<\/span><\/td><\/tr>`; }).join('');
+    tbody.innerHTML = santri.map((s, i) => { let status = getStatus(s), persen = getProgressPercentage(s); let badgeClass = status === 'Lulus' ? 'badge-success' : (status === 'Proses' ? 'badge-warning' : 'badge-danger'); return `<tr class="border-b"><td class="p-3">${i+1}<\/td><td class="p-3 font-medium">${s.nama}<\/td><td class="p-3">${s.kelas}<\/td><td class="p-3">${s.nilai_hafalan || '-'}<\/td><td class="p-3"><div class="flex items-center gap-2"><div class="progress-bar w-24"><div class="progress-fill bg-emerald-500" style="width: ${persen}%"><\/div><\/div><span class="text-sm font-semibold">${persen}%<\/span><\/div><\/td><td class="p-3"><span class="badge ${badgeClass}">${status}<\/span><\/td><\/tr>`; }).join('');
 }
 
 function updateLaporanCharts() {
@@ -591,10 +599,37 @@ function updateLaporanCharts() {
 }
 
 function printLaporan() {
-    let win = window.open();
-    let lulus = 0, proses = 0, belum = 0; santri.forEach(s => { let st = getStatus(s); if (st === 'Lulus') lulus++; else if (st === 'Proses') proses++; else belum++; });
+    let lulus = 0, proses = 0, belum = 0;
+    santri.forEach(s => { let st = getStatus(s); if (st === 'Lulus') lulus++; else if (st === 'Proses') proses++; else belum++; });
     let total = santri.length || 1, pLulus = Math.round((lulus / total) * 100), pProses = Math.round((proses / total) * 100), pBelum = Math.round((belum / total) * 100);
-    win.document.write(`<html><head><title>Laporan Mutqin BM</title><style>body{font-family:Inter;padding:30px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:10px}th{background:#065f46;color:#fff}.badge{padding:3px 10px;border-radius:20px;font-size:11px}.badge-success{background:#d1fae5;color:#065f46}.badge-warning{background:#fed7aa;color:#9a3412}.badge-danger{background:#fee2e2;color:#991b1b}.progress-bar{height:8px;background:#e5e7eb;border-radius:10px}.progress-fill{height:100%;border-radius:10px}</style></head><body><div style="text-align:center;margin-bottom:30px"><h1 style="color:#065f46">LAPORAN HAFALAN SANTRI</h1><p>Pondok Pesantren Bahrul Maghfiroh</p><p>Tanggal: ${new Date().toLocaleDateString('id-ID')}</p></div><div style="display:flex;gap:15px;margin-bottom:30px"><div style="flex:1;background:#10b981;padding:15px;border-radius:12px;color:white;text-align:center"><div style="font-size:32px;font-weight:bold">${lulus}</div><div>Lulus</div><div class="progress-bar bg-white/30 mt-2"><div class="progress-fill bg-white" style="width:${pLulus}%"></div></div><div>${pLulus}%</div></div><div style="flex:1;background:#f59e0b;padding:15px;border-radius:12px;color:white;text-align:center"><div style="font-size:32px;font-weight:bold">${proses}</div><div>Proses</div><div class="progress-bar bg-white/30 mt-2"><div class="progress-fill bg-white" style="width:${pProses}%"></div></div><div>${pProses}%</div></div><div style="flex:1;background:#ef4444;padding:15px;border-radius:12px;color:white;text-align:center"><div style="font-size:32px;font-weight:bold">${belum}</div><div>Belum</div><div class="progress-bar bg-white/30 mt-2"><div class="progress-fill bg-white" style="width:${pBelum}%"></div></div><div>${pBelum}%</div></div></div><table><thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Nilai</th><th>Persentase</th><th>Status</th></tr></thead><tbody>${santri.map((s,i)=>`<tr><td>${i+1}</td><td>${s.nama}</td><td>${s.kelas}</td><td>${s.nilai_hafalan || '-'}</td><td>${getProgressPercentage(s)}%</td><td><span class="badge ${getStatus(s) === 'Lulus' ? 'badge-success' : (getStatus(s) === 'Proses' ? 'badge-warning' : 'badge-danger')}">${getStatus(s)}</span></td></tr>`).join('')}</tbody></table></body></html>`);
+    let win = window.open();
+    win.document.write(`<html><head><title>Laporan Mutqin BM</title><style>
+        body { font-family: 'Inter', Arial, sans-serif; padding: 30px; margin: 0; }
+        h1 { color: #065f46; text-align: center; }
+        .stats { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .stat-card { flex: 1; padding: 15px; border-radius: 12px; color: white; text-align: center; min-width: 150px; }
+        .stat-card.green { background: linear-gradient(135deg, #10b981, #059669); }
+        .stat-card.orange { background: linear-gradient(135deg, #f59e0b, #ea580c); }
+        .stat-card.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .stat-card .number { font-size: 32px; font-weight: bold; }
+        .progress-bar-bg { background: rgba(255,255,255,0.3); height: 10px; border-radius: 10px; margin-top: 10px; }
+        .progress-fill { height: 100%; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #065f46; color: white; }
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fed7aa; color: #9a3412; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .progress-bar { height: 8px; background: #e5e7eb; border-radius: 10px; width: 100px; display: inline-block; margin-right: 8px; }
+        .progress-fill { height: 100%; border-radius: 10px; background: #10b981; }
+        .chart-container { text-align: center; margin: 20px 0; }
+        @media print { .no-print { display: none; } body { padding: 0; } }
+    </style></head><body>
+    <div style="text-align:center;margin-bottom:30px"><h1>📊 LAPORAN HAFALAN SANTRI</h1><p>Pondok Pesantren Bahrul Maghfiroh</p><p>Tanggal: ${new Date().toLocaleDateString('id-ID')}</p></div>
+    <div class="stats"><div class="stat-card green"><div class="number">${lulus}</div><div>Lulus</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${pLulus}%;background:white"></div></div><div>${pLulus}%</div></div><div class="stat-card orange"><div class="number">${proses}</div><div>Proses</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${pProses}%;background:white"></div></div><div>${pProses}%</div></div><div class="stat-card red"><div class="number">${belum}</div><div>Belum</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${pBelum}%;background:white"></div></div><div>${pBelum}%</div></div></div>
+    <table><thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Nilai</th><th>Persentase</th><th>Status</th></tr></thead><tbody>${santri.map((s,i)=>`<tr><td>${i+1}</td><td>${s.nama}</td><td>${s.kelas}</td><td>${s.nilai_hafalan || '-'}</td><td><div style="display:flex;align-items:center"><div class="progress-bar"><div class="progress-fill" style="width:${getProgressPercentage(s)}%"></div></div> ${getProgressPercentage(s)}%</div></td><td><span class="badge ${getStatus(s) === 'Lulus' ? 'badge-success' : (getStatus(s) === 'Proses' ? 'badge-warning' : 'badge-danger')}">${getStatus(s)}</span></td></tr>`).join('')}</tbody></table>
+    </body></html>`);
     win.document.close(); win.print();
 }
 
@@ -607,14 +642,14 @@ function showPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
     document.getElementById(`page${page.charAt(0).toUpperCase() + page.slice(1)}`).classList.remove('hidden');
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    if (event && event.currentTarget) event.currentTarget.classList.add('active');
+    if (window.event && window.event.currentTarget) window.event.currentTarget.classList.add('active');
     if (page === 'santri') renderSantri();
     if (page === 'dashboard') updateDashboard();
     if (page === 'laporan') { renderLaporan(); updateLaporanCharts(); }
     if (page === 'hafalan') updateSelects();
     if (page === 'sertifikat') updateSelects();
     if (page === 'profil') loadProfil();
-    if (window.innerWidth < 1024) toggleSidebar();
+    if (window.innerWidth < 1024) document.getElementById('sidebar').classList.add('-translate-x-full');
 }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
