@@ -22,7 +22,6 @@
         .toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; padding: 14px 24px; border-radius: 12px; font-weight: 600; font-size: 14px; animation: slideIn 0.3s ease-out; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px; }
         .toast-success { background: linear-gradient(135deg, #059669, #10b981); color: white; }
         .toast-error { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; }
-        .toast-info { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
         input, select, textarea { transition: all 0.2s; border: 1.5px solid #e5e7eb; outline: none; border-radius: 12px; padding: 12px 16px; }
         input:focus, select:focus, textarea:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
         .badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
@@ -44,20 +43,11 @@
         .progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
         .certificate-box { background: white; border: 8px double #059669; border-radius: 16px; position: relative; overflow: hidden; }
         .login-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
-        
-        /* Responsive */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); position: fixed; z-index: 50; height: 100vh; }
-            .sidebar.show { transform: translateX(0); }
             .toast { bottom: 16px; right: 16px; left: 16px; white-space: normal; text-align: center; justify-content: center; }
-            .stat-card { padding: 12px; }
-            .stat-card .text-3xl { font-size: 24px; }
             .btn { padding: 8px 16px; font-size: 13px; }
-            .modal-content { width: 95%; margin: 16px; }
-            table { font-size: 12px; }
-            .badge { font-size: 10px; padding: 3px 8px; }
         }
-        
         @media print {
             body { margin: 0; padding: 0; }
             .no-print { display: none; }
@@ -69,9 +59,9 @@
 
 <!-- LOGIN SCREEN -->
 <div id="loginScreen" class="min-h-screen flex items-center justify-center login-bg">
-    <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-10 w-full max-w-md mx-4 transform transition-all">
+    <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-10 w-full max-w-md mx-4">
         <div class="text-center mb-8">
-            <div class="w-24 h-24 mx-auto mb-4 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg bg-gradient-to-br from-emerald-100 to-teal-100 mx-auto" id="loginLogoContainer">
+            <div class="w-24 h-24 mx-auto mb-4 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg bg-gradient-to-br from-emerald-100 to-teal-100" id="loginLogoContainer">
                 <i class="fas fa-graduation-cap text-emerald-600 text-5xl" id="defaultLoginLogo"></i>
                 <img id="loginLogoImg" class="hidden w-full h-full object-cover" alt="Logo">
             </div>
@@ -90,7 +80,6 @@
 
 <!-- MAIN APP -->
 <div id="mainApp" class="hidden min-h-screen">
-    <!-- TOP NAVBAR -->
     <div class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-30">
         <div class="px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
@@ -114,7 +103,6 @@
     </div>
 
     <div class="flex relative">
-        <!-- SIDEBAR -->
         <div id="sidebar" class="w-72 bg-gradient-to-b from-emerald-50 via-white to-emerald-50 min-h-screen fixed lg:relative z-20 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-xl border-r border-emerald-100 overflow-y-auto">
             <div class="p-6 border-b border-emerald-100">
                 <div class="flex items-center gap-3">
@@ -137,14 +125,13 @@
             <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-emerald-100"><div class="text-center text-xs text-gray-400"><i class="fas fa-code-branch"></i> Version 3.0 | © 2024</div></div>
         </div>
 
-        <!-- MAIN CONTENT -->
         <div class="flex-1 lg:ml-0 min-h-screen">
             <div class="p-4 md:p-6">
                 <!-- DASHBOARD -->
                 <div id="pageDashboard" class="page">
                     <div class="mb-6 md:mb-8">
                         <h2 class="text-xl md:text-2xl font-bold text-gray-800" id="welcomeText">Selamat datang, Admin...</h2>
-                        <div id="datetimeDisplay" class="text-gray-500 mt-2 flex items-center gap-2 flex-wrap text-sm"><i class="fas fa-calendar-alt text-emerald-500"></i><span id="currentDate" class="font-medium"></span><i class="fas fa-clock text-emerald-500 ml-3"></i><span id="currentTime" class="font-mono"></span></div>
+                        <div class="text-gray-500 mt-2 flex items-center gap-2 flex-wrap text-sm"><i class="fas fa-calendar-alt text-emerald-500"></i><span id="currentDate"></span><i class="fas fa-clock text-emerald-500 ml-3"></i><span id="currentTime"></span></div>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 mb-6 md:mb-8">
                         <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-4 md:p-5 text-white shadow-lg"><div class="flex items-center justify-between mb-2 md:mb-3"><div class="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-xl flex items-center justify-center"><i class="fas fa-users text-white text-lg md:text-xl"></i></div><span class="text-2xl md:text-3xl font-bold" id="totalSantri">0</span></div><h3 class="font-medium text-sm md:text-base">Total Santri</h3></div>
@@ -158,9 +145,9 @@
                     </div>
                 </div>
 
-                <!-- DATA SANTRI -->
+                <!-- DATA SANTRI - Group by Kelas -->
                 <div id="pageSantri" class="page hidden">
-                    <div class="mb-6 md:mb-8"><h2 class="text-xl md:text-2xl font-bold text-gray-800">Data Santri</h2><p class="text-gray-500 mt-1 text-sm">Kelola data santri - dikelompokkan berdasarkan kelas</p></div>
+                    <div class="mb-6 md:mb-8"><h2 class="text-xl md:text-2xl font-bold text-gray-800">Data Santri</h2><p class="text-gray-500 mt-1 text-sm">Data santri dikelompokkan berdasarkan kelas</p></div>
                     <div class="flex gap-3 mb-6 flex-wrap"><button onclick="openModal('tambahModal')" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Santri</button><button onclick="openModal('massalModal')" class="btn btn-outline"><i class="fas fa-upload"></i> Import Massal</button></div>
                     <div class="bg-white rounded-2xl p-4 shadow-sm border mb-6"><div class="relative"><i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i><input type="text" id="searchSantri" placeholder="🔍 Cari santri berdasarkan nama atau kelas..." class="w-full pl-12" onkeyup="renderSantri()"></div></div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden" id="santriListContainer"></div>
@@ -207,6 +194,7 @@
                         <div class="mb-5 text-center"><label class="block text-sm font-medium text-gray-700 mb-2">Logo Pesantren</label><div class="flex flex-col items-center gap-3"><div class="w-28 h-28 md:w-32 md:h-32 rounded-2xl border-2 border-dashed border-emerald-300 flex items-center justify-center overflow-hidden bg-gray-50" id="logoPreviewContainer"><i class="fas fa-cloud-upload-alt text-emerald-400 text-3xl md:text-4xl" id="logoPreviewIcon"></i><img id="logoPreviewImg" class="hidden w-full h-full object-cover" alt="Preview"></div><input type="file" id="logoUpload" accept="image/*" class="hidden" onchange="previewLogo(this)"><button onclick="document.getElementById('logoUpload').click()" class="btn btn-outline btn-sm"><i class="fas fa-upload"></i> Upload Logo</button><button onclick="clearLogo()" class="btn btn-outline btn-sm text-red-500"><i class="fas fa-trash"></i> Hapus Logo</button></div></div>
                         <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-mosque mr-2 text-emerald-600"></i>Nama Pesantren</label><input type="text" id="profilNama" class="w-full" value="Pondok Pesantren Bahrul Maghfiroh"></div>
                         <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-user-tie mr-2 text-emerald-600"></i>Nama Pengasuh</label><input type="text" id="profilPengasuh" class="w-full" placeholder="KH. Nama Pengasuh"></div>
+                        <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-user-graduate mr-2 text-emerald-600"></i>Nama Kepala Pendidikan</label><input type="text" id="profilKapendik" class="w-full" placeholder="Nama Kepala Pendidikan"></div>
                         <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-map-marker-alt mr-2 text-emerald-600"></i>Alamat</label><textarea id="profilAlamat" rows="2" class="w-full" placeholder="Alamat lengkap pesantren"></textarea></div>
                         <button onclick="saveProfil()" class="btn btn-primary w-full justify-center"><i class="fas fa-save"></i> Simpan Profil</button>
                     </div>
@@ -230,6 +218,14 @@ let currentUser = null;
 let currentSantriId = null;
 let statusChart = null, nilaiChart = null, laporanChart = null, laporanPieChart = null;
 let logoBase64 = null;
+
+// Profil data
+let profilData = {
+    nama: 'Pondok Pesantren Bahrul Maghfiroh',
+    pengasuh: '',
+    kapendik: '',
+    alamat: ''
+};
 
 const juz30List = ['An-Naba', 'An-Nazi\'at', 'Abasa', 'At-Takwir', 'Al-Infitar', 'Al-Mutaffifin', 'Al-Insyiqaq', 'Al-Buruj', 'At-Tariq', 'Al-A\'la', 'Al-Ghasyiyah', 'Al-Fajr', 'Al-Balad', 'Asy-Syams', 'Al-Lail', 'Ad-Duha', 'Asy-Syarh', 'At-Tin', 'Al-Alaq', 'Al-Qadr', 'Al-Bayyinah', 'Az-Zalzalah', 'Al-Adiyat', 'Al-Qari\'ah', 'At-Takasur', 'Al-Asr', 'Al-Humazah', 'Al-Fil', 'Quraisy', 'Al-Ma\'un', 'Al-Kausar', 'Al-Kafirun', 'An-Nasr', 'Al-Lahab', 'Al-Ikhlas', 'Al-Falaq', 'An-Nas'];
 
@@ -286,9 +282,9 @@ function getStatus(s) {
     return 'Belum';
 }
 
-// Load/Save Data (menggunakan localStorage agar data tersimpan lintas perangkat di browser yang sama)
+// Load Data from localStorage
 function loadData() {
-    let saved = localStorage.getItem('mutqin_santri_v7');
+    let saved = localStorage.getItem('mutqin_santri_v8');
     if (saved) { try { santri = JSON.parse(saved); } catch(e) { santri = []; } }
     if (!santri.length) {
         santri = [
@@ -297,12 +293,49 @@ function loadData() {
             { id: 3, nama: 'Muhammad Rizki', kelas: 'Kelas 1' }
         ];
     }
+    
+    // Load profil data
+    let savedProfil = localStorage.getItem('mutqin_profil_data');
+    if (savedProfil) {
+        try { 
+            let p = JSON.parse(savedProfil);
+            profilData.nama = p.nama || 'Pondok Pesantren Bahrul Maghfiroh';
+            profilData.pengasuh = p.pengasuh || '';
+            profilData.kapendik = p.kapendik || '';
+            profilData.alamat = p.alamat || '';
+        } catch(e) {}
+    }
+    document.getElementById('profilNama').value = profilData.nama;
+    document.getElementById('profilPengasuh').value = profilData.pengasuh;
+    document.getElementById('profilKapendik').value = profilData.kapendik;
+    document.getElementById('profilAlamat').value = profilData.alamat;
+    
     refreshAll();
 }
 
-function saveData() { localStorage.setItem('mutqin_santri_v7', JSON.stringify(santri)); refreshAll(); }
+function saveData() { 
+    localStorage.setItem('mutqin_santri_v8', JSON.stringify(santri)); 
+    refreshAll(); 
+}
 
-function refreshAll() { updateDashboard(); renderSantri(); updateSelects(); if (document.getElementById('pageLaporan') && !document.getElementById('pageLaporan').classList.contains('hidden')) { renderLaporan(); updateLaporanCharts(); } }
+function saveProfilData() {
+    profilData.nama = document.getElementById('profilNama').value;
+    profilData.pengasuh = document.getElementById('profilPengasuh').value;
+    profilData.kapendik = document.getElementById('profilKapendik').value;
+    profilData.alamat = document.getElementById('profilAlamat').value;
+    localStorage.setItem('mutqin_profil_data', JSON.stringify(profilData));
+    showToast('✅ Profil berhasil disimpan');
+}
+
+function refreshAll() { 
+    updateDashboard(); 
+    renderSantri(); 
+    updateSelects(); 
+    if (document.getElementById('pageLaporan') && !document.getElementById('pageLaporan').classList.contains('hidden')) { 
+        renderLaporan(); 
+        updateLaporanCharts(); 
+    } 
+}
 
 // Logo functions
 function loadLogo() {
@@ -374,6 +407,7 @@ function tambahSantri() {
 function editSantri(id) { let s = santri.find(x => x.id === id); if (!s) return; document.getElementById('editId').value = s.id; document.getElementById('editNama').value = s.nama; document.getElementById('editKelas').value = s.kelas; openModal('editModal'); }
 function updateSantri() { let id = parseInt(document.getElementById('editId').value); let idx = santri.findIndex(x => x.id === id); if (idx === -1) return; santri[idx].nama = document.getElementById('editNama').value.trim(); santri[idx].kelas = document.getElementById('editKelas').value; saveData(); showToast('✅ Data diupdate'); closeModal(null, 'editModal'); }
 function hapusSantri(id) { if (confirm('Yakin hapus santri ini?')) { santri = santri.filter(s => s.id !== id); saveData(); showToast('Santri dihapus'); } }
+
 function importMassal() {
     let text = document.getElementById('massalData').value.trim();
     if (!text) { showToast('Data kosong!', 'error'); return; }
@@ -383,10 +417,17 @@ function importMassal() {
         let parts = line.split(',');
         if (parts.length < 2) continue;
         let nama = parts[0].trim(), kelas = parts[1].trim();
-        if (nama && kelas) { let newSantri = getDefaultSantri(); newSantri.id = Date.now() + added; newSantri.nama = nama; newSantri.kelas = kelas; santri.push(newSantri); added++; }
+        if (nama && kelas && (kelas === 'Kelas 1' || kelas === 'Kelas 2' || kelas === 'Kelas 3' || kelas === 'Kelas 4' || kelas === 'Kelas 5' || kelas === 'Kelas 6')) {
+            let newSantri = getDefaultSantri(); 
+            newSantri.id = Date.now() + added; 
+            newSantri.nama = nama; 
+            newSantri.kelas = kelas; 
+            santri.push(newSantri); 
+            added++;
+        }
     }
     if (added > 0) { saveData(); showToast(`✅ ${added} santri diimport`); closeModal(null, 'massalModal'); document.getElementById('massalData').value = ''; }
-    else showToast('Tidak ada data valid', 'error');
+    else showToast('Tidak ada data valid. Format: Nama,Kelas (contoh: Ahmad,Kelas 1)', 'error');
 }
 
 function renderSantri() {
@@ -395,6 +436,8 @@ function renderSantri() {
     let container = document.getElementById('santriListContainer');
     if (!container) return;
     if (filtered.length === 0) { container.innerHTML = '<div class="text-center py-12 text-gray-400"><i class="fas fa-inbox text-5xl mb-3"></i><p>Belum ada data santri</p></div>'; return; }
+    
+    // Group by kelas
     let grouped = {};
     filtered.forEach(s => { if (!grouped[s.kelas]) grouped[s.kelas] = []; grouped[s.kelas].push(s); });
     let kelasOrder = ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6'];
@@ -423,7 +466,7 @@ function updateSelects() {
 
 function filterHafalan() { let q = document.getElementById('searchHafalan').value.toLowerCase(); let select = document.getElementById('selectHafalan'); Array.from(select.options).forEach(opt => { if (opt.value && !opt.text.toLowerCase().includes(q)) opt.style.display = 'none'; else opt.style.display = 'block'; }); }
 
-// Simpan per kategori (tampilan tetap tidak hilang)
+// Simpan per kategori - TAMPILAN TETAP TIDAK HILANG
 function simpanKategori(kategori) {
     if (!currentSantriId) { showToast('Pilih santri dulu', 'error'); return; }
     let idx = santri.findIndex(x => x.id === currentSantriId);
@@ -462,8 +505,7 @@ function simpanKategori(kategori) {
     }
     saveData();
     showToast(`✅ Nilai ${kategori} tersimpan`);
-    // Reload form tapi dengan data yang sama (tampilan tetap)
-    loadHafalan();
+    // TIDAK reload halaman, hanya update data di memory - tampilan tetap
 }
 
 // Centang semua tanpa auto simpan
@@ -564,7 +606,7 @@ function loadHafalan() {
     `;
 }
 
-// Sertifikat
+// Sertifikat dengan logo, pengasuh, kapendik dari profil
 function generateSertifikat() {
     let id = document.getElementById('selectSertifikat').value;
     if (!id) { document.getElementById('sertifikatPreview').classList.add('hidden'); return; }
@@ -572,11 +614,40 @@ function generateSertifikat() {
     if (!s || getStatus(s) !== 'Lulus') { showToast('Pilih santri yang sudah LULUS', 'error'); return; }
     let today = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     let logoHtml = logoBase64 ? `<img src="${logoBase64}" class="w-20 h-20 mx-auto mb-3 rounded-full object-cover border-2 border-emerald-600">` : '<i class="fas fa-graduation-cap text-emerald-600 text-6xl mb-3"></i>';
-    document.getElementById('sertifikatPreview').innerHTML = `<div class="text-center"><div id="sertifikatBox" class="certificate-box bg-white border-4 border-emerald-700 rounded-2xl p-8 max-w-lg mx-auto shadow-2xl"><div class="text-center mb-4">${logoHtml}<h2 class="text-2xl font-bold text-emerald-800">PONDOK PESANTREN</h2><h3 class="text-2xl font-bold text-blue-600">BAHRUL MAGHFIROH</h3></div><div class="border-b-2 border-emerald-600 w-32 mx-auto my-4"></div><p class="text-gray-500 text-sm tracking-wider">SERTIFIKAT KELULUSAN</p><p class="text-sm text-gray-500 mt-4">Diberikan kepada:</p><h4 class="text-4xl font-bold text-emerald-700 my-4 uppercase">${s.nama}</h4><p class="text-sm text-gray-600">Sebagai tanda bahwa telah menyelesaikan pendidikan<br>dan memenuhi standar kelulusan di</p><p class="text-md font-semibold text-emerald-700 mt-2">Pondok Pesantren Bahrul Maghfiroh</p><div class="inline-block bg-emerald-100 px-8 py-2 rounded-full my-5"><span class="font-bold text-emerald-800 text-xl">LULUS</span></div><p class="text-xs text-gray-500 mt-2">Malang, ${today}</p><div class="grid grid-cols-2 gap-8 mt-6 pt-4 border-t border-gray-300"><div><div class="border-t-2 border-gray-400 pt-2 text-sm font-medium">Pengasuh Pondok</div><div class="text-xs text-gray-400 mt-1">_________________</div></div><div><div class="border-t-2 border-gray-400 pt-2 text-sm font-medium">Kepala Pendidikan</div><div class="text-xs text-gray-400 mt-1">_________________</div></div></div></div><button onclick="downloadSertifikat()" class="btn btn-primary mt-6"><i class="fas fa-download"></i> Download Sertifikat (PNG)</button></div>`;
+    
+    document.getElementById('sertifikatPreview').innerHTML = `
+        <div class="text-center">
+            <div id="sertifikatBox" class="certificate-box bg-white border-4 border-emerald-700 rounded-2xl p-8 max-w-lg mx-auto shadow-2xl">
+                <div class="text-center mb-4">${logoHtml}<h2 class="text-2xl font-bold text-emerald-800">${profilData.nama}</h2><h3 class="text-xl font-bold text-blue-600">BAHRUL MAGHFIROH</h3></div>
+                <div class="border-b-2 border-emerald-600 w-32 mx-auto my-4"></div>
+                <p class="text-gray-500 text-sm tracking-wider">SERTIFIKAT KELULUSAN</p>
+                <p class="text-sm text-gray-500 mt-4">Diberikan kepada:</p>
+                <h4 class="text-4xl font-bold text-emerald-700 my-4 uppercase">${s.nama}</h4>
+                <p class="text-sm text-gray-600">Sebagai tanda bahwa telah menyelesaikan pendidikan<br>dan memenuhi standar kelulusan di</p>
+                <p class="text-md font-semibold text-emerald-700 mt-2">${profilData.nama}</p>
+                <div class="inline-block bg-emerald-100 px-8 py-2 rounded-full my-5"><span class="font-bold text-emerald-800 text-xl">LULUS</span></div>
+                <p class="text-xs text-gray-500 mt-2">Malang, ${today}</p>
+                <div class="grid grid-cols-2 gap-8 mt-6 pt-4 border-t border-gray-300">
+                    <div><div class="border-t-2 border-gray-400 pt-2 text-sm font-medium">Pengasuh Pondok</div><div class="text-sm font-semibold mt-1">${profilData.pengasuh || '_________________'}</div></div>
+                    <div><div class="border-t-2 border-gray-400 pt-2 text-sm font-medium">Kepala Pendidikan</div><div class="text-sm font-semibold mt-1">${profilData.kapendik || '_________________'}</div></div>
+                </div>
+            </div>
+            <button onclick="downloadSertifikat()" class="btn btn-primary mt-6"><i class="fas fa-download"></i> Download Sertifikat (PNG)</button>
+        </div>
+    `;
     document.getElementById('sertifikatPreview').classList.remove('hidden');
 }
 
-function downloadSertifikat() { let node = document.getElementById('sertifikatBox'); html2canvas(node, { scale: 2 }).then(canvas => { let link = document.createElement('a'); link.download = 'sertifikat.png'; link.href = canvas.toDataURL(); link.click(); showToast('Sertifikat terunduh'); }).catch(() => showToast('Gagal download', 'error')); }
+function downloadSertifikat() { 
+    let node = document.getElementById('sertifikatBox'); 
+    html2canvas(node, { scale: 2 }).then(canvas => { 
+        let link = document.createElement('a'); 
+        link.download = 'sertifikat.png'; 
+        link.href = canvas.toDataURL(); 
+        link.click(); 
+        showToast('Sertifikat terunduh'); 
+    }).catch(() => showToast('Gagal download', 'error')); 
+}
 
 // Laporan
 function renderLaporan() {
@@ -623,19 +694,14 @@ function printLaporan() {
         .badge-danger { background: #fee2e2; color: #991b1b; }
         .progress-bar { height: 8px; background: #e5e7eb; border-radius: 10px; width: 100px; display: inline-block; margin-right: 8px; }
         .progress-fill { height: 100%; border-radius: 10px; background: #10b981; }
-        .chart-container { text-align: center; margin: 20px 0; }
         @media print { .no-print { display: none; } body { padding: 0; } }
     </style></head><body>
-    <div style="text-align:center;margin-bottom:30px"><h1>📊 LAPORAN HAFALAN SANTRI</h1><p>Pondok Pesantren Bahrul Maghfiroh</p><p>Tanggal: ${new Date().toLocaleDateString('id-ID')}</p></div>
+    <div style="text-align:center;margin-bottom:30px"><h1>📊 LAPORAN HAFALAN SANTRI</h1><p>${profilData.nama}</p><p>Tanggal: ${new Date().toLocaleDateString('id-ID')}</p></div>
     <div class="stats"><div class="stat-card green"><div class="number">${lulus}</div><div>Lulus</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${pLulus}%;background:white"></div></div><div>${pLulus}%</div></div><div class="stat-card orange"><div class="number">${proses}</div><div>Proses</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${pProses}%;background:white"></div></div><div>${pProses}%</div></div><div class="stat-card red"><div class="number">${belum}</div><div>Belum</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${pBelum}%;background:white"></div></div><div>${pBelum}%</div></div></div>
     <table><thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Nilai</th><th>Persentase</th><th>Status</th></tr></thead><tbody>${santri.map((s,i)=>`<tr><td>${i+1}</td><td>${s.nama}</td><td>${s.kelas}</td><td>${s.nilai_hafalan || '-'}</td><td><div style="display:flex;align-items:center"><div class="progress-bar"><div class="progress-fill" style="width:${getProgressPercentage(s)}%"></div></div> ${getProgressPercentage(s)}%</div></td><td><span class="badge ${getStatus(s) === 'Lulus' ? 'badge-success' : (getStatus(s) === 'Proses' ? 'badge-warning' : 'badge-danger')}">${getStatus(s)}</span></td></tr>`).join('')}</tbody></table>
     </body></html>`);
     win.document.close(); win.print();
 }
-
-// Profil
-function saveProfil() { localStorage.setItem('mutqin_profil_nama', document.getElementById('profilNama').value); localStorage.setItem('mutqin_profil_pengasuh', document.getElementById('profilPengasuh').value); localStorage.setItem('mutqin_profil_alamat', document.getElementById('profilAlamat').value); showToast('Profil disimpan'); }
-function loadProfil() { let n = localStorage.getItem('mutqin_profil_nama'); if (n) document.getElementById('profilNama').value = n; let p = localStorage.getItem('mutqin_profil_pengasuh'); if (p) document.getElementById('profilPengasuh').value = p; let a = localStorage.getItem('mutqin_profil_alamat'); if (a) document.getElementById('profilAlamat').value = a; }
 
 // Navigation
 function showPage(page) {
@@ -648,7 +714,6 @@ function showPage(page) {
     if (page === 'laporan') { renderLaporan(); updateLaporanCharts(); }
     if (page === 'hafalan') updateSelects();
     if (page === 'sertifikat') updateSelects();
-    if (page === 'profil') loadProfil();
     if (window.innerWidth < 1024) document.getElementById('sidebar').classList.add('-translate-x-full');
 }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
