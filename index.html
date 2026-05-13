@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Mutqin BM - Sistem Manajemen Kelulusan Profesional</title>
+    <title>Mutqin BM - Sistem Manajemen Kelulusan Profesional (Cloud Sync)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -24,6 +24,7 @@
         .toast-success { background: linear-gradient(135deg, #059669, #10b981); color: white; }
         .toast-error { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; }
         .toast-info { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+        .toast-warning { background: linear-gradient(135deg, #f59e0b, #ea580c); color: white; }
         input, select, textarea { transition: all 0.2s; border: 1.5px solid #e5e7eb; outline: none; border-radius: 12px; padding: 12px 16px; }
         input:focus, select:focus, textarea:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
         .badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
@@ -79,7 +80,7 @@
             <h1 class="text-3xl font-bold text-gray-800">Mutqin BM</h1>
             <p class="text-gray-500 mt-2">Sistem Manajemen Kelulusan Profesional</p>
             <p class="text-gray-400 text-sm">Pondok Pesantren Bahrul Maghfiroh</p>
-            <p class="text-emerald-600 text-xs mt-2"><i class="fas fa-cloud"></i> Cloud Sync - Akses Semua Device</p>
+            <p class="text-emerald-600 text-xs mt-2"><i class="fas fa-cloud"></i> Cloud Database - Akses Semua Device</p>
         </div>
         <div id="loginError" class="hidden bg-red-50 text-red-600 p-3 rounded-xl mb-4 text-center text-sm"></div>
         <div class="space-y-4">
@@ -112,8 +113,8 @@
                     <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center"><i class="fas fa-user text-white text-sm"></i></div>
                     <span class="text-sm font-semibold text-gray-700" id="userRoleText">Administrator</span>
                 </div>
-                <button onclick="syncData()" class="btn btn-outline text-sm py-1.5 md:py-2 px-3 md:px-4" title="Sinkronisasi data dari cloud">
-                    <i class="fas fa-sync-alt"></i> <span class="hidden md:inline">Sinkronisasi</span>
+                <button onclick="syncDataFromCloud()" class="btn btn-outline text-sm py-1.5 md:py-2 px-3 md:px-4" title="Sinkronisasi data dari cloud">
+                    <i class="fas fa-cloud-download-alt"></i> <span class="hidden md:inline">Sinkronisasi</span>
                 </button>
                 <button onclick="doLogout()" class="btn btn-outline text-sm py-1.5 md:py-2 px-3 md:px-4"><i class="fas fa-sign-out-alt"></i> <span class="hidden md:inline">Keluar</span></button>
             </div>
@@ -141,7 +142,7 @@
                 <div class="nav-item" onclick="showPage('profil')"><i class="fas fa-building w-5 text-emerald-600"></i><span class="text-gray-700">Profil Ponpes</span></div>
             </nav>
             <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-emerald-100">
-                <div class="text-center text-xs text-gray-400"><i class="fas fa-cloud"></i> Cloud Sync | <i class="fas fa-code-branch"></i> v5.0 FINAL</div>
+                <div class="text-center text-xs text-gray-400"><i class="fas fa-cloud"></i> Cloud Sync | <i class="fas fa-code-branch"></i> v5.0</div>
             </div>
         </div>
 
@@ -168,7 +169,7 @@
                 <!-- DATA SANTRI -->
                 <div id="pageSantri" class="page hidden">
                     <div class="mb-6 md:mb-8"><h2 class="text-xl md:text-2xl font-bold text-gray-800">Data Santri</h2><p class="text-gray-500 mt-1 text-sm">Data santri dikelompokkan berdasarkan kelas (1A, 1B, 2A, dst)</p></div>
-                    <div class="flex gap-3 mb-6 flex-wrap"><button onclick="openModal('tambahModal')" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Santri</button><button onclick="openModal('massalModal')" class="btn btn-outline"><i class="fas fa-upload"></i> Import Massal</button><button onclick="syncData()" class="btn btn-outline"><i class="fas fa-cloud-download-alt"></i> Sinkronisasi</button></div>
+                    <div class="flex gap-3 mb-6 flex-wrap"><button onclick="openModal('tambahModal')" class="btn btn-primary"><i class="fas fa-plus"></i> Tambah Santri</button><button onclick="openModal('massalModal')" class="btn btn-outline"><i class="fas fa-upload"></i> Import Massal</button><button onclick="syncDataFromCloud()" class="btn btn-outline"><i class="fas fa-cloud-download-alt"></i> Sinkronisasi</button></div>
                     <div class="bg-white rounded-2xl p-4 shadow-sm border mb-6"><div class="relative"><i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i><input type="text" id="searchSantri" placeholder="🔍 Cari santri berdasarkan nama atau kelas..." class="w-full pl-12" onkeyup="renderSantri()"></div></div>
                     <div class="bg-white rounded-2xl shadow-sm border overflow-hidden" id="santriListContainer"></div>
                 </div>
@@ -233,6 +234,7 @@
 
 <script>
 // ==================== GOOGLE APPS SCRIPT CONFIGURATION ====================
+// Ganti dengan URL Google Apps Script Anda
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzbmhSkU-ad6GKV-8y2jGoaibdjcthXlA0myjvi7UvALb9EIiL2BksqPdg2A4k9R2XEdA/exec';
 
 // ==================== DATA STORAGE ====================
@@ -262,7 +264,6 @@ function getDefaultSantri() {
         praktik_shalat: false, praktik_jenazah: false, praktik_khotib: false, nilai_praktik: 'Mumtaz', 
         madin_ula: false, madin_wustho: false, 
         sikap_jamaah: false, sikap_aktif_madin: false, sikap_aktif_formal: false,
-        // TAMBAHAN 2 item agar total 56 dan 100% LULUS
         hafalan_tambahan_1: false, hafalan_tambahan_2: false
     };
 }
@@ -288,39 +289,31 @@ function updateDateTime() {
 }
 setInterval(updateDateTime, 1000);
 
-// ==================== PERBAIKAN PERSENTASE - TOTAL 56 ITEM ====================
+// ==================== FUNGSI PERSENTASE ====================
 function getProgressPercentage(s) {
     let total = 0, done = 0;
-    // Surat (3)
     if (s.hafalan_yasin) done++; total++;
     if (s.hafalan_waqiah) done++; total++;
     if (s.hafalan_mulk) done++; total++;
-    // Aurad (6)
     if (s.aurad_wirid) done++; total++;
     if (s.aurad_doa) done++; total++;
     if (s.aurad_tahlil_ringkas) done++; total++;
     if (s.aurad_tahlil_lengkap) done++; total++;
     if (s.aurad_doa_tahlil) done++; total++;
     if (s.aurad_tawasul) done++; total++;
-    // Juz30 (37)
     if (s.juz30) { let juzDone = s.juz30.filter(v=>v===true).length; done += juzDone; total += 37; }
-    // Praktik (3)
     if (s.praktik_shalat) done++; total++;
     if (s.praktik_jenazah) done++; total++;
     if (s.praktik_khotib) done++; total++;
-    // Madin (2)
     if (s.madin_ula) done++; total++;
     if (s.madin_wustho) done++; total++;
-    // Sikap (3)
     if (s.sikap_jamaah) done++; total++;
     if (s.sikap_aktif_madin) done++; total++;
     if (s.sikap_aktif_formal) done++; total++;
-    // TAMBAHAN 2 item untuk genap 56
     if (s.hafalan_tambahan_1) done++; total++;
     if (s.hafalan_tambahan_2) done++; total++;
     
     let persen = total > 0 ? Math.round((done / total) * 100) : 0;
-    console.log(`Progress: ${done}/${total} = ${persen}%`);
     return persen > 100 ? 100 : persen;
 }
 
@@ -331,14 +324,18 @@ function getStatus(s) {
     return 'Belum';
 }
 
-// ==================== CLOUD FUNCTIONS ====================
-async function loadFromCloud() {
+// ==================== FUNGSI CLOUD (SYNC KE GOOGLE SHEETS) ====================
+async function syncDataFromCloud() {
+    showLoading(true);
+    showToast('Mengambil data dari cloud...', 'info');
+    
     try {
-        showLoading(true);
         const response = await fetch(GOOGLE_SCRIPT_URL);
-        const data = await response.json();
-        if (data && data.length > 0) {
-            data.forEach(s => {
+        const cloudData = await response.json();
+        
+        if (cloudData && cloudData.length > 0) {
+            // Konversi data dari cloud
+            cloudData.forEach(s => {
                 if (s.juz30 && typeof s.juz30 === 'string') {
                     s.juz30 = s.juz30.split(',').map(v => v === 'true');
                 } else if (!s.juz30) {
@@ -351,89 +348,80 @@ async function loadFromCloud() {
                 });
                 if (s.id) s.id = parseInt(s.id);
             });
-            return data;
+            
+            santri = cloudData;
+            saveDataToLocal();
+            showToast(`✅ Berhasil sync ${santri.length} data dari cloud!`, 'success');
+            refreshAll();
+        } else {
+            // Jika cloud kosong, upload data lokal ke cloud
+            if (santri.length > 0) {
+                await uploadAllToCloud();
+                showToast('Data lokal berhasil diupload ke cloud', 'success');
+            } else {
+                showToast('Cloud kosong, silakan tambah data', 'warning');
+            }
         }
-        return null;
     } catch(e) {
-        console.error('Gagal load cloud:', e);
-        return null;
+        console.error('Gagal sync cloud:', e);
+        showToast('Gagal sync data dari cloud', 'error');
     } finally {
         showLoading(false);
     }
 }
 
-async function saveToCloud(data) {
+async function uploadAllToCloud() {
+    for (let s of santri) {
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(s)
+        });
+    }
+    return true;
+}
+
+async function saveSingleToCloud(data) {
     try {
-        showLoading(true);
         const response = await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
-        const result = await response.json();
-        showLoading(false);
-        return result.success;
+        return await response.json();
     } catch(e) {
-        console.error('Gagal simpan cloud:', e);
-        showLoading(false);
+        console.error('Gagal simpan ke cloud:', e);
         return false;
     }
 }
 
 async function updateToCloud(id, data) {
     try {
-        showLoading(true);
         const response = await fetch(GOOGLE_SCRIPT_URL, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({...data, id: id})
         });
-        const result = await response.json();
-        showLoading(false);
-        return result.success;
+        return await response.json();
     } catch(e) {
         console.error('Gagal update cloud:', e);
-        showLoading(false);
         return false;
     }
 }
 
 async function deleteFromCloud(id) {
     try {
-        showLoading(true);
         const response = await fetch(`${GOOGLE_SCRIPT_URL}?id=${id}`, { method: 'DELETE' });
-        const result = await response.json();
-        showLoading(false);
-        return result.success;
+        return await response.json();
     } catch(e) {
         console.error('Gagal hapus cloud:', e);
-        showLoading(false);
         return false;
     }
 }
 
-async function syncData() {
-    showToast('Mengambil data dari cloud...', 'info');
-    const cloudData = await loadFromCloud();
-    if (cloudData && cloudData.length > 0) {
-        const localIds = new Set(santri.map(s => s.id));
-        for (let cloudItem of cloudData) {
-            if (!localIds.has(cloudItem.id)) {
-                santri.push(cloudItem);
-            } else {
-                const index = santri.findIndex(s => s.id === cloudItem.id);
-                if (index !== -1) santri[index] = cloudItem;
-            }
-        }
-        saveData();
-        showToast('Sinkronisasi berhasil!', 'success');
-    } else {
-        showToast('Tidak ada data di cloud', 'info');
-    }
-}
-
-function loadData() {
-    let saved = localStorage.getItem('mutqin_santri_v13');
+// ==================== DATA LOCAL STORAGE ====================
+function loadDataFromLocal() {
+    let saved = localStorage.getItem('mutqin_santri_v14');
     if (saved) { try { santri = JSON.parse(saved); } catch(e) { santri = []; } }
     if (!santri.length) {
         santri = [
@@ -442,6 +430,13 @@ function loadData() {
             { id: 3, nama: 'Muhammad Rizki', kelas: '1A' }
         ];
     }
+}
+
+function saveDataToLocal() { 
+    localStorage.setItem('mutqin_santri_v14', JSON.stringify(santri)); 
+}
+
+function loadProfilData() {
     let savedProfil = localStorage.getItem('mutqin_profil_data');
     if (savedProfil) {
         try { 
@@ -456,12 +451,6 @@ function loadData() {
     document.getElementById('profilPengasuh').value = profilData.pengasuh;
     document.getElementById('profilKapondok').value = profilData.kapondok;
     document.getElementById('profilAlamat').value = profilData.alamat;
-    refreshAll();
-}
-
-function saveData() { 
-    localStorage.setItem('mutqin_santri_v13', JSON.stringify(santri)); 
-    refreshAll(); 
 }
 
 function saveProfil() {
@@ -483,6 +472,7 @@ function refreshAll() {
     } 
 }
 
+// ==================== LOGO FUNCTIONS ====================
 function loadLogo() {
     let savedLogo = localStorage.getItem('mutqin_logo');
     if (savedLogo) { logoBase64 = savedLogo; updateAllLogos(logoBase64); }
@@ -513,6 +503,7 @@ function previewLogo(input) {
 
 function clearLogo() { logoBase64 = null; updateAllLogos(null); localStorage.removeItem('mutqin_logo'); document.getElementById('logoUpload').value = ''; showToast('Logo dihapus'); }
 
+// ==================== DASHBOARD ====================
 function updateDashboard() {
     let lulus = 0, proses = 0, belum = 0, mumtaz = 0, jayyidJ = 0, jayyid = 0;
     santri.forEach(s => { let st = getStatus(s); if (st === 'Lulus') lulus++; else if (st === 'Proses') proses++; else belum++; if (s.nilai_hafalan === 'Mumtaz') mumtaz++; else if (s.nilai_hafalan === 'Jayyid Jiddan') jayyidJ++; else if (s.nilai_hafalan === 'Jayyid') jayyid++; });
@@ -530,29 +521,32 @@ function updateDashboard() {
     if (ctx2) nilaiChart = new Chart(ctx2, { type: 'bar', data: { labels: ['Mumtaz', 'Jayyid Jiddan', 'Jayyid'], datasets: [{ label: 'Jumlah Santri', data: [mumtaz, jayyidJ, jayyid], backgroundColor: '#10b981', borderRadius: 8 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } } });
 }
 
-function tambahSantri() {
+// ==================== SANTRI FUNCTIONS ====================
+async function tambahSantri() {
     let nama = document.getElementById('tambahNama').value.trim();
     let kelas = document.getElementById('tambahKelas').value;
     if (!nama) { showToast('Nama harus diisi!', 'error'); return; }
     if (!kelas) { showToast('Pilih kelas!', 'error'); return; }
+    
     let newSantri = getDefaultSantri();
     newSantri.id = Date.now();
     newSantri.nama = nama;
     newSantri.kelas = kelas;
     santri.push(newSantri);
-    saveData();
-    saveToCloud(newSantri);
-    showToast(`✅ ${nama} berhasil ditambahkan`);
+    saveDataToLocal();
+    await saveSingleToCloud(newSantri);
+    showToast(`✅ ${nama} berhasil ditambahkan & tersimpan di cloud!`);
     closeModal(null, 'tambahModal');
     document.getElementById('tambahNama').value = '';
     document.getElementById('tambahKelas').value = '';
+    refreshAll();
 }
 
 function editSantri(id) { let s = santri.find(x => x.id === id); if (!s) return; document.getElementById('editId').value = s.id; document.getElementById('editNama').value = s.nama; document.getElementById('editKelas').value = s.kelas; openModal('editModal'); }
-function updateSantri() { let id = parseInt(document.getElementById('editId').value); let idx = santri.findIndex(x => x.id === id); if (idx === -1) return; santri[idx].nama = document.getElementById('editNama').value.trim(); santri[idx].kelas = document.getElementById('editKelas').value; saveData(); updateToCloud(id, santri[idx]); showToast('✅ Data diupdate'); closeModal(null, 'editModal'); }
-function hapusSantri(id) { if (confirm('Yakin hapus santri ini?')) { santri = santri.filter(s => s.id !== id); saveData(); deleteFromCloud(id); showToast('Santri dihapus'); } }
+async function updateSantri() { let id = parseInt(document.getElementById('editId').value); let idx = santri.findIndex(x => x.id === id); if (idx === -1) return; santri[idx].nama = document.getElementById('editNama').value.trim(); santri[idx].kelas = document.getElementById('editKelas').value; saveDataToLocal(); await updateToCloud(id, santri[idx]); showToast('✅ Data diupdate & tersimpan di cloud'); closeModal(null, 'editModal'); refreshAll(); }
+async function hapusSantri(id) { if (confirm('Yakin hapus santri ini?')) { santri = santri.filter(s => s.id !== id); saveDataToLocal(); await deleteFromCloud(id); showToast('Santri dihapus dari cloud'); refreshAll(); } }
 
-function importMassal() {
+async function importMassal() {
     let text = document.getElementById('massalData').value.trim();
     if (!text) { showToast('Data kosong!', 'error'); return; }
     let lines = text.split('\n'), added = 0;
@@ -567,14 +561,12 @@ function importMassal() {
             newSantri.nama = nama; 
             newSantri.kelas = kelas; 
             santri.push(newSantri); 
-            saveToCloud(newSantri);
+            await saveSingleToCloud(newSantri);
             added++;
-        } else if (nama && kelas) {
-            showToast(`Kelas "${kelas}" tidak valid. Gunakan format: 1A, 2B, 3A, dst`, 'error');
         }
     }
-    if (added > 0) { saveData(); showToast(`✅ ${added} santri diimport`); closeModal(null, 'massalModal'); document.getElementById('massalData').value = ''; }
-    else showToast('Tidak ada data valid. Format: Nama,Kelas (contoh: Fatimah Azzahra,2B)', 'error');
+    if (added > 0) { saveDataToLocal(); showToast(`✅ ${added} santri diimport & tersimpan di cloud`); closeModal(null, 'massalModal'); document.getElementById('massalData').value = ''; refreshAll(); }
+    else showToast('Tidak ada data valid', 'error');
 }
 
 function renderSantri() {
@@ -622,6 +614,7 @@ function renderSantri() {
     container.innerHTML = html;
 }
 
+// ==================== HAFALAN FUNCTIONS ====================
 function updateSelects() {
     let select = document.getElementById('selectHafalan');
     if (select) select.innerHTML = '<option value="">-- Pilih Santri --</option>' + santri.map(s => `<option value="${s.id}">${s.nama} (Kelas ${s.kelas})</option>`).join('');
@@ -629,13 +622,11 @@ function updateSelects() {
     if (selectSertif) { let lulusan = santri.filter(s => getStatus(s) === 'Lulus'); selectSertif.innerHTML = '<option value="">-- Pilih Santri Lulus --</option>' + lulusan.map(s => `<option value="${s.id}">${s.nama}</option>`).join(''); }
 }
 
-// ==================== PERBAIKAN PENCARIAN HAFALAN ====================
 function filterHafalan() { 
     let q = document.getElementById('searchHafalan').value.toLowerCase().trim(); 
     let select = document.getElementById('selectHafalan'); 
     if (!select) return;
     let options = select.querySelectorAll('option');
-    let firstOption = options[0];
     options.forEach(opt => { 
         if (opt.value && opt.text.toLowerCase().includes(q)) {
             opt.style.display = 'block'; 
@@ -647,7 +638,7 @@ function filterHafalan() {
     });
 }
 
-function simpanKategori(kategori) {
+async function simpanKategori(kategori) {
     if (!currentSantriId) { showToast('Pilih santri dulu', 'error'); return; }
     let idx = santri.findIndex(x => x.id === currentSantriId);
     if (idx === -1) return;
@@ -686,10 +677,11 @@ function simpanKategori(kategori) {
         santri[idx].hafalan_tambahan_1 = document.getElementById('hafalan_tambahan_1')?.checked || false;
         santri[idx].hafalan_tambahan_2 = document.getElementById('hafalan_tambahan_2')?.checked || false;
     }
-    saveData();
-    updateToCloud(currentSantriId, santri[idx]);
-    showToast(`✅ Nilai ${kategori} tersimpan`);
+    saveDataToLocal();
+    await updateToCloud(currentSantriId, santri[idx]);
+    showToast(`✅ Nilai ${kategori} tersimpan & sync ke cloud`);
     updateFormValues(currentSantriId);
+    refreshAll();
 }
 
 function updateFormValues(id) {
@@ -730,54 +722,54 @@ function updateFormValues(id) {
     if (nilaiPraktik && s.nilai_praktik) nilaiPraktik.value = s.nilai_praktik;
 }
 
-function checkAllSurat() {
+async function checkAllSurat() {
     let cbs = ['hafalan_yasin', 'hafalan_waqiah', 'hafalan_mulk'];
     cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = true; });
     document.getElementById('nilai_hafalan').value = 'Mumtaz';
-    simpanKategori('surat');
+    await simpanKategori('surat');
 }
 
-function checkAllAurad() {
+async function checkAllAurad() {
     let cbs = ['aurad_wirid', 'aurad_doa', 'aurad_tahlil_ringkas', 'aurad_tahlil_lengkap', 'aurad_doa_tahlil', 'aurad_tawasul'];
     cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = true; });
     document.getElementById('nilai_aurad').value = 'Mumtaz';
-    simpanKategori('aurad');
+    await simpanKategori('aurad');
 }
 
-function checkAllJuz30() {
+async function checkAllJuz30() {
     let selectAll = document.getElementById('selectAllJuz30');
     for (let i = 0; i < 37; i++) { let cb = document.getElementById(`juz_cb_${i}`); if (cb) cb.checked = selectAll.checked; }
     if (selectAll.checked) document.getElementById('nilai_juz30').value = 'Mumtaz';
-    simpanKategori('juz30');
+    await simpanKategori('juz30');
 }
 
-function checkAllPraktik() {
+async function checkAllPraktik() {
     let cbs = ['praktik_shalat', 'praktik_jenazah', 'praktik_khotib'];
     cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = true; });
     document.getElementById('nilai_praktik').value = 'Mumtaz';
-    simpanKategori('praktik');
+    await simpanKategori('praktik');
 }
 
-function checkAllMadin() {
+async function checkAllMadin() {
     let cbs = ['madin_ula'];
     let wustho = document.getElementById('madin_wustho');
     if (wustho && wustho.style.display !== 'none') cbs.push('madin_wustho');
     cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = true; });
-    simpanKategori('madin');
+    await simpanKategori('madin');
 }
 
-function checkAllSikap() {
+async function checkAllSikap() {
     let cbs = ['sikap_jamaah', 'sikap_aktif_madin', 'sikap_aktif_formal'];
     cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = true; });
-    simpanKategori('sikap');
+    await simpanKategori('sikap');
 }
 
-function checkAllTambahan() {
+async function checkAllTambahan() {
     let cb1 = document.getElementById('hafalan_tambahan_1');
     let cb2 = document.getElementById('hafalan_tambahan_2');
     if (cb1) cb1.checked = true;
     if (cb2) cb2.checked = true;
-    simpanKategori('tambahan');
+    await simpanKategori('tambahan');
 }
 
 function loadHafalan() {
@@ -818,7 +810,7 @@ function loadHafalan() {
     `;
 }
 
-// SERTIFIKAT
+// ==================== SERTIFIKAT ====================
 function generateSertifikat() {
     let id = document.getElementById('selectSertifikat').value;
     if (!id) { document.getElementById('sertifikatPreview').classList.add('hidden'); return; }
@@ -861,6 +853,7 @@ function downloadSertifikat() {
     }).catch(() => showToast('Gagal download', 'error')); 
 }
 
+// ==================== LAPORAN ====================
 function renderLaporan() {
     let tbody = document.getElementById('laporanTable');
     if (!tbody) return;
@@ -886,10 +879,11 @@ function printLaporan() {
     let total = santri.length || 1, pLulus = Math.round((lulus / total) * 100), pProses = Math.round((proses / total) * 100), pBelum = Math.round((belum / total) * 100);
     let win = window.open();
     win.document.write(`<html><head><title>Laporan Mutqin BM</title><style>body{font-family:Inter,Arial,sans-serif;padding:30px}h1{color:#065f46;text-align:center}.stats{display:flex;gap:15px;margin-bottom:30px;flex-wrap:wrap}.stat-card{flex:1;padding:15px;border-radius:12px;color:white;text-align:center;min-width:150px}.stat-card.green{background:linear-gradient(135deg,#10b981,#059669)}.stat-card.orange{background:linear-gradient(135deg,#f59e0b,#ea580c)}.stat-card.red{background:linear-gradient(135deg,#ef4444,#dc2626)}.stat-card .number{font-size:32px;font-weight:bold}.progress-bar-bg{background:rgba(255,255,255,0.3);height:10px;border-radius:10px;margin-top:10px;width:100%}.progress-fill{height:100%;border-radius:10px}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ddd;padding:10px;text-align:left}th{background:#065f46;color:white}.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:bold;display:inline-block}.badge-success{background:#d1fae5;color:#065f46}.badge-warning{background:#fed7aa;color:#9a3412}.badge-danger{background:#fee2e2;color:#991b1b}.progress-bar-sm{height:8px;background:#e5e7eb;border-radius:10px;width:100px;display:inline-block;margin-right:8px}.progress-fill-sm{height:100%;border-radius:10px;background:#10b981}@media print{.no-print{display:none}body{padding:0}}</style></head><body><div style="text-align:center;margin-bottom:30px"><h1>📊 LAPORAN HAFALAN SANTRI</h1><p>${profilData.nama}</p><p>Tanggal: ${new Date().toLocaleDateString('id-ID')}</p></div><div class="stats"><div class="stat-card green"><div class="number">${lulus}</div><div>Lulus</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${pLulus}%;background:white"></div></div><div>${pLulus}%</div></div><div class="stat-card orange"><div class="number">${proses}</div><div>Proses</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${pProses}%;background:white"></div></div><div>${pProses}%</div></div><div class="stat-card red"><div class="number">${belum}</div><div>Belum</div><div class="progress-bar-bg"><div class="progress-fill" style="width:${pBelum}%;background:white"></div></div><div>${pBelum}%</div></div></div>
-    <table><thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Nilai</th><th>Persentase</th><th>Status</th></tr></thead><tbody>${santri.map((s,i)=>`<tr><td>${i+1}</td><td>${s.nama}</td><td>Kelas ${s.kelas}</td><td>${s.nilai_hafalan || '-'}</td><td><div style="display:flex;align-items:center"><div class="progress-bar-sm"><div class="progress-fill-sm" style="width:${getProgressPercentage(s)}%"></div></div> ${getProgressPercentage(s)}%</div></td><td><span class="badge ${getStatus(s) === 'Lulus' ? 'badge-success' : (getStatus(s) === 'Proses' ? 'badge-warning' : 'badge-danger')}">${getStatus(s)}</span></td></tr>`).join('')}</tbody></table></body></html>`);
+    <tr><thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Nilai</th><th>Persentase</th><th>Status</th></tr></thead><tbody>${santri.map((s,i)=>`<tr><td>${i+1}</td><td>${s.nama}</td><td>Kelas ${s.kelas}</td><td>${s.nilai_hafalan || '-'}</td><td><div style="display:flex;align-items:center"><div class="progress-bar-sm"><div class="progress-fill-sm" style="width:${getProgressPercentage(s)}%"></div></div> ${getProgressPercentage(s)}%</div></td><td><span class="badge ${getStatus(s) === 'Lulus' ? 'badge-success' : (getStatus(s) === 'Proses' ? 'badge-warning' : 'badge-danger')}">${getStatus(s)}</span></td></tr>`).join('')}</tbody></table></body></html>`);
     win.document.close(); win.print();
 }
 
+// ==================== NAVIGATION ====================
 function showPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
     document.getElementById(`page${page.charAt(0).toUpperCase() + page.slice(1)}`).classList.remove('hidden');
@@ -906,6 +900,7 @@ function toggleSidebar() { document.getElementById('sidebar').classList.toggle('
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
 function closeModal(event, id) { if (!event || event.target === document.getElementById(id)) { document.getElementById(id).classList.add('hidden'); document.body.style.overflow = 'auto'; } }
 
+// ==================== LOGIN ====================
 function doLogin() {
     let u = document.getElementById('loginUser').value, p = document.getElementById('loginPass').value;
     if ((u === 'admin' && p === 'admin123') || (u === 'guru' && p === 'guru123')) {
@@ -914,13 +909,21 @@ function doLogin() {
         document.getElementById('mainApp').classList.remove('hidden');
         document.getElementById('userRoleText').innerHTML = `<i class="fas fa-user-circle mr-1"></i> ${u === 'admin' ? 'Administrator' : 'Guru'}`;
         document.getElementById('sidebarRole').innerHTML = `<i class="fas fa-user-circle mr-1"></i> ${u === 'admin' ? 'Administrator' : 'Guru'}`;
-        loadData(); loadLogo(); showToast(`Selamat datang, ${u === 'admin' ? 'Administrator' : 'Guru'}!`);
-        showToast('💾 Data tersimpan di Cloud! Bisa diakses dari semua device', 'info');
+        loadDataFromLocal();
+        loadProfilData();
+        loadLogo();
+        // Auto sync dari cloud saat login
+        syncDataFromCloud();
+        showToast(`Selamat datang, ${u === 'admin' ? 'Administrator' : 'Guru'}!`);
+        showToast('☁️ Data otomatis sync dari cloud', 'info');
     } else { let err = document.getElementById('loginError'); err.innerText = 'Username/Password salah!'; err.classList.remove('hidden'); setTimeout(() => err.classList.add('hidden'), 2000); }
 }
 function doLogout() { document.getElementById('mainApp').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); document.getElementById('loginUser').value = ''; document.getElementById('loginPass').value = ''; }
 
-loadData(); loadLogo();
+// Start aplikasi
+loadDataFromLocal();
+loadProfilData();
+loadLogo();
 </script>
 </body>
 </html>
