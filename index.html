@@ -83,9 +83,14 @@
         </div>
         <div id="loginError" class="hidden bg-red-50 text-red-600 p-3 rounded-xl mb-4 text-center text-sm"></div>
         <div class="space-y-4">
-            <div><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-user mr-2 text-emerald-600"></i>Username</label><input type="text" id="loginUser" class="w-full" placeholder="Masukkan username"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-lock mr-2 text-emerald-600"></i>Password</label><input type="password" id="loginPass" class="w-full" placeholder="Masukkan password"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-user mr-2 text-emerald-600"></i>Username</label><input type="text" id="loginUser" class="w-full" placeholder="admin / guru"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-lock mr-2 text-emerald-600"></i>Password</label><input type="password" id="loginPass" class="w-full" placeholder="******"></div>
             <button onclick="doLogin()" class="btn btn-primary w-full py-3 justify-center text-base"><i class="fas fa-sign-in-alt mr-2"></i> Masuk Dashboard</button>
+        </div>
+        <div class="mt-4 text-center text-xs text-gray-400">
+            <span class="inline-block px-3 py-1 bg-gray-100 rounded-lg">👑 admin / admin123</span>
+            <span class="mx-2">•</span>
+            <span class="inline-block px-3 py-1 bg-gray-100 rounded-lg">👨‍🏫 guru / guru123</span>
         </div>
     </div>
 </div>
@@ -624,15 +629,13 @@ function updateSelects() {
     if (selectSertif) { let lulusan = santri.filter(s => getStatus(s) === 'Lulus'); selectSertif.innerHTML = '<option value="">-- Pilih Santri Lulus --</option>' + lulusan.map(s => `<option value="${s.id}">${s.nama}</option>`).join(''); }
 }
 
-// ==================== PERBAIKAN PENCARIAN HAFALAN (PASTI BERFUNGSI) ====================
+// ==================== PERBAIKAN PENCARIAN HAFALAN ====================
 function filterHafalan() { 
     let searchText = document.getElementById('searchHafalan').value.toLowerCase().trim(); 
     let select = document.getElementById('selectHafalan'); 
     if (!select) return;
     
     let options = select.querySelectorAll('option');
-    let hasVisible = false;
-    
     options.forEach(opt => { 
         if (opt.value === "") {
             opt.style.display = 'block';
@@ -640,13 +643,11 @@ function filterHafalan() {
         }
         if (opt.text.toLowerCase().includes(searchText)) {
             opt.style.display = 'block';
-            hasVisible = true;
         } else {
             opt.style.display = 'none';
         }
     });
     
-    // Reset pilihan jika yang dipilih tidak terlihat
     let selectedOpt = select.options[select.selectedIndex];
     if (selectedOpt && selectedOpt.value !== "" && selectedOpt.style.display === 'none') {
         select.value = "";
@@ -658,16 +659,14 @@ function filterHafalan() {
 // Centang semua (TANPA AUTO SIMPAN)
 function checkAllSurat() {
     let cbs = ['hafalan_yasin', 'hafalan_waqiah', 'hafalan_mulk'];
-    let allChecked = cbs.every(id => document.getElementById(id)?.checked);
-    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = !allChecked; });
-    if (!allChecked) document.getElementById('nilai_hafalan').value = 'Mumtaz';
+    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = true; });
+    document.getElementById('nilai_hafalan').value = 'Mumtaz';
 }
 
 function checkAllAurad() {
     let cbs = ['aurad_wirid', 'aurad_doa', 'aurad_tahlil_ringkas', 'aurad_tahlil_lengkap', 'aurad_doa_tahlil', 'aurad_tawasul'];
-    let allChecked = cbs.every(id => document.getElementById(id)?.checked);
-    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = !allChecked; });
-    if (!allChecked) document.getElementById('nilai_aurad').value = 'Mumtaz';
+    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = true; });
+    document.getElementById('nilai_aurad').value = 'Mumtaz';
 }
 
 function checkAllJuz30() {
@@ -678,32 +677,28 @@ function checkAllJuz30() {
 
 function checkAllPraktik() {
     let cbs = ['praktik_shalat', 'praktik_jenazah', 'praktik_khotib'];
-    let allChecked = cbs.every(id => document.getElementById(id)?.checked);
-    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = !allChecked; });
-    if (!allChecked) document.getElementById('nilai_praktik').value = 'Mumtaz';
+    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = true; });
+    document.getElementById('nilai_praktik').value = 'Mumtaz';
 }
 
 function checkAllMadin() {
     let cbs = ['madin_ula'];
     let wustho = document.getElementById('madin_wustho');
     if (wustho && wustho.style.display !== 'none') cbs.push('madin_wustho');
-    let allChecked = cbs.every(id => document.getElementById(id)?.checked);
-    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = !allChecked; });
+    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = true; });
 }
 
 function checkAllSikap() {
     let cbs = ['sikap_jamaah', 'sikap_aktif_madin', 'sikap_aktif_formal'];
-    let allChecked = cbs.every(id => document.getElementById(id)?.checked);
-    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = !allChecked; });
+    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = true; });
 }
 
 function checkAllTambahan() {
     let cbs = ['hafalan_tambahan_1', 'hafalan_tambahan_2', 'hafalan_tambahan_3', 'hafalan_tambahan_4'];
-    let allChecked = cbs.every(id => document.getElementById(id)?.checked);
-    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = !allChecked; });
+    cbs.forEach(id => { let cb = document.getElementById(id); if (cb) cb.checked = true; });
 }
 
-// Simpan data setelah selesai centang
+// Simpan semua data
 async function simpanSemuaKategori() {
     if (!currentSantriId) { showToast('Pilih santri dulu', 'error'); return; }
     
@@ -921,7 +916,7 @@ function printLaporan() {
                 else if(status==='Proses') proses++;
                 else belum++;
                 let badgeClass = status==='Lulus'?'badge-success':(status==='Proses'?'badge-warning':'badge-danger');
-                html += `<tr><td>\${i+1}</td><td>\${s.nama}</td><td>\${s.kelas}</td><td>\${s.nilai_hafalan || '-'}</td><td><div style="display:flex;align-items:center"><div class="progress-bar-sm"><div class="progress-fill-sm" style="width:\${persen}%"></div></div> \${persen}%</div></td><td><span class="badge \${badgeClass}">\${status}</span></td></tr>`;
+                html += `<tr><td>\${i+1}</td><td>\${s.nama}</td><td>\${s.kelas}</td><td>\${s.nilai_hafalan || '-'}</td><td><div style="display:flex;align-items:center"><div class="progress-bar-sm"><div class="progress-fill-sm" style="width:\${persen}%"></div></div> \${persen}%</div></td><td><span class="badge \${badgeClass}">\${status}</span></td><\/tr>`;
             });
             document.getElementById('printTableBody').innerHTML = html;
             let total = santriData.length || 1;
