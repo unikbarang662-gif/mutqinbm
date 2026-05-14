@@ -21,7 +21,7 @@
         .nav-item:hover { background: #d1fae5; }
         .nav-item.active { background: #10b981; color: white; }
         .btn-primary { background: #10b981; color: white; padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
-        .btn-primary:hover { background: #059669; transform: scale(1.02); }
+        .btn-primary:hover { background: #059669; }
         .btn-outline { background: white; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 10px; cursor: pointer; transition: 0.2s; }
         .btn-outline:hover { border-color: #10b981; color: #10b981; }
         .badge-success { background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 12px; display: inline-block; }
@@ -145,10 +145,6 @@
                     <div class="bg-white rounded-xl p-4 shadow"><canvas id="statusChart" height="200"></canvas></div>
                     <div class="bg-white rounded-xl p-4 shadow"><canvas id="nilaiChart" height="200"></canvas></div>
                 </div>
-                <div class="bg-white rounded-xl p-4 shadow mt-6">
-                    <h3 class="font-semibold mb-3">📈 Grafik Perkembangan Santri (30 Hari Terakhir)</h3>
-                    <canvas id="perkembanganChart" height="150"></canvas>
-                </div>
             </div>
 
             <!-- Data Santri -->
@@ -164,13 +160,13 @@
                 <h2 class="text-xl font-bold mb-4">Hafalan & Penilaian</h2>
                 <div class="bg-white rounded-xl shadow">
                     <div class="p-4 border-b bg-gray-50">
-                        <label class="font-semibold block mb-2">Pilih Santri</label>
+                        <label class="font-semibold block mb-2">📋 Pilih Santri</label>
                         <div class="relative">
                             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                            <input type="text" id="searchSantriHafalan" placeholder="Cari nama santri atau kelas..." class="w-full pl-10 p-2 border rounded-lg" onkeyup="filterSantriByKelas()" autocomplete="off">
+                            <input type="text" id="searchSantriHafalan" placeholder="Cari nama santri atau kelas..." class="w-full pl-10 p-2 border rounded-lg" onkeyup="renderSantriHafalanGroup()" autocomplete="off">
                             <i class="fas fa-times-circle absolute right-3 top-3 text-gray-400 cursor-pointer" onclick="clearSearchHafalan()"></i>
                         </div>
-                        <div id="santriListHafalan" class="santri-list-group mt-2 hidden"></div>
+                        <div id="santriListHafalan" class="santri-list-group mt-2"></div>
                     </div>
                     <div id="formHafalan" class="hidden p-4"></div>
                 </div>
@@ -332,19 +328,18 @@ let currentUserRole = null;
 let currentSantriId = null;
 let logoBase64 = null;
 let chartInstances = {};
-let perkembanganData = [];
 let darkMode = localStorage.getItem('darkMode') === 'true';
 
 let profilData = { 
     nama: 'Pondok Pesantren Bahrul Maghfiroh', 
-    pengasuh: 'KH. Moch. Imron, S.Ag., M.Pd', 
-    kapondok: 'Dr. H. Ahmad Fauzi, M.Ag', 
-    alamat: 'Jl. Raya Pondok Pesantren No. 123, Desa Bahrul Maghfiroh, Kec. Tumpang, Kab. Malang, Jawa Timur' 
+    pengasuh: '', 
+    kapondok: '', 
+    alamat: '' 
 };
 
 const daftarJuz = ['An-Naba','An-Nazi\'at','Abasa','At-Takwir','Al-Infitar','Al-Mutaffifin','Al-Insyiqaq','Al-Buruj','At-Tariq','Al-A\'la','Al-Ghasyiyah','Al-Fajr','Al-Balad','Asy-Syams','Al-Lail','Ad-Duha','Asy-Syarh','At-Tin','Al-Alaq','Al-Qadr','Al-Bayyinah','Az-Zalzalah','Al-Adiyat','Al-Qari\'ah','At-Takasur','Al-Asr','Al-Humazah','Al-Fil','Quraisy','Al-Ma\'un','Al-Kausar','Al-Kafirun','An-Nasr','Al-Lahab','Al-Ikhlas','Al-Falaq','An-Nas'];
 
-// TOTAL ITEM = 54 (3 surat + 6 aurad + 37 juz + 3 praktik + 2 madin + 3 sikap = 54)
+// TOTAL 54 ITEM: 3 surat + 6 aurad + 37 juz + 3 praktik + 2 madin + 3 sikap = 54
 function hitungProgress(s) {
     let total = 54;
     let done = 0;
@@ -609,18 +604,17 @@ function setSyncStatus(text, isOnline) {
 
 // ==================== DATA LOCAL ====================
 function loadData() {
-    let saved = localStorage.getItem('mutqin_santri_final_v2');
+    let saved = localStorage.getItem('mutqin_santri_final_v3');
     if (saved) { try { santri = JSON.parse(saved); } catch(e) { santri = []; } }
     if (!santri.length) {
-        let contohJuz = Array(37).fill(true);
         santri = [
-            { id: 1, nama: 'Ahmad Maulana', kelas: '3A', yasin: true, waqiah: true, mulk: true, nilaiSurat: 'Mumtaz', wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, nilaiAurad: 'Mumtaz', juz30: [...contohJuz], nilaiJuz: 'Mumtaz', praktikShalat: true, praktikJenazah: true, praktikKhotib: true, nilaiPraktik: 'Mumtaz', madinUla: true, madinWustho: true, sikapJamaah: true, sikapMadin: true, sikapFormal: true, tanggalUpdate: new Date().toISOString() },
+            { id: 1, nama: 'Ahmad Maulana', kelas: '3A', yasin: true, waqiah: true, mulk: true, nilaiSurat: 'Mumtaz', wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, nilaiAurad: 'Mumtaz', juz30: Array(37).fill(true), nilaiJuz: 'Mumtaz', praktikShalat: true, praktikJenazah: true, praktikKhotib: true, nilaiPraktik: 'Mumtaz', madinUla: true, madinWustho: true, sikapJamaah: true, sikapMadin: true, sikapFormal: true, tanggalUpdate: new Date().toISOString() },
             { id: 2, nama: 'Fatimah Azzahra', kelas: '2B', yasin: true, nilaiSurat: 'Jayyid Jiddan', juz30: Array(37).fill(false), tanggalUpdate: new Date().toISOString() },
             { id: 3, nama: 'Muhammad Rizki', kelas: '1A', juz30: Array(37).fill(false), tanggalUpdate: new Date().toISOString() }
         ];
     }
     
-    let savedProfil = localStorage.getItem('mutqin_profil_final_v2');
+    let savedProfil = localStorage.getItem('mutqin_profil_final_v3');
     if (savedProfil) { try { let p = JSON.parse(savedProfil); profilData = p; } catch(e) {} }
     
     document.getElementById('profilNama').value = profilData.nama || 'Pondok Pesantren Bahrul Maghfiroh';
@@ -628,16 +622,16 @@ function loadData() {
     document.getElementById('profilKapondok').value = profilData.kapondok || '';
     document.getElementById('profilAlamat').value = profilData.alamat || '';
     
-    let savedLogo = localStorage.getItem('mutqin_logo_final_v2');
+    let savedLogo = localStorage.getItem('mutqin_logo_final_v3');
     if (savedLogo) { logoBase64 = savedLogo; updateLogoDisplay(logoBase64); }
     
     refreshAll();
 }
 
 function saveData() { 
-    localStorage.setItem('mutqin_santri_final_v2', JSON.stringify(santri)); 
-    localStorage.setItem('mutqin_profil_final_v2', JSON.stringify(profilData)); 
-    if(logoBase64) localStorage.setItem('mutqin_logo_final_v2', logoBase64);
+    localStorage.setItem('mutqin_santri_final_v3', JSON.stringify(santri)); 
+    localStorage.setItem('mutqin_profil_final_v3', JSON.stringify(profilData)); 
+    if(logoBase64) localStorage.setItem('mutqin_logo_final_v3', logoBase64);
     refreshAll(); 
     showToast('Data tersimpan di lokal');
     setTimeout(() => { syncToCloud().catch(e => console.log('Auto sync gagal')); }, 500);
@@ -650,7 +644,7 @@ function saveProfil() {
         kapondok: document.getElementById('profilKapondok').value, 
         alamat: document.getElementById('profilAlamat').value 
     }; 
-    localStorage.setItem('mutqin_profil_final_v2', JSON.stringify(profilData)); 
+    localStorage.setItem('mutqin_profil_final_v3', JSON.stringify(profilData)); 
     saveProfilToCloud();
     showToast('Profil berhasil disimpan'); 
 }
@@ -672,7 +666,7 @@ function uploadLogo(input) {
         r.onload=e=>{ 
             logoBase64=e.target.result; 
             updateLogoDisplay(logoBase64); 
-            localStorage.setItem('mutqin_logo_final_v2',logoBase64); 
+            localStorage.setItem('mutqin_logo_final_v3',logoBase64); 
             showToast('Logo tersimpan'); 
         }; 
         r.readAsDataURL(input.files[0]); 
@@ -682,7 +676,7 @@ function uploadLogo(input) {
 function clearLogo() { 
     logoBase64=null; 
     updateLogoDisplay(null); 
-    localStorage.removeItem('mutqin_logo_final_v2'); 
+    localStorage.removeItem('mutqin_logo_final_v3'); 
     showToast('Logo dihapus'); 
 }
 
@@ -760,7 +754,7 @@ function downloadSertifikat(){
 function refreshAll() { 
     updateDashboard(); 
     renderSantri(); 
-    renderSantriListHafalan();
+    renderSantriHafalanGroup();
     updateSelectSertifikat(); 
     updateLaporanContent(); 
     updateFilterKelas(); 
@@ -835,6 +829,7 @@ function printFullLaporan() {
     printWindow.document.close(); 
 }
 
+// ==================== DATA SANTRI (RENDER GROUP BY KELAS) ====================
 function renderSantri() { 
     let search=document.getElementById('searchSantri')?.value.toLowerCase()||''; 
     let filtered=santri.filter(s=>s.nama.toLowerCase().includes(search)||s.kelas.toLowerCase().includes(search)); 
@@ -858,21 +853,20 @@ function renderSantri() {
     container.innerHTML=html; 
 }
 
-function renderSantriListHafalan() {
+// ==================== HAFALAN & PENILAIAN (GROUP BY KELAS) ====================
+function renderSantriHafalanGroup() {
     let searchTerm = document.getElementById('searchSantriHafalan')?.value.toLowerCase() || '';
     let listDiv = document.getElementById('santriListHafalan');
     if(!listDiv) return;
     
-    if (searchTerm === '') {
-        listDiv.classList.add('hidden');
-        return;
+    // Tampilkan semua santri jika tidak ada pencarian
+    let filtered = santri;
+    if (searchTerm !== '') {
+        filtered = santri.filter(s => s.nama.toLowerCase().includes(searchTerm) || s.kelas.toLowerCase().includes(searchTerm));
     }
-    
-    let filtered = santri.filter(s => s.nama.toLowerCase().includes(searchTerm) || s.kelas.toLowerCase().includes(searchTerm));
     
     if (filtered.length === 0) {
         listDiv.innerHTML = '<div class="p-6 text-center text-gray-400"><i class="fas fa-search text-3xl mb-2 block"></i>Tidak ditemukan</div>';
-        listDiv.classList.remove('hidden');
         return;
     }
     
@@ -917,7 +911,6 @@ function renderSantriListHafalan() {
     }
     
     listDiv.innerHTML = html;
-    listDiv.classList.remove('hidden');
     
     document.querySelectorAll('#santriListHafalan .santri-item').forEach(item => {
         item.addEventListener('click', function() {
@@ -925,19 +918,14 @@ function renderSantriListHafalan() {
             let nama = this.dataset.nama;
             document.getElementById('searchSantriHafalan').value = nama;
             currentSantriId = id;
-            listDiv.classList.add('hidden');
             loadFormHafalan();
         });
     });
 }
 
-function filterSantriByKelas() {
-    renderSantriListHafalan();
-}
-
 function clearSearchHafalan() {
     document.getElementById('searchSantriHafalan').value = '';
-    document.getElementById('santriListHafalan').classList.add('hidden');
+    renderSantriHafalanGroup();
 }
 
 function updateSelectSertifikat(){ 
@@ -963,6 +951,7 @@ function tambahSantri(){
     document.getElementById('tambahNama').value=''; 
     document.getElementById('tambahKelas').value=''; 
     showToast(`Santri ${nama} ditambahkan`); 
+    renderSantriHafalanGroup();
 }
 
 function editSantri(id){ 
@@ -975,6 +964,7 @@ function editSantri(id){
     if(kelasBaru) s.kelas=kelasBaru; 
     saveData(); 
     showToast('Data diupdate'); 
+    renderSantriHafalanGroup();
 }
 
 function hapusSantri(id){ 
@@ -983,6 +973,7 @@ function hapusSantri(id){
         santri=santri.filter(s=>s.id!==id); 
         saveData(); 
         showToast('Santri dihapus'); 
+        renderSantriHafalanGroup();
     } 
 }
 
@@ -1012,11 +1003,13 @@ function importMassal(){
         closeModal(null,'massalModal'); 
         document.getElementById('massalData').value=''; 
         showToast(`Berhasil import ${added} santri`); 
+        renderSantriHafalanGroup();
     } else { 
         showToast('Tidak ada data valid. Format: Nama,Kelas','error'); 
     } 
 }
 
+// ==================== FORM HAFALAN ====================
 function loadFormHafalan() {
     if (!currentSantriId) return;
     let s = santri.find(x => x.id === currentSantriId);
@@ -1093,8 +1086,10 @@ function simpanSurat(){
     santri[idx].nilaiSurat=document.getElementById('nilaiSurat').value; 
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
-    showToast('✅ Surat tersimpan - Progress: ' + hitungProgress(santri[idx]) + '%'); 
+    let prog = hitungProgress(santri[idx]);
+    showToast('✅ Surat tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
     loadFormHafalan(); 
+    renderSantriHafalanGroup();
 }
 
 function simpanAurad(){ 
@@ -1109,8 +1104,10 @@ function simpanAurad(){
     santri[idx].nilaiAurad=document.getElementById('nilaiAurad').value; 
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
-    showToast('✅ Aurad tersimpan - Progress: ' + hitungProgress(santri[idx]) + '%'); 
+    let prog = hitungProgress(santri[idx]);
+    showToast('✅ Aurad tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
     loadFormHafalan(); 
+    renderSantriHafalanGroup();
 }
 
 function simpanJuz(){ 
@@ -1120,8 +1117,10 @@ function simpanJuz(){
     santri[idx].nilaiJuz=document.getElementById('nilaiJuz').value; 
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
-    showToast('✅ Juz 30 tersimpan - Progress: ' + hitungProgress(santri[idx]) + '%'); 
+    let prog = hitungProgress(santri[idx]);
+    showToast('✅ Juz 30 tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
     loadFormHafalan(); 
+    renderSantriHafalanGroup();
 }
 
 function simpanPraktik(){ 
@@ -1133,8 +1132,10 @@ function simpanPraktik(){
     santri[idx].nilaiPraktik=document.getElementById('nilaiPraktik').value; 
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
-    showToast('✅ Praktik tersimpan - Progress: ' + hitungProgress(santri[idx]) + '%'); 
+    let prog = hitungProgress(santri[idx]);
+    showToast('✅ Praktik tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
     loadFormHafalan(); 
+    renderSantriHafalanGroup();
 }
 
 function simpanMadin(){ 
@@ -1145,8 +1146,10 @@ function simpanMadin(){
     if(wustho)santri[idx].madinWustho=wustho.checked; 
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
-    showToast('✅ Madin tersimpan - Progress: ' + hitungProgress(santri[idx]) + '%'); 
+    let prog = hitungProgress(santri[idx]);
+    showToast('✅ Madin tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
     loadFormHafalan(); 
+    renderSantriHafalanGroup();
 }
 
 function simpanSikap(){ 
@@ -1157,8 +1160,10 @@ function simpanSikap(){
     santri[idx].sikapFormal=document.getElementById('sikapFormal').checked; 
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
-    showToast('✅ Sikap tersimpan - Progress: ' + hitungProgress(santri[idx]) + '%'); 
+    let prog = hitungProgress(santri[idx]);
+    showToast('✅ Sikap tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
     loadFormHafalan(); 
+    renderSantriHafalanGroup();
 }
 
 function toggleAllSurat(){ let c=['yasin','waqiah','mulk']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); if(!all)document.getElementById('nilaiSurat').value='Mumtaz'; }
@@ -1178,11 +1183,9 @@ function showPage(page){
     if(page==='laporan') updateLaporanContent(); 
     if(page==='sertifikat') updateSelectSertifikat(); 
     if(page==='hafalan'){ 
-        document.getElementById('searchSantriHafalan').value=''; 
-        document.getElementById('santriListHafalan').classList.add('hidden'); 
+        renderSantriHafalanGroup();
         document.getElementById('formHafalan').classList.add('hidden'); 
         currentSantriId=null; 
-        renderSantriListHafalan();
     } 
     if(window.innerWidth<1024) document.getElementById('sidebar').classList.add('-translate-x-full'); 
 }
