@@ -27,17 +27,20 @@
         .badge-success { background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 12px; display: inline-block; }
         .badge-warning { background: #fed7aa; color: #9a3412; padding: 4px 10px; border-radius: 20px; font-size: 12px; display: inline-block; }
         .badge-danger { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 12px; display: inline-block; }
+        .badge-info { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 12px; display: inline-block; }
         .progress-bar { width: 80px; height: 6px; background: #e5e7eb; border-radius: 10px; overflow: hidden; }
         .progress-fill { height: 100%; background: #10b981; border-radius: 10px; }
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .modal-content { background: white; border-radius: 20px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 20px; }
-        .santri-list-group { max-height: 400px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 12px; margin-top: 5px; background: white; }
+        .santri-list-group { max-height: 500px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 12px; margin-top: 5px; background: white; }
         .kelas-group { border-bottom: 1px solid #e5e7eb; }
-        .kelas-title { background: #f0fdf4; padding: 10px 15px; font-weight: 700; color: #065f46; border-bottom: 1px solid #d1fae5; font-size: 14px; }
-        .santri-item { padding: 10px 15px; padding-left: 35px; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .kelas-title { background: #f0fdf4; padding: 12px 16px; font-weight: 700; color: #065f46; border-bottom: 1px solid #d1fae5; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .santri-item { padding: 12px 16px; padding-left: 35px; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
         .santri-item:hover { background: #d1fae5; }
         .santri-item .nama { font-weight: 500; }
         .santri-item .status-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; }
+        .santri-item .progress-small { width: 60px; height: 4px; background: #e5e7eb; border-radius: 10px; overflow: hidden; display: inline-block; margin-left: 8px; }
+        .santri-item .progress-fill-small { height: 100%; background: #10b981; }
         .certificate-box { background: white; border: 8px double #059669; border-radius: 16px; padding: 30px; }
         .datetime-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 20px; color: white; margin-bottom: 20px; }
         .date-large { font-size: 2rem; font-weight: bold; }
@@ -58,10 +61,11 @@
         .sync-status.online { color: #10b981; }
         .sync-status.offline { color: #f59e0b; }
         .dark-mode .sync-status { background: #16213e; color: #eee; }
-        .filter-hafalan { position: relative; }
-        .filter-hafalan input { padding-right: 40px; }
         .kelas-badge { background: #e0e7ff; color: #1e40af; padding: 2px 8px; border-radius: 20px; font-size: 10px; margin-left: 8px; }
         .dark-mode .kelas-badge { background: #1e3a5f; color: #93c5fd; }
+        .role-badge { background: #e0e7ff; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .role-badge.admin { background: #dcfce7; color: #166534; }
+        .role-badge.guru { background: #fef3c7; color: #92400e; }
     </style>
 </head>
 <body class="bg-gray-100" id="appBody">
@@ -77,10 +81,21 @@
             <p class="text-gray-500 text-sm">Pondok Pesantren Bahrul Maghfiroh</p>
         </div>
         <div id="loginError" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-center text-sm"></div>
+        
+        <!-- Pilihan Role -->
+        <div class="flex gap-3 mb-4">
+            <button onclick="setRole('admin')" id="btnRoleAdmin" class="flex-1 py-2 rounded-lg border-2 border-emerald-500 text-emerald-600 font-semibold">Admin</button>
+            <button onclick="setRole('guru')" id="btnRoleGuru" class="flex-1 py-2 rounded-lg border-2 border-gray-300 text-gray-500 font-semibold">Guru</button>
+        </div>
+        
         <input type="text" id="loginUser" class="w-full p-3 border rounded-lg mb-3" placeholder="Username">
         <input type="password" id="loginPass" class="w-full p-3 border rounded-lg mb-4" placeholder="Password">
         <button onclick="doLogin()" class="btn-primary w-full py-3 rounded-lg">Login</button>
-        <div class="text-center text-xs text-gray-400 mt-4">admin / admin123</div>
+        
+        <div class="text-center text-xs text-gray-400 mt-4">
+            <div>Admin: admin / admin123</div>
+            <div>Guru: guru / guru123</div>
+        </div>
     </div>
 </div>
 
@@ -98,6 +113,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-3">
+                <span id="userRoleBadge" class="role-badge admin">Admin</span>
                 <button onclick="toggleDarkMode()" class="dark-toggle no-print text-gray-600"><i class="fas fa-moon"></i></button>
                 <button onclick="doLogout()" class="text-gray-500 hover:text-red-500"><i class="fas fa-sign-out-alt"></i> Keluar</button>
             </div>
@@ -107,14 +123,8 @@
     <div class="flex">
         <div id="sidebar" class="w-64 bg-white min-h-screen fixed lg:relative transform -translate-x-full lg:translate-x-0 transition duration-300 shadow-lg z-10">
             <div class="p-4 border-b"><div class="font-bold">Menu Utama</div></div>
-            <nav class="py-4">
-                <div class="nav-item" onclick="showPage('dashboard')"><i class="fas fa-chart-line w-5"></i> Dashboard</div>
-                <div class="nav-item" onclick="showPage('santri')"><i class="fas fa-users w-5"></i> Data Santri</div>
-                <div class="nav-item" onclick="showPage('hafalan')"><i class="fas fa-book-open w-5"></i> Hafalan & Penilaian</div>
-                <div class="nav-item" onclick="showPage('sertifikat')"><i class="fas fa-certificate w-5"></i> Sertifikat</div>
-                <div class="nav-item" onclick="showPage('laporan')"><i class="fas fa-chart-bar w-5"></i> Laporan</div>
-                <div class="nav-item" onclick="showPage('profil')"><i class="fas fa-building w-5"></i> Profil Ponpes</div>
-                <div class="nav-item" onclick="showPage('pengaturan')"><i class="fas fa-cog w-5"></i> Pengaturan</div>
+            <nav class="py-4" id="sidebarNav">
+                <!-- Menu akan diisi berdasarkan role -->
             </nav>
         </div>
 
@@ -145,7 +155,7 @@
                 </div>
             </div>
 
-            <!-- Data Santri -->
+            <!-- Data Santri (Hanya untuk Admin) -->
             <div id="pageSantri" class="page hidden">
                 <h2 class="text-xl font-bold mb-4">Data Santri</h2>
                 <div class="flex gap-2 mb-4 flex-wrap">
@@ -159,15 +169,15 @@
                 <div id="santriListContainer" class="bg-white rounded-xl shadow overflow-hidden"></div>
             </div>
 
-            <!-- Hafalan & Penilaian - SAMA SEPERTI DATA SANTRI (GROUP KELAS) -->
+            <!-- Hafalan & Penilaian - TAMPILAN GROUP BY KELAS SEPERTI DATA SANTRI -->
             <div id="pageHafalan" class="page hidden">
                 <h2 class="text-xl font-bold mb-4">Hafalan & Penilaian</h2>
                 <div class="bg-white rounded-xl shadow">
                     <div class="p-4 border-b bg-gray-50">
                         <label class="font-semibold block mb-2">Pilih Santri</label>
-                        <div class="relative filter-hafalan">
+                        <div class="relative">
                             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                            <input type="text" id="searchSantriHafalan" placeholder="Cari nama santri atau kelas..." class="w-full pl-10 pr-10 p-2 border rounded-lg" onkeyup="filterSantriByKelas()" autocomplete="off">
+                            <input type="text" id="searchSantriHafalan" placeholder="Cari nama santri atau kelas..." class="w-full pl-10 p-2 border rounded-lg" onkeyup="filterSantriByKelas()" autocomplete="off">
                             <i class="fas fa-times-circle absolute right-3 top-3 text-gray-400 cursor-pointer" onclick="clearSearchHafalan()"></i>
                         </div>
                         <div id="santriListHafalan" class="santri-list-group mt-2 hidden"></div>
@@ -262,7 +272,7 @@
                 </div>
             </div>
 
-            <!-- Pengaturan -->
+            <!-- Pengaturan (Hanya untuk Admin) -->
             <div id="pagePengaturan" class="page hidden">
                 <h2 class="text-xl font-bold mb-4">Pengaturan Aplikasi</h2>
                 <div class="bg-white rounded-xl shadow p-6 max-w-lg">
@@ -325,12 +335,12 @@
 
 <script>
 // ==================== KONFIGURASI ====================
-// APPS SCRIPT URL ANDA
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzrggTyykOVlN91bvafoY-GjcXyonQ0S70_USSBXfluUyCkyP_Vb4FdQvW1QPkMMgF/exec';
 
 // ==================== DATA ====================
 let santri = [];
 let currentUser = null;
+let currentUserRole = null; // 'admin' atau 'guru'
 let currentSantriId = null;
 let logoBase64 = null;
 let chartInstances = {};
@@ -397,7 +407,69 @@ function showToast(msg,type='success'){
     setTimeout(()=>t.remove(),3000); 
 }
 
-// ==================== CLOUD SYNC (GOOGLE SHEETS) ====================
+// ==================== ROLE & MENU ====================
+let selectedRole = 'admin';
+
+function setRole(role) {
+    selectedRole = role;
+    const btnAdmin = document.getElementById('btnRoleAdmin');
+    const btnGuru = document.getElementById('btnRoleGuru');
+    if(role === 'admin') {
+        btnAdmin.classList.remove('border-gray-300', 'text-gray-500');
+        btnAdmin.classList.add('border-emerald-500', 'text-emerald-600');
+        btnGuru.classList.remove('border-emerald-500', 'text-emerald-600');
+        btnGuru.classList.add('border-gray-300', 'text-gray-500');
+    } else {
+        btnGuru.classList.remove('border-gray-300', 'text-gray-500');
+        btnGuru.classList.add('border-emerald-500', 'text-emerald-600');
+        btnAdmin.classList.remove('border-emerald-500', 'text-emerald-600');
+        btnAdmin.classList.add('border-gray-300', 'text-gray-500');
+    }
+}
+
+function updateMenuByRole() {
+    const sidebarNav = document.getElementById('sidebarNav');
+    const userRoleBadge = document.getElementById('userRoleBadge');
+    
+    if(currentUserRole === 'admin') {
+        userRoleBadge.innerHTML = 'Admin';
+        userRoleBadge.className = 'role-badge admin';
+        sidebarNav.innerHTML = `
+            <div class="nav-item" onclick="showPage('dashboard')"><i class="fas fa-chart-line w-5"></i> Dashboard</div>
+            <div class="nav-item" onclick="showPage('santri')"><i class="fas fa-users w-5"></i> Data Santri</div>
+            <div class="nav-item" onclick="showPage('hafalan')"><i class="fas fa-book-open w-5"></i> Hafalan & Penilaian</div>
+            <div class="nav-item" onclick="showPage('sertifikat')"><i class="fas fa-certificate w-5"></i> Sertifikat</div>
+            <div class="nav-item" onclick="showPage('laporan')"><i class="fas fa-chart-bar w-5"></i> Laporan</div>
+            <div class="nav-item" onclick="showPage('profil')"><i class="fas fa-building w-5"></i> Profil Ponpes</div>
+            <div class="nav-item" onclick="showPage('pengaturan')"><i class="fas fa-cog w-5"></i> Pengaturan</div>
+        `;
+        // Tampilkan tombol tambah di data santri
+        const santriContainer = document.getElementById('pageSantri');
+        if(santriContainer) {
+            const btnContainer = santriContainer.querySelector('.flex.gap-2.mb-4');
+            if(btnContainer) btnContainer.style.display = 'flex';
+        }
+    } else {
+        userRoleBadge.innerHTML = 'Guru';
+        userRoleBadge.className = 'role-badge guru';
+        sidebarNav.innerHTML = `
+            <div class="nav-item" onclick="showPage('dashboard')"><i class="fas fa-chart-line w-5"></i> Dashboard</div>
+            <div class="nav-item" onclick="showPage('santri')"><i class="fas fa-users w-5"></i> Data Santri</div>
+            <div class="nav-item" onclick="showPage('hafalan')"><i class="fas fa-book-open w-5"></i> Hafalan & Penilaian</div>
+            <div class="nav-item" onclick="showPage('sertifikat')"><i class="fas fa-certificate w-5"></i> Sertifikat</div>
+            <div class="nav-item" onclick="showPage('laporan')"><i class="fas fa-chart-bar w-5"></i> Laporan</div>
+            <div class="nav-item" onclick="showPage('profil')"><i class="fas fa-building w-5"></i> Profil Ponpes</div>
+        `;
+        // Sembunyikan tombol tambah di data santri untuk guru (baca saja)
+        const santriContainer = document.getElementById('pageSantri');
+        if(santriContainer) {
+            const btnContainer = santriContainer.querySelector('.flex.gap-2.mb-4');
+            if(btnContainer) btnContainer.style.display = 'none';
+        }
+    }
+}
+
+// ==================== CLOUD SYNC ====================
 async function syncToCloud() {
     try {
         setSyncStatus('Menyimpan ke cloud...', true);
@@ -439,9 +511,7 @@ async function loadFromCloud() {
         const data = await response.json();
         
         if (data && data.length > 1) {
-            const headers = data[0];
             const rows = data.slice(1);
-            
             santri = [];
             for (let row of rows) {
                 if (row[0] && row[1]) {
@@ -479,7 +549,6 @@ async function loadFromCloud() {
             }
         }
         
-        // Load profil
         try {
             const profilResponse = await fetch(`${APPS_SCRIPT_URL}?action=getProfil`);
             const profilDataCloud = await profilResponse.json();
@@ -557,7 +626,6 @@ function saveData() {
     refreshAll(); 
     showToast('Data tersimpan di lokal');
     
-    // Auto sync ke cloud
     setTimeout(() => { syncToCloud().catch(e => console.log('Auto sync gagal')); }, 500);
 }
 
@@ -678,11 +746,11 @@ function downloadSertifikat(){
 function refreshAll() { 
     updateDashboard(); 
     renderSantri(); 
+    renderSantriListHafalan(); // Refresh tampilan hafalan
     updateSelectSertifikat(); 
     updateLaporanContent(); 
     updateFilterKelas(); 
     checkNotifications(); 
-    renderSantriListHafalan(); // Refresh tampilan hafalan
 }
 
 function updateFilterKelas() { 
@@ -707,8 +775,8 @@ function updateDashboard() {
     document.getElementById('totalLulus').innerText=lulus; 
     document.getElementById('totalProses').innerText=proses; 
     document.getElementById('totalBelum').innerText=belum; 
-    let role=currentUser==='admin'?'Administrator':'Guru'; 
-    document.getElementById('welcomeText').innerHTML=`Selamat Datang, ${role}`; 
+    let roleLabel = currentUserRole === 'admin' ? 'Administrator' : 'Guru';
+    document.getElementById('welcomeText').innerHTML=`Selamat Datang, ${roleLabel}`; 
     if(chartInstances.statusChart) chartInstances.statusChart.destroy(); 
     let ctx1=document.getElementById('statusChart')?.getContext('2d'); 
     if(ctx1) chartInstances.statusChart=new Chart(ctx1,{type:'doughnut',data:{labels:['Lulus','Proses','Belum'],datasets:[{data:[lulus,proses,belum],backgroundColor:['#10b981','#f59e0b','#ef4444']}]}}); 
@@ -736,7 +804,7 @@ function updateLaporanContent() {
     let ctx2=document.getElementById('laporanNilaiChart')?.getContext('2d'); 
     if(ctx2) chartInstances.laporanNilaiChart=new Chart(ctx2,{type:'bar',data:{labels:['Mumtaz','Jayyid Jiddan','Jayyid'],datasets:[{label:'Jumlah Santri',data:[mumtaz,jayyidJ,jayyid],backgroundColor:'#10b981'}]}}); 
     let tbody=document.getElementById('laporanTableFull'); 
-    if(tbody) tbody.innerHTML=filtered.map((s,i)=>{ let st=getStatus(s), persen=hitungProgress(s), bc=st==='Lulus'?'badge-success':(st==='Proses'?'badge-warning':'badge-danger'); return `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2">${s.nama}</td><td class="p-2">${s.kelas}</td><td class="p-2">${s.nilaiSurat||'-'}</td><td class="p-2"><div class="flex items-center gap-2"><div class="progress-bar"><div class="progress-fill" style="width:${persen}%"></div></div>${persen}%</div></td><td class="p-2"><span class="${bc}">${st}</span></td></tr>`; }).join(''); 
+    if(tbody) tbody.innerHTML=filtered.map((s,i)=>{ let st=getStatus(s), persen=hitungProgress(s), bc=st==='Lulus'?'badge-success':(st==='Proses'?'badge-warning':'badge-danger'); return `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2">${s.nama}</td><td class="p-2">${s.kelas}<td><td class="p-2">${s.nilaiSurat||'-'}</td><td class="p-2"><div class="flex items-center gap-2"><div class="progress-bar"><div class="progress-fill" style="width:${persen}%"></div></div>${persen}%</div></td><td class="p-2"><span class="${bc}">${st}</span></td></tr>`; }).join(''); 
 }
 
 function printFullLaporan() { 
@@ -753,7 +821,7 @@ function printFullLaporan() {
     printWindow.document.close(); 
 }
 
-// ==================== DATA SANTRI ====================
+// ==================== DATA SANTRI (RENDER GROUP BY KELAS) ====================
 function renderSantri() { 
     let search=document.getElementById('searchSantri')?.value.toLowerCase()||''; 
     let filtered=santri.filter(s=>s.nama.toLowerCase().includes(search)||s.kelas.toLowerCase().includes(search)); 
@@ -765,14 +833,19 @@ function renderSantri() {
     let sortedKelas = Object.keys(groups).sort((a,b)=>{ let na=parseInt(a.match(/\d+/)?.[0]||0), nb=parseInt(b.match(/\d+/)?.[0]||0); if(na!==nb) return na-nb; return (a.match(/[A-Z]/)?.[0]||'').localeCompare(b.match(/[A-Z]/)?.[0]||''); });
     let html=''; 
     for(let kelas of sortedKelas){ 
-        html+=`<div class="border-b"><div class="bg-emerald-50 p-3 font-semibold">Kelas ${kelas} (${groups[kelas].length})</div>`; 
-        groups[kelas].forEach((s,i)=>{ let st=getStatus(s), persen=hitungProgress(s), bc=st==='Lulus'?'badge-success':(st==='Proses'?'badge-warning':'badge-danger'); html+=`<div class="p-3 border-b flex justify-between items-center flex-wrap gap-2"><div class="flex items-center gap-3"><span class="w-6">${i+1}.</span><span class="font-medium">${s.nama}</span><div class="flex items-center gap-1"><div class="progress-bar"><div class="progress-fill" style="width:${persen}%"></div></div><span class="text-xs">${persen}%</span></div></div><div class="flex gap-2"><span class="${bc}">${st}</span><button onclick="editSantri(${s.id})" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="hapusSantri(${s.id})" class="text-red-500"><i class="fas fa-trash"></i></button></div></div>`; }); 
+        html+=`<div class="border-b"><div class="bg-emerald-50 p-3 font-semibold">📚 Kelas ${kelas} <span class="text-sm ml-2 text-gray-500">(${groups[kelas].length} santri)</span></div>`; 
+        groups[kelas].forEach((s,i)=>{ let st=getStatus(s), persen=hitungProgress(s), bc=st==='Lulus'?'badge-success':(st==='Proses'?'badge-warning':'badge-danger'); 
+        html+=`<div class="p-3 border-b flex justify-between items-center flex-wrap gap-2"><div class="flex items-center gap-3"><span class="w-6 text-gray-400">${i+1}.</span><span class="font-medium">${s.nama}</span><div class="flex items-center gap-1"><div class="progress-bar"><div class="progress-fill" style="width:${persen}%"></div></div><span class="text-xs text-gray-500">${persen}%</span></div></div><div class="flex gap-2"><span class="${bc}">${st}</span>`;
+        if(currentUserRole === 'admin') {
+            html+=`<button onclick="editSantri(${s.id})" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button><button onclick="hapusSantri(${s.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>`;
+        }
+        html+=`</div></div>`; }); 
         html+=`</div>`; 
     } 
     container.innerHTML=html; 
 }
 
-// ==================== HAFALAN & PENILAIAN (SAMA SEPERTI DATA SANTRI) ====================
+// ==================== HAFALAN & PENILAIAN (GROUP BY KELAS SAMA SEPERTI DATA SANTRI) ====================
 function renderSantriListHafalan() {
     let searchTerm = document.getElementById('searchSantriHafalan')?.value.toLowerCase() || '';
     let listDiv = document.getElementById('santriListHafalan');
@@ -786,7 +859,7 @@ function renderSantriListHafalan() {
     let filtered = santri.filter(s => s.nama.toLowerCase().includes(searchTerm) || s.kelas.toLowerCase().includes(searchTerm));
     
     if (filtered.length === 0) {
-        listDiv.innerHTML = '<div class="p-3 text-gray-500 text-center">Tidak ditemukan</div>';
+        listDiv.innerHTML = '<div class="p-6 text-center text-gray-400"><i class="fas fa-search text-3xl mb-2 block"></i>Tidak ditemukan</div>';
         listDiv.classList.remove('hidden');
         return;
     }
@@ -802,19 +875,29 @@ function renderSantriListHafalan() {
     let html = '';
     for (let kelas of sortedKelas) {
         html += `<div class="kelas-group">
-            <div class="kelas-title"><i class="fas fa-graduation-cap mr-2"></i>Kelas ${kelas} (${groups[kelas].length})</div>`;
+            <div class="kelas-title">
+                <span><i class="fas fa-graduation-cap mr-2"></i>Kelas ${kelas}</span>
+                <span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">${groups[kelas].length} santri</span>
+            </div>`;
         groups[kelas].forEach(s => {
             let st = getStatus(s);
+            let persen = hitungProgress(s);
             let badgeClass = st === 'Lulus' ? 'badge-success' : (st === 'Proses' ? 'badge-warning' : 'badge-danger');
             html += `<div class="santri-item" data-id="${s.id}" data-nama="${s.nama}">
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-user text-gray-400"></i>
-                    <span class="nama">${s.nama}</span>
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-user-circle text-gray-400 text-lg"></i>
+                    <div>
+                        <span class="nama font-medium">${s.nama}</span>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="kelas-badge"><i class="fas fa-tag mr-1"></i>${s.kelas}</span>
+                            <div class="progress-small"><div class="progress-fill-small" style="width: ${persen}%"></div></div>
+                            <span class="text-xs text-gray-400">${persen}%</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="kelas-badge">${s.kelas}</span>
                     <span class="status-badge ${badgeClass}">${st}</span>
-                    <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                    <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
                 </div>
             </div>`;
         });
@@ -854,6 +937,7 @@ function updateSelectSertifikat(){
 }
 
 function tambahSantri(){ 
+    if(currentUserRole !== 'admin') { showToast('Hanya admin yang dapat menambah santri', 'error'); return; }
     let nama=document.getElementById('tambahNama').value.trim(), kelas=document.getElementById('tambahKelas').value.trim(); 
     if(!nama){showToast('Nama wajib diisi','error');return;} 
     if(!kelas){showToast('Kelas wajib diisi','error');return;} 
@@ -870,6 +954,7 @@ function tambahSantri(){
 }
 
 function editSantri(id){ 
+    if(currentUserRole !== 'admin') { showToast('Hanya admin yang dapat mengedit santri', 'error'); return; }
     let s=santri.find(x=>x.id===id); 
     if(!s)return; 
     let namaBaru=prompt('Edit Nama:',s.nama); 
@@ -881,6 +966,7 @@ function editSantri(id){
 }
 
 function hapusSantri(id){ 
+    if(currentUserRole !== 'admin') { showToast('Hanya admin yang dapat menghapus santri', 'error'); return; }
     if(confirm('Yakin hapus santri ini?')){ 
         santri=santri.filter(s=>s.id!==id); 
         saveData(); 
@@ -889,6 +975,7 @@ function hapusSantri(id){
 }
 
 function importMassal(){ 
+    if(currentUserRole !== 'admin') { showToast('Hanya admin yang dapat import massal', 'error'); return; }
     let text=document.getElementById('massalData').value.trim(); 
     if(!text){showToast('Data kosong','error');return;} 
     let lines=text.split('\n'), added=0; 
@@ -1013,6 +1100,7 @@ function showPage(page){
         document.getElementById('santriListHafalan').classList.add('hidden'); 
         document.getElementById('formHafalan').classList.add('hidden'); 
         currentSantriId=null; 
+        renderSantriListHafalan();
     } 
     if(window.innerWidth<1024) document.getElementById('sidebar').classList.add('-translate-x-full'); 
 }
@@ -1023,14 +1111,30 @@ function closeModal(e,id){ if(!e||e.target===document.getElementById(id)) docume
 
 function doLogin(){ 
     let u=document.getElementById('loginUser').value, p=document.getElementById('loginPass').value; 
-    if((u==='admin'&&p==='admin123')||(u==='guru'&&p==='guru123')){ 
-        currentUser=u; 
+    let role = selectedRole;
+    
+    // Validasi login berdasarkan role
+    if(role === 'admin' && u === 'admin' && p === 'admin123'){ 
+        currentUserRole = 'admin';
+        currentUser = u;
         document.getElementById('loginScreen').classList.add('hidden'); 
         document.getElementById('mainApp').classList.remove('hidden'); 
+        updateMenuByRole();
         loadData(); 
-        showToast(`Selamat datang!`); 
+        showToast(`Selamat datang Admin!`, 'success'); 
         setTimeout(() => { loadFromCloud(); }, 1000);
-    } else { 
+    } 
+    else if(role === 'guru' && u === 'guru' && p === 'guru123'){ 
+        currentUserRole = 'guru';
+        currentUser = u;
+        document.getElementById('loginScreen').classList.add('hidden'); 
+        document.getElementById('mainApp').classList.remove('hidden'); 
+        updateMenuByRole();
+        loadData(); 
+        showToast(`Selamat datang Guru!`, 'success'); 
+        setTimeout(() => { loadFromCloud(); }, 1000);
+    }
+    else { 
         let err=document.getElementById('loginError'); 
         err.innerText='Username atau password salah!'; 
         err.classList.remove('hidden'); 
@@ -1043,6 +1147,7 @@ function doLogout(){
     document.getElementById('loginScreen').classList.remove('hidden'); 
     document.getElementById('loginUser').value=''; 
     document.getElementById('loginPass').value=''; 
+    setRole('admin');
 }
 
 loadData();
