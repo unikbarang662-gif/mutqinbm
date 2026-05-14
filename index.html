@@ -31,10 +31,10 @@
         .progress-fill { height: 100%; background: #10b981; border-radius: 10px; }
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .modal-content { background: white; border-radius: 20px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 20px; }
-        .santri-list-group { max-height: 300px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 12px; margin-top: 5px; }
+        .santri-list-group { max-height: 300px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 12px; margin-top: 5px; background: white; }
         .kelas-group { border-bottom: 1px solid #e5e7eb; }
-        .kelas-title { background: #f0fdf4; padding: 8px 12px; font-weight: 600; color: #065f46; }
-        .santri-item { padding: 10px 15px; padding-left: 30px; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: 0.2s; }
+        .kelas-title { background: #f0fdf4; padding: 8px 12px; font-weight: 600; color: #065f46; border-bottom: 1px solid #d1fae5; }
+        .santri-item { padding: 8px 15px; padding-left: 30px; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: 0.2s; }
         .santri-item:hover { background: #d1fae5; }
         .santri-item.active { background: #10b981; color: white; }
         .certificate-box { background: white; border: 8px double #059669; border-radius: 16px; padding: 30px; }
@@ -50,6 +50,7 @@
         .dark-mode .santri-item { background: #16213e; color: #eee; border-color: #2c3e66; }
         .dark-mode .santri-item:hover { background: #0f3460; }
         .dark-mode .kelas-title { background: #0f3460; color: #86efac; }
+        .dark-mode .santri-list-group { background: #16213e; border-color: #2c3e66; }
         .dark-mode .datetime-card { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
         @media print { body { margin: 0; padding: 0; } .no-print { display: none; } canvas { max-width: 100% !important; height: auto !important; } }
         .sync-status { position: fixed; bottom: 20px; left: 20px; background: white; padding: 5px 12px; border-radius: 20px; font-size: 11px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 100; }
@@ -256,7 +257,7 @@
                     </div>
                     <div>
                         <h3 class="font-semibold mb-3"><i class="fas fa-database mr-2"></i> Sinkronisasi Data</h3>
-                        <p class="text-sm text-gray-500 mb-3">Backup data ke file atau restore dari file backup</p>
+                        <p class="text-sm text-gray-500 mb-3">Backup data ke file atau restore dari file backup untuk digunakan di perangkat lain</p>
                         <div class="flex gap-3">
                             <button onclick="syncToCloud()" class="btn-primary flex-1 py-2 rounded-lg"><i class="fas fa-cloud-upload-alt"></i> Backup</button>
                             <button onclick="restoreFromCloud()" class="btn-outline flex-1 py-2 rounded-lg"><i class="fas fa-cloud-download-alt"></i> Restore</button>
@@ -331,7 +332,7 @@ function toggleDarkMode() { darkMode = !darkMode; localStorage.setItem('darkMode
 if(darkMode) document.getElementById('appBody').classList.add('dark-mode');
 
 function loadData() {
-    let saved = localStorage.getItem('mutqin_santri_fix5');
+    let saved = localStorage.getItem('mutqin_santri_final_v2');
     if (saved) { try { santri = JSON.parse(saved); } catch(e) { santri = []; } }
     if (!santri.length) {
         let contohJuz = Array(37).fill(true);
@@ -342,13 +343,13 @@ function loadData() {
             { id: 4, nama: 'Khadijah', kelas: '6A', juz30: Array(37).fill(false), tanggalUpdate: new Date().toISOString() }
         ];
     }
-    let savedProfil = localStorage.getItem('mutqin_profil_fix5');
+    let savedProfil = localStorage.getItem('mutqin_profil_final_v2');
     if (savedProfil) { try { let p = JSON.parse(savedProfil); profilData = p; } catch(e) {} }
     document.getElementById('profilNama').value = profilData.nama;
     document.getElementById('profilPengasuh').value = profilData.pengasuh || '';
     document.getElementById('profilKapondok').value = profilData.kapondok || '';
     document.getElementById('profilAlamat').value = profilData.alamat || '';
-    let savedLogo = localStorage.getItem('mutqin_logo_fix5');
+    let savedLogo = localStorage.getItem('mutqin_logo_final_v2');
     if (savedLogo) { logoBase64 = savedLogo; updateLogoDisplay(logoBase64); }
     
     let savedPerkembangan = localStorage.getItem('perkembanganData');
@@ -359,8 +360,9 @@ function loadData() {
     checkNotifications();
     updatePerkembanganChart();
 }
+
 function saveData() { 
-    localStorage.setItem('mutqin_santri_fix5', JSON.stringify(santri)); 
+    localStorage.setItem('mutqin_santri_final_v2', JSON.stringify(santri)); 
     let today = new Date().toISOString().split('T')[0];
     let lulus = santri.filter(s => getStatus(s) === 'Lulus').length;
     let existing = perkembanganData.find(d => d.tanggal === today);
@@ -372,10 +374,48 @@ function saveData() {
     showToast('Data tersimpan');
     updatePerkembanganChart();
 }
-function saveProfil() { profilData = { nama: document.getElementById('profilNama').value, pengasuh: document.getElementById('profilPengasuh').value, kapondok: document.getElementById('profilKapondok').value, alamat: document.getElementById('profilAlamat').value }; localStorage.setItem('mutqin_profil_fix5', JSON.stringify(profilData)); showToast('Profil tersimpan'); }
-function updateLogoDisplay(data) { let iconEl = document.getElementById('logoPreviewIcon'), imgEl = document.getElementById('logoPreviewImg'); if(data){ if(iconEl)iconEl.classList.add('hidden'); if(imgEl){imgEl.classList.remove('hidden'); imgEl.src=data;} } else { if(iconEl)iconEl.classList.remove('hidden'); if(imgEl)imgEl.classList.add('hidden'); } }
-function uploadLogo(input) { if(input.files && input.files[0]){ let r=new FileReader(); r.onload=e=>{ logoBase64=e.target.result; updateLogoDisplay(logoBase64); localStorage.setItem('mutqin_logo_fix5',logoBase64); showToast('Logo tersimpan'); }; r.readAsDataURL(input.files[0]); } }
-function clearLogo() { logoBase64=null; updateLogoDisplay(null); localStorage.removeItem('mutqin_logo_fix5'); showToast('Logo dihapus'); }
+
+function saveProfil() { 
+    profilData = { 
+        nama: document.getElementById('profilNama').value, 
+        pengasuh: document.getElementById('profilPengasuh').value, 
+        kapondok: document.getElementById('profilKapondok').value, 
+        alamat: document.getElementById('profilAlamat').value 
+    }; 
+    localStorage.setItem('mutqin_profil_final_v2', JSON.stringify(profilData)); 
+    showToast('Profil tersimpan'); 
+}
+
+function updateLogoDisplay(data) { 
+    let iconEl = document.getElementById('logoPreviewIcon'), imgEl = document.getElementById('logoPreviewImg'); 
+    if(data){ 
+        if(iconEl) iconEl.classList.add('hidden'); 
+        if(imgEl){ imgEl.classList.remove('hidden'); imgEl.src = data; } 
+    } else { 
+        if(iconEl) iconEl.classList.remove('hidden'); 
+        if(imgEl) imgEl.classList.add('hidden'); 
+    } 
+}
+
+function uploadLogo(input) { 
+    if(input.files && input.files[0]){ 
+        let r=new FileReader(); 
+        r.onload=e=>{ 
+            logoBase64=e.target.result; 
+            updateLogoDisplay(logoBase64); 
+            localStorage.setItem('mutqin_logo_final_v2',logoBase64); 
+            showToast('Logo tersimpan'); 
+        }; 
+        r.readAsDataURL(input.files[0]); 
+    } 
+}
+
+function clearLogo() { 
+    logoBase64=null; 
+    updateLogoDisplay(null); 
+    localStorage.removeItem('mutqin_logo_final_v2'); 
+    showToast('Logo dihapus'); 
+}
 
 function checkNotifications() {
     let hampirLulus = santri.filter(s => { let p = hitungProgress(s); return p >= 90 && p < 100; });
@@ -384,37 +424,338 @@ function checkNotifications() {
     if(hampirLulus.length > 0) {
         notifDiv.innerHTML = `<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3 rounded-lg"><i class="fas fa-bell mr-2"></i> <strong>${hampirLulus.length} santri</strong> hampir lulus! (Progress ≥ 90%)</div>`;
         if(notifList) notifList.innerHTML = hampirLulus.map(s => `<div class="p-2 border-b">📢 ${s.nama} (${s.kelas}) - Progress ${hitungProgress(s)}%</div>`).join('');
-    } else { if(notifDiv) notifDiv.innerHTML = ''; if(notifList) notifList.innerHTML = '<div class="text-gray-500 p-2">Tidak ada notifikasi</div>'; }
+    } else { 
+        if(notifDiv) notifDiv.innerHTML = ''; 
+        if(notifList) notifList.innerHTML = '<div class="text-gray-500 p-2">Tidak ada notifikasi</div>'; 
+    }
 }
 
-function syncToCloud() { try { let dataToSave={ santri:santri, profil:profilData, logo:logoBase64, timestamp:new Date().toISOString() }; let jsonStr=JSON.stringify(dataToSave); let blob=new Blob([jsonStr],{type:'application/json'}); let url=URL.createObjectURL(blob); let a=document.createElement('a'); a.href=url; a.download=`mutqin_backup_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`; a.click(); URL.revokeObjectURL(url); showToast('Backup berhasil! File tersimpan'); } catch(e){ showToast('Backup gagal','error'); } }
-function restoreFromCloud(){ let input=document.createElement('input'); input.type='file'; input.accept='application/json'; input.onchange=function(e){ let file=e.target.files[0]; let reader=new FileReader(); reader.onload=function(ev){ try{ let restored=JSON.parse(ev.target.result); if(restored.santri) santri=restored.santri; if(restored.profil) profilData=restored.profil; if(restored.logo){ logoBase64=restored.logo; updateLogoDisplay(logoBase64); localStorage.setItem('mutqin_logo_fix5',logoBase64); } saveData(); localStorage.setItem('mutqin_profil_fix5',JSON.stringify(profilData)); showToast('Data berhasil dipulihkan'); refreshAll(); }catch(err){ showToast('File backup tidak valid','error'); } }; reader.readAsText(file); }; input.click(); }
-function exportToExcel() { let data=santri.map((s,i)=>({ No:i+1, Nama:s.nama, Kelas:s.kelas, Nilai_Hafalan:s.nilaiSurat, Progress:`${hitungProgress(s)}%`, Status:getStatus(s), Terakhir_Update:s.tanggalUpdate })); let ws=XLSX.utils.json_to_sheet(data); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Data Santri'); XLSX.writeFile(wb,`mutqin_data_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('Export Excel berhasil'); }
-function importFromExcel(){ let input=document.createElement('input'); input.type='file'; input.accept='.xlsx,.xls'; input.onchange=function(e){ let file=e.target.files[0]; let reader=new FileReader(); reader.onload=function(ev){ let data=new Uint8Array(ev.target.result); let workbook=XLSX.read(data,{type:'array'}); let sheet=workbook.Sheets[workbook.SheetNames[0]]; let rows=XLSX.utils.sheet_to_json(sheet); let added=0; for(let row of rows){ if(row.Nama && row.Kelas){ let baru=getNewSantri(); baru.id=Date.now()+added; baru.nama=row.Nama; baru.kelas=row.Kelas; santri.push(baru); added++; } } if(added>0){ saveData(); showToast(`Import ${added} data dari Excel`); }else{ showToast('Tidak ada data valid','error'); } }; reader.readAsArrayBuffer(file); }; input.click(); }
-function exportLaporanToExcel(){ let data=[]; let filterKelas=document.getElementById('filterKelas').value; let filtered=santri.filter(s=>!filterKelas||s.kelas===filterKelas); filtered.forEach((s,i)=>{ data.push({ No:i+1, Nama:s.nama, Kelas:s.kelas, Nilai_Hafalan:s.nilaiSurat, Progress:`${hitungProgress(s)}%`, Status:getStatus(s) }); }); let ws=XLSX.utils.json_to_sheet(data); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Laporan Hafalan'); XLSX.writeFile(wb,`laporan_mutqin_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('Export laporan berhasil'); }
-function updatePerkembanganChart() { let ctx=document.getElementById('perkembanganChart')?.getContext('2d'); if(ctx){ if(chartInstances.perkembanganChart) chartInstances.perkembanganChart.destroy(); let labels=perkembanganData.map(d=>d.tanggal.slice(5)); let data=perkembanganData.map(d=>d.lulus); chartInstances.perkembanganChart=new Chart(ctx,{type:'line',data:{labels:labels,datasets:[{label:'Jumlah Santri Lulus',data:data,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',fill:true,tension:0.3}]},options:{responsive:true,maintainAspectRatio:true}}); } }
+function syncToCloud() { 
+    try { 
+        let dataToSave={ santri:santri, profil:profilData, logo:logoBase64, timestamp:new Date().toISOString() }; 
+        let jsonStr=JSON.stringify(dataToSave); 
+        let blob=new Blob([jsonStr],{type:'application/json'}); 
+        let url=URL.createObjectURL(blob); 
+        let a=document.createElement('a'); 
+        a.href=url; 
+        a.download=`mutqin_backup_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.json`; 
+        a.click(); 
+        URL.revokeObjectURL(url); 
+        showToast('Backup berhasil! File tersimpan'); 
+    } catch(e){ showToast('Backup gagal','error'); } 
+}
+
+function restoreFromCloud(){ 
+    let input=document.createElement('input'); 
+    input.type='file'; 
+    input.accept='application/json'; 
+    input.onchange=function(e){ 
+        let file=e.target.files[0]; 
+        let reader=new FileReader(); 
+        reader.onload=function(ev){ 
+            try{ 
+                let restored=JSON.parse(ev.target.result); 
+                if(restored.santri) santri=restored.santri; 
+                if(restored.profil) profilData=restored.profil; 
+                if(restored.logo){ 
+                    logoBase64=restored.logo; 
+                    updateLogoDisplay(logoBase64); 
+                    localStorage.setItem('mutqin_logo_final_v2',logoBase64); 
+                } 
+                saveData(); 
+                localStorage.setItem('mutqin_profil_final_v2',JSON.stringify(profilData)); 
+                showToast('Data berhasil dipulihkan'); 
+                refreshAll(); 
+            } catch(err){ 
+                showToast('File backup tidak valid','error'); 
+            } 
+        }; 
+        reader.readAsText(file); 
+    }; 
+    input.click(); 
+}
+
+function exportToExcel() { 
+    let data=santri.map((s,i)=>({ No:i+1, Nama:s.nama, Kelas:s.kelas, Nilai_Hafalan:s.nilaiSurat, Progress:`${hitungProgress(s)}%`, Status:getStatus(s), Terakhir_Update:s.tanggalUpdate })); 
+    let ws=XLSX.utils.json_to_sheet(data); 
+    let wb=XLSX.utils.book_new(); 
+    XLSX.utils.book_append_sheet(wb,ws,'Data Santri'); 
+    XLSX.writeFile(wb,`mutqin_data_${new Date().toISOString().slice(0,10)}.xlsx`); 
+    showToast('Export Excel berhasil'); 
+}
+
+function importFromExcel(){ 
+    let input=document.createElement('input'); 
+    input.type='file'; 
+    input.accept='.xlsx,.xls'; 
+    input.onchange=function(e){ 
+        let file=e.target.files[0]; 
+        let reader=new FileReader(); 
+        reader.onload=function(ev){ 
+            let data=new Uint8Array(ev.target.result); 
+            let workbook=XLSX.read(data,{type:'array'}); 
+            let sheet=workbook.Sheets[workbook.SheetNames[0]]; 
+            let rows=XLSX.utils.sheet_to_json(sheet); 
+            let added=0; 
+            for(let row of rows){ 
+                if(row.Nama && row.Kelas){ 
+                    let baru=getNewSantri(); 
+                    baru.id=Date.now()+added; 
+                    baru.nama=row.Nama; 
+                    baru.kelas=row.Kelas; 
+                    santri.push(baru); 
+                    added++; 
+                } 
+            } 
+            if(added>0){ 
+                saveData(); 
+                showToast(`Import ${added} data dari Excel`); 
+            } else { 
+                showToast('Tidak ada data valid','error'); 
+            } 
+        }; 
+        reader.readAsArrayBuffer(file); 
+    }; 
+    input.click(); 
+}
+
+function exportLaporanToExcel(){ 
+    let data=[]; 
+    let filterKelas=document.getElementById('filterKelas').value; 
+    let filtered=santri.filter(s=>!filterKelas||s.kelas===filterKelas); 
+    filtered.forEach((s,i)=>{ 
+        data.push({ No:i+1, Nama:s.nama, Kelas:s.kelas, Nilai_Hafalan:s.nilaiSurat, Progress:`${hitungProgress(s)}%`, Status:getStatus(s) }); 
+    }); 
+    let ws=XLSX.utils.json_to_sheet(data); 
+    let wb=XLSX.utils.book_new(); 
+    XLSX.utils.book_append_sheet(wb,ws,'Laporan Hafalan'); 
+    XLSX.writeFile(wb,`laporan_mutqin_${new Date().toISOString().slice(0,10)}.xlsx`); 
+    showToast('Export laporan berhasil'); 
+}
+
+function updatePerkembanganChart() { 
+    let ctx=document.getElementById('perkembanganChart')?.getContext('2d'); 
+    if(ctx){ 
+        if(chartInstances.perkembanganChart) chartInstances.perkembanganChart.destroy(); 
+        let labels=perkembanganData.map(d=>d.tanggal.slice(5)); 
+        let data=perkembanganData.map(d=>d.lulus); 
+        chartInstances.perkembanganChart=new Chart(ctx,{type:'line',data:{labels:labels,datasets:[{label:'Jumlah Santri Lulus',data:data,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.1)',fill:true,tension:0.3}]},options:{responsive:true,maintainAspectRatio:true}}); 
+    } 
+}
 
 let currentSertifikatSantri = null;
-function loadSertifikatUntukEdit(){ let id=document.getElementById('selectSertifikat').value; if(!id){ document.getElementById('sertifikatEditor').classList.add('hidden'); document.getElementById('sertifikatPreview').innerHTML=''; return; } currentSertifikatSantri=santri.find(x=>x.id==parseInt(id)); if(!currentSertifikatSantri||getStatus(currentSertifikatSantri)!=='Lulus'){ showToast('Pilih santri LULUS','error'); return; } document.getElementById('editNamaSertifikat').value=currentSertifikatSantri.nama; document.getElementById('editTanggalSertifikat').value=new Date().toLocaleDateString('id-ID'); document.getElementById('editTextSertifikat').value=''; document.getElementById('sertifikatEditor').classList.remove('hidden'); generateSertifikatWithEdit(); }
-function generateSertifikatWithEdit(){ if(!currentSertifikatSantri) return; let today=document.getElementById('editTanggalSertifikat').value || new Date().toLocaleDateString('id-ID'); let nama=document.getElementById('editNamaSertifikat').value || currentSertifikatSantri.nama; let extraText=document.getElementById('editTextSertifikat').value; let logoHtml=logoBase64?`<img src="${logoBase64}" class="w-16 h-16 mx-auto mb-2 rounded-full object-cover">`:'<i class="fas fa-graduation-cap text-emerald-600 text-5xl mb-2"></i>'; document.getElementById('sertifikatPreview').innerHTML=`<div class="text-center"><div id="sertifikatBox" class="certificate-box inline-block text-left"><div class="text-center">${logoHtml}<h2 class="text-xl font-bold">${profilData.nama}</h2></div><div class="border-b-2 border-emerald-600 w-24 mx-auto my-3"></div><p class="text-center text-gray-500 text-sm">SERTIFIKAT KELULUSAN</p><p class="text-center text-sm text-gray-500 mt-4">Diberikan kepada:</p><h3 class="text-center text-2xl font-bold my-3">${nama}</h3><p class="text-center text-sm">Sebagai tanda bahwa telah menyelesaikan pendidikan<br>dan memenuhi standar kelulusan di</p><p class="text-center font-semibold text-emerald-700 mt-2">${profilData.nama}</p>${extraText?`<p class="text-center text-sm mt-2">${extraText}</p>`:''}<div class="text-center bg-emerald-100 px-6 py-2 rounded-full inline-block w-full my-4"><span class="font-bold text-emerald-800">LULUS</span></div><p class="text-center text-xs text-gray-500">Malang, ${today}</p><div class="grid grid-cols-2 gap-4 mt-4 pt-3 border-t"><div><div class="border-t border-gray-400 pt-1 text-xs text-center">Pengasuh Pondok</div><div class="text-xs text-center mt-1 font-medium">${profilData.pengasuh||'_________________'}</div></div><div><div class="border-t border-gray-400 pt-1 text-xs text-center">Kepala Pondok</div><div class="text-xs text-center mt-1 font-medium">${profilData.kapondok||'_________________'}</div></div></div></div><button onclick="downloadSertifikat()" class="btn-primary px-4 py-2 rounded-lg mt-4">Download Sertifikat (PNG)</button></div>`; }
+function loadSertifikatUntukEdit(){ 
+    let id=document.getElementById('selectSertifikat').value; 
+    if(!id){ 
+        document.getElementById('sertifikatEditor').classList.add('hidden'); 
+        document.getElementById('sertifikatPreview').innerHTML=''; 
+        return; 
+    } 
+    currentSertifikatSantri=santri.find(x=>x.id==parseInt(id)); 
+    if(!currentSertifikatSantri||getStatus(currentSertifikatSantri)!=='Lulus'){ 
+        showToast('Pilih santri LULUS','error'); 
+        return; 
+    } 
+    document.getElementById('editNamaSertifikat').value=currentSertifikatSantri.nama; 
+    document.getElementById('editTanggalSertifikat').value=new Date().toLocaleDateString('id-ID'); 
+    document.getElementById('editTextSertifikat').value=''; 
+    document.getElementById('sertifikatEditor').classList.remove('hidden'); 
+    generateSertifikatWithEdit(); 
+}
+
+function generateSertifikatWithEdit(){ 
+    if(!currentSertifikatSantri) return; 
+    let today=document.getElementById('editTanggalSertifikat').value || new Date().toLocaleDateString('id-ID'); 
+    let nama=document.getElementById('editNamaSertifikat').value || currentSertifikatSantri.nama; 
+    let extraText=document.getElementById('editTextSertifikat').value; 
+    let logoHtml=logoBase64?`<img src="${logoBase64}" class="w-16 h-16 mx-auto mb-2 rounded-full object-cover">`:'<i class="fas fa-graduation-cap text-emerald-600 text-5xl mb-2"></i>'; 
+    document.getElementById('sertifikatPreview').innerHTML=`<div class="text-center"><div id="sertifikatBox" class="certificate-box inline-block text-left"><div class="text-center">${logoHtml}<h2 class="text-xl font-bold">${profilData.nama}</h2></div><div class="border-b-2 border-emerald-600 w-24 mx-auto my-3"></div><p class="text-center text-gray-500 text-sm">SERTIFIKAT KELULUSAN</p><p class="text-center text-sm text-gray-500 mt-4">Diberikan kepada:</p><h3 class="text-center text-2xl font-bold my-3">${nama}</h3><p class="text-center text-sm">Sebagai tanda bahwa telah menyelesaikan pendidikan<br>dan memenuhi standar kelulusan di</p><p class="text-center font-semibold text-emerald-700 mt-2">${profilData.nama}</p>${extraText?`<p class="text-center text-sm mt-2">${extraText}</p>`:''}<div class="text-center bg-emerald-100 px-6 py-2 rounded-full inline-block w-full my-4"><span class="font-bold text-emerald-800">LULUS</span></div><p class="text-center text-xs text-gray-500">Malang, ${today}</p><div class="grid grid-cols-2 gap-4 mt-4 pt-3 border-t"><div><div class="border-t border-gray-400 pt-1 text-xs text-center">Pengasuh Pondok</div><div class="text-xs text-center mt-1 font-medium">${profilData.pengasuh||'_________________'}</div></div><div><div class="border-t border-gray-400 pt-1 text-xs text-center">Kepala Pondok</div><div class="text-xs text-center mt-1 font-medium">${profilData.kapondok||'_________________'}</div></div></div></div><button onclick="downloadSertifikat()" class="btn-primary px-4 py-2 rounded-lg mt-4">Download Sertifikat (PNG)</button></div>`; 
+}
+
 function updateSertifikat(){ generateSertifikatWithEdit(); showToast('Sertifikat diperbarui'); }
-function downloadSertifikat(){ let node=document.getElementById('sertifikatBox'); html2canvas(node,{scale:2}).then(c=>{let a=document.createElement('a');a.download='sertifikat.png';a.href=c.toDataURL();a.click();showToast('Sertifikat terunduh');}).catch(()=>showToast('Gagal download','error')); }
 
-function refreshAll() { updateDashboard(); renderSantri(); updateSelectSertifikat(); updateLaporanContent(); updateFilterKelas(); checkNotifications(); updatePerkembanganChart(); }
-function updateFilterKelas() { let select=document.getElementById('filterKelas'); if(select){ let kelasSet=new Set(santri.map(s=>s.kelas)); select.innerHTML='<option value="">Semua Kelas</option>'+Array.from(kelasSet).sort().map(k=>`<option value="${k}">${k}</option>`).join(''); } }
-function resetFilters(){ document.getElementById('filterKelas').value=''; document.getElementById('filterStartDate').value=''; document.getElementById('filterEndDate').value=''; updateLaporanContent(); }
-function updateDashboard() { let lulus=0, proses=0, belum=0, mumtaz=0, jayyidJ=0, jayyid=0; santri.forEach(s=>{ let st=getStatus(s); if(st==='Lulus') lulus++; else if(st==='Proses') proses++; else belum++; if(s.nilaiSurat==='Mumtaz') mumtaz++; else if(s.nilaiSurat==='Jayyid Jiddan') jayyidJ++; else if(s.nilaiSurat==='Jayyid') jayyid++; }); document.getElementById('totalSantri').innerText=santri.length; document.getElementById('totalLulus').innerText=lulus; document.getElementById('totalProses').innerText=proses; document.getElementById('totalBelum').innerText=belum; let role=currentUser==='admin'?'Administrator':'Guru'; document.getElementById('welcomeText').innerHTML=`Selamat Datang, ${role}`; if(chartInstances.statusChart) chartInstances.statusChart.destroy(); let ctx1=document.getElementById('statusChart')?.getContext('2d'); if(ctx1) chartInstances.statusChart=new Chart(ctx1,{type:'doughnut',data:{labels:['Lulus','Proses','Belum'],datasets:[{data:[lulus,proses,belum],backgroundColor:['#10b981','#f59e0b','#ef4444']}]}}); if(chartInstances.nilaiChart) chartInstances.nilaiChart.destroy(); let ctx2=document.getElementById('nilaiChart')?.getContext('2d'); if(ctx2) chartInstances.nilaiChart=new Chart(ctx2,{type:'bar',data:{labels:['Mumtaz','Jayyid Jiddan','Jayyid'],datasets:[{label:'Jumlah Santri',data:[mumtaz,jayyidJ,jayyid],backgroundColor:'#10b981'}]}}); }
-function updateLaporanContent() { let filterKelas=document.getElementById('filterKelas').value; let startDate=document.getElementById('filterStartDate').value; let endDate=document.getElementById('filterEndDate').value; let filtered=santri.filter(s=>{ if(filterKelas && s.kelas!==filterKelas) return false; if(startDate && s.tanggalUpdate && s.tanggalUpdate.split('T')[0] < startDate) return false; if(endDate && s.tanggalUpdate && s.tanggalUpdate.split('T')[0] > endDate) return false; return true; }); let lulus=0, proses=0, belum=0, mumtaz=0, jayyidJ=0, jayyid=0; filtered.forEach(s=>{ let st=getStatus(s); if(st==='Lulus') lulus++; else if(st==='Proses') proses++; else belum++; if(s.nilaiSurat==='Mumtaz') mumtaz++; else if(s.nilaiSurat==='Jayyid Jiddan') jayyidJ++; else if(s.nilaiSurat==='Jayyid') jayyid++; }); let tanggal=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}); document.getElementById('laporanTanggal').innerHTML=`Tanggal: ${tanggal}${filterKelas?` | Kelas: ${filterKelas}`:''}`; document.getElementById('laporanFooterTanggal').innerHTML=tanggal; document.getElementById('laporanTotalSantri').innerText=filtered.length; document.getElementById('laporanTotalLulus').innerText=lulus; document.getElementById('laporanTotalProses').innerText=proses; document.getElementById('laporanTotalBelum').innerText=belum; if(chartInstances.laporanStatusChart) chartInstances.laporanStatusChart.destroy(); let ctx1=document.getElementById('laporanStatusChart')?.getContext('2d'); if(ctx1) chartInstances.laporanStatusChart=new Chart(ctx1,{type:'doughnut',data:{labels:['Lulus','Proses','Belum'],datasets:[{data:[lulus,proses,belum],backgroundColor:['#10b981','#f59e0b','#ef4444']}]}}); if(chartInstances.laporanNilaiChart) chartInstances.laporanNilaiChart.destroy(); let ctx2=document.getElementById('laporanNilaiChart')?.getContext('2d'); if(ctx2) chartInstances.laporanNilaiChart=new Chart(ctx2,{type:'bar',data:{labels:['Mumtaz','Jayyid Jiddan','Jayyid'],datasets:[{label:'Jumlah Santri',data:[mumtaz,jayyidJ,jayyid],backgroundColor:'#10b981'}]}}); let tbody=document.getElementById('laporanTableFull'); if(tbody) tbody.innerHTML=filtered.map((s,i)=>{ let st=getStatus(s), persen=hitungProgress(s), bc=st==='Lulus'?'badge-success':(st==='Proses'?'badge-warning':'badge-danger'); return `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2">${s.nama}</td><td class="p-2">${s.kelas}</td><td class="p-2">${s.nilaiSurat||'-'}</td><td class="p-2"><div class="flex items-center gap-2"><div class="progress-bar"><div class="progress-fill" style="width:${persen}%"></div></div>${persen}%</div></td><td class="p-2"><span class="${bc}">${st}</span></td></tr>`; }).join(''); }
-function printFullLaporan() { let printContent=document.getElementById('laporanContent').cloneNode(true); let printWindow=window.open('','_blank'); printWindow.document.write(`<!DOCTYPE html><html><head><title>Laporan Mutqin BM</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"><style>*{font-family:'Inter',sans-serif;}body{padding:30px;background:white;}.container{max-width:1200px;margin:0 auto;}.text-center{text-align:center;}.border-b{border-bottom:1px solid #e5e7eb;}.border{border:1px solid #e5e7eb;}.rounded-xl{border-radius:12px;}.p-4{padding:16px;}.p-6{padding:24px;}.mb-4{margin-bottom:16px;}.mb-6{margin-bottom:24px;}.mb-8{margin-bottom:32px;}.grid{display:grid;}.grid-cols-2{grid-template-columns:repeat(2,1fr);}.grid-cols-4{grid-template-columns:repeat(4,1fr);}.gap-4{gap:16px;}.gap-6{gap:24px;}.bg-blue-50{background:#eff6ff;}.bg-green-50{background:#f0fdf4;}.bg-yellow-50{background:#fefce8;}.bg-red-50{background:#fef2f2;}.bg-emerald-600{background:#059669;}.text-blue-600{color:#2563eb;}.text-green-600{color:#16a34a;}.text-yellow-600{color:#ca8a04;}.text-red-600{color:#dc2626;}.text-emerald-800{color:#065f46;}.text-white{color:white;}table{width:100%;border-collapse:collapse;}th,td{padding:10px;text-align:left;border-bottom:1px solid #e5e7eb;}th{background:#059669;color:white;}.progress-bar{width:80px;height:6px;background:#e5e7eb;border-radius:10px;overflow:hidden;display:inline-block;margin-right:8px;}.progress-fill{height:100%;background:#10b981;border-radius:10px;}.badge-success{background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}.badge-warning{background:#fed7aa;color:#9a3412;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}.badge-danger{background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}@media print{body{padding:0;}}</style></head><body><div class="container">${printContent.innerHTML}</div><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);};<\/script></body></html>`); printWindow.document.close(); }
-function renderSantri() { let search=document.getElementById('searchSantri')?.value.toLowerCase()||''; let filtered=santri.filter(s=>s.nama.toLowerCase().includes(search)||s.kelas.toLowerCase().includes(search)); let container=document.getElementById('santriListContainer'); if(!container) return; if(filtered.length===0){ container.innerHTML='<div class="p-8 text-center text-gray-400">Tidak ada data</div>'; return; } let groups={}; filtered.forEach(s=>{if(!groups[s.kelas]) groups[s.kelas]=[]; groups[s.kelas].push(s);}); let html=''; for(let kelas in groups){ html+=`<div class="border-b"><div class="bg-emerald-50 p-3 font-semibold">Kelas ${kelas} (${groups[kelas].length})</div>`; groups[kelas].forEach((s,i)=>{ let st=getStatus(s), persen=hitungProgress(s), bc=st==='Lulus'?'badge-success':(st==='Proses'?'badge-warning':'badge-danger'); html+=`<div class="p-3 border-b flex justify-between items-center flex-wrap gap-2"><div class="flex items-center gap-3"><span class="w-6">${i+1}.</span><span class="font-medium">${s.nama}</span><div class="flex items-center gap-1"><div class="progress-bar"><div class="progress-fill" style="width:${persen}%"></div></div><span class="text-xs">${persen}%</span></div></div><div class="flex gap-2"><span class="${bc}">${st}</span><button onclick="editSantri(${s.id})" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="hapusSantri(${s.id})" class="text-red-500"><i class="fas fa-trash"></i></button></div></div>`; }); html+=`</div>`; } container.innerHTML=html; }
-function updateSelectSertifikat(){ let select=document.getElementById('selectSertifikat'); if(select){ let lulusan=santri.filter(s=>getStatus(s)==='Lulus'); select.innerHTML='<option value="">-- Pilih Santri Lulus --</option>'+lulusan.map(s=>`<option value="${s.id}">${s.nama} (${s.kelas})</option>`).join(''); } }
-function tambahSantri(){ let nama=document.getElementById('tambahNama').value.trim(), kelas=document.getElementById('tambahKelas').value.trim(); if(!nama){showToast('Nama wajib diisi','error');return;} if(!kelas){showToast('Kelas wajib diisi','error');return;} let baru=getNewSantri(); baru.id=Date.now(); baru.nama=nama; baru.kelas=kelas; santri.push(baru); saveData(); closeModal(null,'tambahModal'); document.getElementById('tambahNama').value=''; document.getElementById('tambahKelas').value=''; showToast(`Santri ${nama} ditambahkan`); }
-function editSantri(id){ let s=santri.find(x=>x.id===id); if(!s)return; let namaBaru=prompt('Edit Nama:',s.nama); if(namaBaru)s.nama=namaBaru; let kelasBaru=prompt('Edit Kelas:',s.kelas); if(kelasBaru)s.kelas=kelasBaru; saveData(); showToast('Data diupdate'); }
-function hapusSantri(id){ if(confirm('Yakin hapus santri ini?')){ santri=santri.filter(s=>s.id!==id); saveData(); showToast('Santri dihapus'); } }
-function importMassal(){ let text=document.getElementById('massalData').value.trim(); if(!text){showToast('Data kosong','error');return;} let lines=text.split('\n'), added=0; for(let line of lines){ line=line.trim(); if(!line)continue; let parts=line.split(','); if(parts.length<2)continue; let nama=parts[0].trim(); let kelas=parts.slice(1).join(',').trim(); if(nama && kelas){ let baru=getNewSantri(); baru.id=Date.now()+added; baru.nama=nama; baru.kelas=kelas; santri.push(baru); added++; } } if(added>0){ saveData(); closeModal(null,'massalModal'); document.getElementById('massalData').value=''; showToast(`Berhasil import ${added} santri`); }else{ showToast('Tidak ada data valid. Format: Nama,Kelas','error'); } }
-function showToast(msg,type='success'){ let t=document.createElement('div'); t.className=`toast toast-${type}`; t.innerHTML=`<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i> ${msg}`; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
+function downloadSertifikat(){ 
+    let node=document.getElementById('sertifikatBox'); 
+    html2canvas(node,{scale:2}).then(c=>{let a=document.createElement('a');a.download='sertifikat.png';a.href=c.toDataURL();a.click();showToast('Sertifikat terunduh');}).catch(()=>showToast('Gagal download','error')); 
+}
 
-// ==================== HAFALAN BARU DENGAN GROUP KELAS ====================
+function refreshAll() { 
+    updateDashboard(); 
+    renderSantri(); 
+    updateSelectSertifikat(); 
+    updateLaporanContent(); 
+    updateFilterKelas(); 
+    checkNotifications(); 
+    updatePerkembanganChart(); 
+}
+
+function updateFilterKelas() { 
+    let select=document.getElementById('filterKelas'); 
+    if(select){ 
+        let kelasSet=new Set(santri.map(s=>s.kelas)); 
+        select.innerHTML='<option value="">Semua Kelas</option>'+Array.from(kelasSet).sort().map(k=>`<option value="${k}">${k}</option>`).join(''); 
+    } 
+}
+
+function resetFilters(){ 
+    document.getElementById('filterKelas').value=''; 
+    document.getElementById('filterStartDate').value=''; 
+    document.getElementById('filterEndDate').value=''; 
+    updateLaporanContent(); 
+}
+
+function updateDashboard() { 
+    let lulus=0, proses=0, belum=0, mumtaz=0, jayyidJ=0, jayyid=0; 
+    santri.forEach(s=>{ let st=getStatus(s); if(st==='Lulus') lulus++; else if(st==='Proses') proses++; else belum++; if(s.nilaiSurat==='Mumtaz') mumtaz++; else if(s.nilaiSurat==='Jayyid Jiddan') jayyidJ++; else if(s.nilaiSurat==='Jayyid') jayyid++; }); 
+    document.getElementById('totalSantri').innerText=santri.length; 
+    document.getElementById('totalLulus').innerText=lulus; 
+    document.getElementById('totalProses').innerText=proses; 
+    document.getElementById('totalBelum').innerText=belum; 
+    let role=currentUser==='admin'?'Administrator':'Guru'; 
+    document.getElementById('welcomeText').innerHTML=`Selamat Datang, ${role}`; 
+    if(chartInstances.statusChart) chartInstances.statusChart.destroy(); 
+    let ctx1=document.getElementById('statusChart')?.getContext('2d'); 
+    if(ctx1) chartInstances.statusChart=new Chart(ctx1,{type:'doughnut',data:{labels:['Lulus','Proses','Belum'],datasets:[{data:[lulus,proses,belum],backgroundColor:['#10b981','#f59e0b','#ef4444']}]}}); 
+    if(chartInstances.nilaiChart) chartInstances.nilaiChart.destroy(); 
+    let ctx2=document.getElementById('nilaiChart')?.getContext('2d'); 
+    if(ctx2) chartInstances.nilaiChart=new Chart(ctx2,{type:'bar',data:{labels:['Mumtaz','Jayyid Jiddan','Jayyid'],datasets:[{label:'Jumlah Santri',data:[mumtaz,jayyidJ,jayyid],backgroundColor:'#10b981'}]}}); 
+}
+
+function updateLaporanContent() { 
+    let filterKelas=document.getElementById('filterKelas').value; 
+    let startDate=document.getElementById('filterStartDate').value; 
+    let endDate=document.getElementById('filterEndDate').value; 
+    let filtered=santri.filter(s=>{ 
+        if(filterKelas && s.kelas!==filterKelas) return false; 
+        if(startDate && s.tanggalUpdate && s.tanggalUpdate.split('T')[0] < startDate) return false; 
+        if(endDate && s.tanggalUpdate && s.tanggalUpdate.split('T')[0] > endDate) return false; 
+        return true; 
+    }); 
+    let lulus=0, proses=0, belum=0, mumtaz=0, jayyidJ=0, jayyid=0; 
+    filtered.forEach(s=>{ let st=getStatus(s); if(st==='Lulus') lulus++; else if(st==='Proses') proses++; else belum++; if(s.nilaiSurat==='Mumtaz') mumtaz++; else if(s.nilaiSurat==='Jayyid Jiddan') jayyidJ++; else if(s.nilaiSurat==='Jayyid') jayyid++; }); 
+    let tanggal=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}); 
+    document.getElementById('laporanTanggal').innerHTML=`Tanggal: ${tanggal}${filterKelas?` | Kelas: ${filterKelas}`:''}`; 
+    document.getElementById('laporanFooterTanggal').innerHTML=tanggal; 
+    document.getElementById('laporanTotalSantri').innerText=filtered.length; 
+    document.getElementById('laporanTotalLulus').innerText=lulus; 
+    document.getElementById('laporanTotalProses').innerText=proses; 
+    document.getElementById('laporanTotalBelum').innerText=belum; 
+    if(chartInstances.laporanStatusChart) chartInstances.laporanStatusChart.destroy(); 
+    let ctx1=document.getElementById('laporanStatusChart')?.getContext('2d'); 
+    if(ctx1) chartInstances.laporanStatusChart=new Chart(ctx1,{type:'doughnut',data:{labels:['Lulus','Proses','Belum'],datasets:[{data:[lulus,proses,belum],backgroundColor:['#10b981','#f59e0b','#ef4444']}]}}); 
+    if(chartInstances.laporanNilaiChart) chartInstances.laporanNilaiChart.destroy(); 
+    let ctx2=document.getElementById('laporanNilaiChart')?.getContext('2d'); 
+    if(ctx2) chartInstances.laporanNilaiChart=new Chart(ctx2,{type:'bar',data:{labels:['Mumtaz','Jayyid Jiddan','Jayyid'],datasets:[{label:'Jumlah Santri',data:[mumtaz,jayyidJ,jayyid],backgroundColor:'#10b981'}]}}); 
+    let tbody=document.getElementById('laporanTableFull'); 
+    if(tbody) tbody.innerHTML=filtered.map((s,i)=>{ let st=getStatus(s), persen=hitungProgress(s), bc=st==='Lulus'?'badge-success':(st==='Proses'?'badge-warning':'badge-danger'); return `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2">${s.nama}</td><td class="p-2">${s.kelas}</td><td class="p-2">${s.nilaiSurat||'-'}</td><td class="p-2"><div class="flex items-center gap-2"><div class="progress-bar"><div class="progress-fill" style="width:${persen}%"></div></div>${persen}%</div></td><td class="p-2"><span class="${bc}">${st}</span></td></tr>`; }).join(''); 
+}
+
+function printFullLaporan() { 
+    let printContent=document.getElementById('laporanContent').cloneNode(true); 
+    let printWindow=window.open('','_blank'); 
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Laporan Mutqin BM</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"><style>*{font-family:'Inter',sans-serif;}body{padding:30px;background:white;}.container{max-width:1200px;margin:0 auto;}.text-center{text-align:center;}.border-b{border-bottom:1px solid #e5e7eb;}.border{border:1px solid #e5e7eb;}.rounded-xl{border-radius:12px;}.p-4{padding:16px;}.p-6{padding:24px;}.mb-4{margin-bottom:16px;}.mb-6{margin-bottom:24px;}.mb-8{margin-bottom:32px;}.grid{display:grid;}.grid-cols-2{grid-template-columns:repeat(2,1fr);}.grid-cols-4{grid-template-columns:repeat(4,1fr);}.gap-4{gap:16px;}.gap-6{gap:24px;}.bg-blue-50{background:#eff6ff;}.bg-green-50{background:#f0fdf4;}.bg-yellow-50{background:#fefce8;}.bg-red-50{background:#fef2f2;}.bg-emerald-600{background:#059669;}.text-blue-600{color:#2563eb;}.text-green-600{color:#16a34a;}.text-yellow-600{color:#ca8a04;}.text-red-600{color:#dc2626;}.text-emerald-800{color:#065f46;}.text-white{color:white;}table{width:100%;border-collapse:collapse;}th,td{padding:10px;text-align:left;border-bottom:1px solid #e5e7eb;}th{background:#059669;color:white;}.progress-bar{width:80px;height:6px;background:#e5e7eb;border-radius:10px;overflow:hidden;display:inline-block;margin-right:8px;}.progress-fill{height:100%;background:#10b981;border-radius:10px;}.badge-success{background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}.badge-warning{background:#fed7aa;color:#9a3412;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}.badge-danger{background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}@media print{body{padding:0;}}</style></head><body><div class="container">${printContent.innerHTML}</div><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);};<\/script></body></html>`); 
+    printWindow.document.close(); 
+}
+
+function renderSantri() { 
+    let search=document.getElementById('searchSantri')?.value.toLowerCase()||''; 
+    let filtered=santri.filter(s=>s.nama.toLowerCase().includes(search)||s.kelas.toLowerCase().includes(search)); 
+    let container=document.getElementById('santriListContainer'); 
+    if(!container) return; 
+    if(filtered.length===0){ container.innerHTML='<div class="p-8 text-center text-gray-400">Tidak ada data</div>'; return; } 
+    let groups={}; 
+    filtered.forEach(s=>{if(!groups[s.kelas]) groups[s.kelas]=[]; groups[s.kelas].push(s);}); 
+    let html=''; 
+    for(let kelas in groups){ 
+        html+=`<div class="border-b"><div class="bg-emerald-50 p-3 font-semibold">Kelas ${kelas} (${groups[kelas].length})</div>`; 
+        groups[kelas].forEach((s,i)=>{ let st=getStatus(s), persen=hitungProgress(s), bc=st==='Lulus'?'badge-success':(st==='Proses'?'badge-warning':'badge-danger'); html+=`<div class="p-3 border-b flex justify-between items-center flex-wrap gap-2"><div class="flex items-center gap-3"><span class="w-6">${i+1}.</span><span class="font-medium">${s.nama}</span><div class="flex items-center gap-1"><div class="progress-bar"><div class="progress-fill" style="width:${persen}%"></div></div><span class="text-xs">${persen}%</span></div></div><div class="flex gap-2"><span class="${bc}">${st}</span><button onclick="editSantri(${s.id})" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="hapusSantri(${s.id})" class="text-red-500"><i class="fas fa-trash"></i></button></div></div>`; }); 
+        html+=`</div>`; 
+    } 
+    container.innerHTML=html; 
+}
+
+function updateSelectSertifikat(){ 
+    let select=document.getElementById('selectSertifikat'); 
+    if(select){ 
+        let lulusan=santri.filter(s=>getStatus(s)==='Lulus'); 
+        select.innerHTML='<option value="">-- Pilih Santri Lulus --</option>'+lulusan.map(s=>`<option value="${s.id}">${s.nama} (${s.kelas})</option>`).join(''); 
+    } 
+}
+
+function tambahSantri(){ 
+    let nama=document.getElementById('tambahNama').value.trim(), kelas=document.getElementById('tambahKelas').value.trim(); 
+    if(!nama){showToast('Nama wajib diisi','error');return;} 
+    if(!kelas){showToast('Kelas wajib diisi','error');return;} 
+    let baru=getNewSantri(); 
+    baru.id=Date.now(); 
+    baru.nama=nama; 
+    baru.kelas=kelas; 
+    santri.push(baru); 
+    saveData(); 
+    closeModal(null,'tambahModal'); 
+    document.getElementById('tambahNama').value=''; 
+    document.getElementById('tambahKelas').value=''; 
+    showToast(`Santri ${nama} ditambahkan`); 
+}
+
+function editSantri(id){ 
+    let s=santri.find(x=>x.id===id); 
+    if(!s)return; 
+    let namaBaru=prompt('Edit Nama:',s.nama); 
+    if(namaBaru) s.nama=namaBaru; 
+    let kelasBaru=prompt('Edit Kelas:',s.kelas); 
+    if(kelasBaru) s.kelas=kelasBaru; 
+    saveData(); 
+    showToast('Data diupdate'); 
+}
+
+function hapusSantri(id){ 
+    if(confirm('Yakin hapus santri ini?')){ 
+        santri=santri.filter(s=>s.id!==id); 
+        saveData(); 
+        showToast('Santri dihapus'); 
+    } 
+}
+
+function importMassal(){ 
+    let text=document.getElementById('massalData').value.trim(); 
+    if(!text){showToast('Data kosong','error');return;} 
+    let lines=text.split('\n'), added=0; 
+    for(let line of lines){ 
+        line=line.trim(); 
+        if(!line)continue; 
+        let parts=line.split(','); 
+        if(parts.length<2)continue; 
+        let nama=parts[0].trim(); 
+        let kelas=parts.slice(1).join(',').trim(); 
+        if(nama && kelas){ 
+            let baru=getNewSantri(); 
+            baru.id=Date.now()+added; 
+            baru.nama=nama; 
+            baru.kelas=kelas; 
+            santri.push(baru); 
+            added++; 
+        } 
+    } 
+    if(added>0){ 
+        saveData(); 
+        closeModal(null,'massalModal'); 
+        document.getElementById('massalData').value=''; 
+        showToast(`Berhasil import ${added} santri`); 
+    } else { 
+        showToast('Tidak ada data valid. Format: Nama,Kelas','error'); 
+    } 
+}
+
+function showToast(msg,type='success'){ 
+    let t=document.createElement('div'); 
+    t.className=`toast toast-${type}`; 
+    t.innerHTML=`<i class="fas ${type==='success'?'fa-check-circle':'fa-exclamation-circle'}"></i> ${msg}`; 
+    document.body.appendChild(t); 
+    setTimeout(()=>t.remove(),3000); 
+}
+
+// ==================== HAFALAN DENGAN GROUP KELAS ====================
 function filterSantriByKelas() {
     let input = document.getElementById('searchSantriHafalan');
     let listDiv = document.getElementById('santriListHafalan');
@@ -425,7 +766,6 @@ function filterSantriByKelas() {
         return;
     }
     
-    // Filter santri berdasarkan pencarian
     let filtered = santri.filter(s => s.nama.toLowerCase().includes(searchTerm) || s.kelas.toLowerCase().includes(searchTerm));
     
     if (filtered.length === 0) {
@@ -434,14 +774,12 @@ function filterSantriByKelas() {
         return;
     }
     
-    // Group berdasarkan kelas
     let groups = {};
     filtered.forEach(s => {
         if (!groups[s.kelas]) groups[s.kelas] = [];
         groups[s.kelas].push(s);
     });
     
-    // Urutkan kelas
     let sortedKelas = Object.keys(groups).sort((a, b) => {
         let numA = parseInt(a.match(/\d+/)?.[0] || 0);
         let numB = parseInt(b.match(/\d+/)?.[0] || 0);
@@ -457,7 +795,7 @@ function filterSantriByKelas() {
             <div class="kelas-title"><i class="fas fa-graduation-cap mr-2"></i>Kelas ${kelas}</div>`;
         groups[kelas].forEach(s => {
             html += `<div class="santri-item" data-id="${s.id}" data-nama="${s.nama}" data-kelas="${s.kelas}">
-                <strong>${s.nama}</strong>
+                <i class="fas fa-user mr-2 text-gray-400"></i><strong>${s.nama}</strong>
             </div>`;
         });
         html += `</div>`;
@@ -466,7 +804,6 @@ function filterSantriByKelas() {
     listDiv.innerHTML = html;
     listDiv.classList.remove('hidden');
     
-    // Tambahkan event listener ke setiap item
     document.querySelectorAll('#santriListHafalan .santri-item').forEach(item => {
         item.addEventListener('click', function() {
             let id = parseInt(this.dataset.id);
@@ -484,7 +821,6 @@ function loadFormHafalan() {
     let s = santri.find(x => x.id === currentSantriId);
     if (!s) return;
     
-    // Dapatkan angka dari kelas untuk menentukan tampilan Madin
     let kelasNum = parseInt(s.kelas.match(/\d+/)?.[0] || 6);
     
     let juzHtml = `<div class="flex justify-between items-center mb-3"><span class="font-medium">Centang Semua Juz 30</span><input type="checkbox" id="selectAllJuz" onchange="toggleAllJuz()" class="w-5 h-5"></div><div class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-60 overflow-y-auto p-2 bg-gray-50 rounded-lg">`;
@@ -493,10 +829,8 @@ function loadFormHafalan() {
     });
     juzHtml += `</div>`;
     
-    // TAMPILAN MADIN BERDASARKAN KELAS
     let madinHtml = '';
     if (kelasNum <= 3) {
-        // Kelas 1, 2, 3: hanya Madin Ula
         madinHtml = `<div class="grid grid-cols-1 gap-3">
             <label class="flex justify-between items-center p-3 bg-white rounded border">
                 <span>✅ Lulus Madin Ula</span>
@@ -504,7 +838,6 @@ function loadFormHafalan() {
             </label>
         </div>`;
     } else {
-        // Kelas 4, 5, 6: Madin Ula dan Madin Wustho
         madinHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <label class="flex justify-between items-center p-3 bg-white rounded border">
                 <span>✅ Lulus Madin Ula</span>
@@ -562,12 +895,52 @@ function toggleAllJuz(){ let sel=document.getElementById('selectAllJuz'); let cb
 function toggleAllPraktik(){ let c=['praktikShalat','praktikJenazah','praktikKhotib']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); if(!all)document.getElementById('nilaiPraktik').value='Mumtaz'; }
 function toggleAllMadin(){ let ula=document.getElementById('madinUla'); let wustho=document.getElementById('madinWustho'); if(ula)ula.checked=!ula.checked; if(wustho)wustho.checked=ula?ula.checked:false; }
 function toggleAllSikap(){ let c=['sikapJamaah','sikapMadin','sikapFormal']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
-function showPage(page){ document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden')); document.getElementById(`page${page.charAt(0).toUpperCase()+page.slice(1)}`).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(item=>item.classList.remove('active')); if(window.event&&window.event.currentTarget) window.event.currentTarget.classList.add('active'); if(page==='santri') renderSantri(); if(page==='dashboard') updateDashboard(); if(page==='laporan') updateLaporanContent(); if(page==='sertifikat') updateSelectSertifikat(); if(page==='hafalan'){ document.getElementById('searchSantriHafalan').value=''; document.getElementById('santriListHafalan').classList.add('hidden'); document.getElementById('formHafalan').classList.add('hidden'); currentSantriId=null; } if(window.innerWidth<1024) document.getElementById('sidebar').classList.add('-translate-x-full'); }
+
+function showPage(page){ 
+    document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden')); 
+    document.getElementById(`page${page.charAt(0).toUpperCase()+page.slice(1)}`).classList.remove('hidden'); 
+    document.querySelectorAll('.nav-item').forEach(item=>item.classList.remove('active')); 
+    if(window.event&&window.event.currentTarget) window.event.currentTarget.classList.add('active'); 
+    if(page==='santri') renderSantri(); 
+    if(page==='dashboard') updateDashboard(); 
+    if(page==='laporan') updateLaporanContent(); 
+    if(page==='sertifikat') updateSelectSertifikat(); 
+    if(page==='hafalan'){ 
+        document.getElementById('searchSantriHafalan').value=''; 
+        document.getElementById('santriListHafalan').classList.add('hidden'); 
+        document.getElementById('formHafalan').classList.add('hidden'); 
+        currentSantriId=null; 
+    } 
+    if(window.innerWidth<1024) document.getElementById('sidebar').classList.add('-translate-x-full'); 
+}
+
 function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
 function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
 function closeModal(e,id){ if(!e||e.target===document.getElementById(id)) document.getElementById(id).classList.add('hidden'); }
-function doLogin(){ let u=document.getElementById('loginUser').value, p=document.getElementById('loginPass').value; if((u==='admin'&&p==='admin123')||(u==='guru'&&p==='guru123')){ currentUser=u; document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden'); loadData(); showToast(`Selamat datang!`); }else{ let err=document.getElementById('loginError'); err.innerText='Username atau password salah!'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),2000); } }
-function doLogout(){ document.getElementById('mainApp').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); document.getElementById('loginUser').value=''; document.getElementById('loginPass').value=''; }
+
+function doLogin(){ 
+    let u=document.getElementById('loginUser').value, p=document.getElementById('loginPass').value; 
+    if((u==='admin'&&p==='admin123')||(u==='guru'&&p==='guru123')){ 
+        currentUser=u; 
+        document.getElementById('loginScreen').classList.add('hidden'); 
+        document.getElementById('mainApp').classList.remove('hidden'); 
+        loadData(); 
+        showToast(`Selamat datang!`); 
+    } else { 
+        let err=document.getElementById('loginError'); 
+        err.innerText='Username atau password salah!'; 
+        err.classList.remove('hidden'); 
+        setTimeout(()=>err.classList.add('hidden'),2000); 
+    } 
+}
+
+function doLogout(){ 
+    document.getElementById('mainApp').classList.add('hidden'); 
+    document.getElementById('loginScreen').classList.remove('hidden'); 
+    document.getElementById('loginUser').value=''; 
+    document.getElementById('loginPass').value=''; 
+}
+
 loadData();
 </script>
 </body>
