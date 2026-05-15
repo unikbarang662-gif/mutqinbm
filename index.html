@@ -478,11 +478,11 @@ async function syncToCloud() {
     try {
         setSyncStatus('Menyimpan ke cloud...', true);
         document.getElementById('cloudStatus').innerHTML = '⏳ Menyimpan ke Google Sheets...';
+        
+        // Simpan data santri
         const dataToSend = { 
             action: 'save', 
             santri: santri, 
-            profil: profilData, 
-            logo: logoBase64,
             timestamp: new Date().toISOString() 
         };
         await fetch(APPS_SCRIPT_URL, { 
@@ -491,6 +491,20 @@ async function syncToCloud() {
             headers: { 'Content-Type': 'application/json' }, 
             body: JSON.stringify(dataToSend) 
         });
+        
+        // Simpan profil ke sheet terpisah
+        const profilToSend = {
+            action: 'saveProfil',
+            profil: profilData,
+            logo: logoBase64
+        };
+        await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(profilToSend)
+        });
+        
         setSyncStatus('✅ Tersimpan ke cloud!', true);
         document.getElementById('cloudStatus').innerHTML = '✅ Data tersimpan di cloud';
         showToast('Data berhasil disimpan ke cloud!', 'success');
@@ -503,6 +517,8 @@ async function loadFromCloud() {
     try {
         setSyncStatus('Memuat dari cloud...', true);
         document.getElementById('cloudStatus').innerHTML = '⏳ Memuat data...';
+        
+        // Load data santri
         const response = await fetch(`${APPS_SCRIPT_URL}?action=get`);
         const data = await response.json();
         
@@ -530,38 +546,39 @@ async function loadFromCloud() {
             }
         }
         
-        // Load profil dari cloud (menggunakan endpoint terpisah)
+        // Load profil dari cloud
         try {
             const profilResponse = await fetch(`${APPS_SCRIPT_URL}?action=getProfil`);
             const profilDataCloud = await profilResponse.json();
             if (profilDataCloud && profilDataCloud.nama) {
                 profilData = profilDataCloud;
+                document.getElementById('profilNama').value = profilData.nama || 'Pondok Pesantren Bahrul Maghfiroh';
+                document.getElementById('profilPengasuh').value = profilData.pengasuh || '';
+                document.getElementById('profilKapondok').value = profilData.kapondok || '';
+                document.getElementById('profilAlamat').value = profilData.alamat || '';
             }
-        } catch(e) {}
-        
-        // Load logo dari cloud
-        try {
-            const logoResponse = await fetch(`${APPS_SCRIPT_URL}?action=getLogo`);
-            const logoData = await logoResponse.json();
-            if (logoData && logoData.logo) {
-                logoBase64 = logoData.logo;
+            if (profilDataCloud && profilDataCloud.logo) {
+                logoBase64 = profilDataCloud.logo;
                 updateLogoDisplay(logoBase64);
                 localStorage.setItem('mutqin_logo_final', logoBase64);
             }
-        } catch(e) {}
+        } catch(e) { console.log('Gagal load profil', e); }
         
-        document.getElementById('profilNama').value = profilData.nama || 'Pondok Pesantren Bahrul Maghfiroh';
-        document.getElementById('profilPengasuh').value = profilData.pengasuh || '';
-        document.getElementById('profilKapondok').value = profilData.kapondok || '';
-        document.getElementById('profilAlamat').value = profilData.alamat || '';
-        
-        saveData();
+        saveDataToLocal();
         setSyncStatus('✅ Load berhasil!', true);
         document.getElementById('cloudStatus').innerHTML = '✅ Data dimuat dari cloud';
         showToast('Data berhasil dimuat dari cloud!', 'success');
     } catch(e) { 
         showToast('Gagal load dari cloud', 'error'); 
     }
+}
+
+function saveDataToLocal() {
+    localStorage.setItem('mutqin_santri_final', JSON.stringify(santri)); 
+    localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData)); 
+    if(logoBase64) localStorage.setItem('mutqin_logo_final', logoBase64);
+    refreshAll(); 
+    showToast('Data tersimpan di lokal');
 }
 
 function setSyncStatus(text, isOnline) { 
@@ -586,7 +603,6 @@ function loadData() {
         ];
     }
     
-    // Load profil dari localStorage
     let savedProfil = localStorage.getItem('mutqin_profil_final');
     if (savedProfil) { 
         try { 
@@ -636,7 +652,7 @@ function saveProfil() {
 
 function updateLogoDisplay(data) { 
     let iconEl = document.getElementById('logoPreviewIcon'), imgEl = document.getElementById('logoPreviewImg'); 
-    if(data){ 
+    if(data && data !== 'null' && data !== 'undefined'){ 
         if(iconEl) iconEl.classList.add('hidden'); 
         if(imgEl){ imgEl.classList.remove('hidden'); imgEl.src = data; } 
     } else { 
@@ -799,7 +815,7 @@ function updateLaporanContent() {
     let ctx1 = document.getElementById('laporanStatusChart')?.getContext('2d'); 
     if(ctx1) chartInstances.laporanStatusChart = new Chart(ctx1, { type: 'doughnut', data: { labels: ['Lulus', 'Proses', 'Belum'], datasets: [{ data: [lulus, proses, belum], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'] }] } }); 
     let tbody = document.getElementById('laporanTableFull'); 
-    if(tbody) tbody.innerHTML = filtered.map((s, i) => { let st = getStatus(s); let bc = st === 'Lulus' ? 'badge-success' : (st === 'Proses' ? 'badge-warning' : 'badge-danger'); return `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2">${s.nama}</td><td class="p-2">${s.kelas}</td><td class="p-2">${s.nilaiSurat||'-'}</td><td class="p-2"><span class="${bc}">${st}</span></td></tr>`; }).join(''); 
+    if(tbody) tbody.innerHTML = filtered.map((s, i) => { let st = getStatus(s); let bc = st === 'Lulus' ? 'badge-success' : (st === 'Proses' ? 'badge-warning' : 'badge-danger'); return `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2">${s.nama}</td><td class="p-2">${s.kelas}</td><td class="p-2">${s.nilaiSurat||'-'}<td><td class="p-2"><span class="${bc}">${st}</span></td></tr>`; }).join(''); 
 }
 
 function printFullLaporan() { 
