@@ -370,9 +370,39 @@ function cekLulus(s) {
     return true;
 }
 
+function hitungPersenLulus(s) {
+    let total = 54;
+    let done = 0;
+    if (s.yasin === true) done++;
+    if (s.waqiah === true) done++;
+    if (s.mulk === true) done++;
+    if (s.wirid === true) done++;
+    if (s.doaShalat === true) done++;
+    if (s.tahlilRingkas === true) done++;
+    if (s.tahlilLengkap === true) done++;
+    if (s.doaTahlil === true) done++;
+    if (s.tawasul === true) done++;
+    if (s.juz30) {
+        for (let i = 0; i < 37; i++) {
+            if (s.juz30[i] === true) done++;
+        }
+    }
+    if (s.praktikShalat === true) done++;
+    if (s.praktikJenazah === true) done++;
+    if (s.praktikKhotib === true) done++;
+    if (s.madinUla === true) done++;
+    if (s.madinWustho === true) done++;
+    if (s.sikapJamaah === true) done++;
+    if (s.sikapMadin === true) done++;
+    if (s.sikapFormal === true) done++;
+    return Math.round((done / total) * 100);
+}
+
 function getStatus(s) { 
     if (cekLulus(s)) return 'Lulus'; 
-    return 'Proses'; 
+    let persen = hitungPersenLulus(s);
+    if (persen >= 30) return 'Proses';
+    return 'Belum';
 }
 
 function getNewSantri() { 
@@ -603,17 +633,18 @@ function setSyncStatus(text, isOnline) {
 
 // ==================== DATA LOCAL ====================
 function loadData() {
-    let saved = localStorage.getItem('mutqin_santri_final_v8');
+    let saved = localStorage.getItem('mutqin_santri_final_v9');
     if (saved) { try { santri = JSON.parse(saved); } catch(e) { santri = []; } }
     if (!santri.length) {
+        let contohJuz = Array(37).fill(true);
         santri = [
-            { id: 1, nama: 'Ahmad Maulana', kelas: '3A', yasin: true, waqiah: true, mulk: true, nilaiSurat: 'Mumtaz', wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, nilaiAurad: 'Mumtaz', juz30: Array(37).fill(true), nilaiJuz: 'Mumtaz', praktikShalat: true, praktikJenazah: true, praktikKhotib: true, nilaiPraktik: 'Mumtaz', madinUla: true, madinWustho: true, sikapJamaah: true, sikapMadin: true, sikapFormal: true, tanggalUpdate: new Date().toISOString() },
+            { id: 1, nama: 'Ahmad Maulana', kelas: '3A', yasin: true, waqiah: true, mulk: true, nilaiSurat: 'Mumtaz', wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, nilaiAurad: 'Mumtaz', juz30: [...contohJuz], nilaiJuz: 'Mumtaz', praktikShalat: true, praktikJenazah: true, praktikKhotib: true, nilaiPraktik: 'Mumtaz', madinUla: true, madinWustho: true, sikapJamaah: true, sikapMadin: true, sikapFormal: true, tanggalUpdate: new Date().toISOString() },
             { id: 2, nama: 'Fatimah Azzahra', kelas: '2B', yasin: true, nilaiSurat: 'Jayyid Jiddan', juz30: Array(37).fill(false), tanggalUpdate: new Date().toISOString() },
             { id: 3, nama: 'Muhammad Rizki', kelas: '1A', juz30: Array(37).fill(false), tanggalUpdate: new Date().toISOString() }
         ];
     }
     
-    let savedProfil = localStorage.getItem('mutqin_profil_final_v8');
+    let savedProfil = localStorage.getItem('mutqin_profil_final_v9');
     if (savedProfil) { try { let p = JSON.parse(savedProfil); profilData = p; } catch(e) {} }
     
     document.getElementById('profilNama').value = profilData.nama || 'Pondok Pesantren Bahrul Maghfiroh';
@@ -621,16 +652,16 @@ function loadData() {
     document.getElementById('profilKapondok').value = profilData.kapondok || '';
     document.getElementById('profilAlamat').value = profilData.alamat || '';
     
-    let savedLogo = localStorage.getItem('mutqin_logo_final_v8');
+    let savedLogo = localStorage.getItem('mutqin_logo_final_v9');
     if (savedLogo) { logoBase64 = savedLogo; updateLogoDisplay(logoBase64); }
     
     refreshAll();
 }
 
 function saveData() { 
-    localStorage.setItem('mutqin_santri_final_v8', JSON.stringify(santri)); 
-    localStorage.setItem('mutqin_profil_final_v8', JSON.stringify(profilData)); 
-    if(logoBase64) localStorage.setItem('mutqin_logo_final_v8', logoBase64);
+    localStorage.setItem('mutqin_santri_final_v9', JSON.stringify(santri)); 
+    localStorage.setItem('mutqin_profil_final_v9', JSON.stringify(profilData)); 
+    if(logoBase64) localStorage.setItem('mutqin_logo_final_v9', logoBase64);
     refreshAll(); 
     showToast('Data tersimpan di lokal');
     setTimeout(() => { syncToCloud().catch(e => console.log('Auto sync gagal')); }, 500);
@@ -643,7 +674,7 @@ function saveProfil() {
         kapondok: document.getElementById('profilKapondok').value, 
         alamat: document.getElementById('profilAlamat').value 
     }; 
-    localStorage.setItem('mutqin_profil_final_v8', JSON.stringify(profilData)); 
+    localStorage.setItem('mutqin_profil_final_v9', JSON.stringify(profilData)); 
     saveProfilToCloud();
     showToast('Profil berhasil disimpan'); 
 }
@@ -665,7 +696,7 @@ function uploadLogo(input) {
         r.onload=e=>{ 
             logoBase64=e.target.result; 
             updateLogoDisplay(logoBase64); 
-            localStorage.setItem('mutqin_logo_final_v8',logoBase64); 
+            localStorage.setItem('mutqin_logo_final_v9',logoBase64); 
             showToast('Logo tersimpan'); 
         }; 
         r.readAsDataURL(input.files[0]); 
@@ -675,7 +706,7 @@ function uploadLogo(input) {
 function clearLogo() { 
     logoBase64=null; 
     updateLogoDisplay(null); 
-    localStorage.removeItem('mutqin_logo_final_v8'); 
+    localStorage.removeItem('mutqin_logo_final_v9'); 
     showToast('Logo dihapus'); 
 }
 
@@ -776,42 +807,91 @@ function resetFilters(){
 }
 
 function updateDashboard() { 
-    let lulus=0, proses=0, mumtaz=0, jayyidJ=0, jayyid=0; 
-    santri.forEach(s=>{ let st=getStatus(s); if(st==='Lulus') lulus++; else proses++; if(s.nilaiSurat==='Mumtaz') mumtaz++; else if(s.nilaiSurat==='Jayyid Jiddan') jayyidJ++; else if(s.nilaiSurat==='Jayyid') jayyid++; }); 
-    document.getElementById('totalSantri').innerText=santri.length; 
-    document.getElementById('totalLulus').innerText=lulus; 
-    document.getElementById('totalProses').innerText=proses; 
-    document.getElementById('totalBelum').innerText=0; 
+    let lulus = 0, proses = 0, belum = 0, mumtaz = 0, jayyidJ = 0, jayyid = 0; 
+    santri.forEach(s => { 
+        let st = getStatus(s); 
+        if (st === 'Lulus') lulus++; 
+        else if (st === 'Proses') proses++; 
+        else belum++; 
+        if(s.nilaiSurat === 'Mumtaz') mumtaz++; 
+        else if(s.nilaiSurat === 'Jayyid Jiddan') jayyidJ++; 
+        else if(s.nilaiSurat === 'Jayyid') jayyid++; 
+    }); 
+    document.getElementById('totalSantri').innerText = santri.length; 
+    document.getElementById('totalLulus').innerText = lulus; 
+    document.getElementById('totalProses').innerText = proses; 
+    document.getElementById('totalBelum').innerText = belum; 
     let roleLabel = currentUserRole === 'admin' ? 'Administrator' : 'Guru';
-    document.getElementById('welcomeText').innerHTML=`Selamat Datang, ${roleLabel}`; 
+    document.getElementById('welcomeText').innerHTML = `Selamat Datang, ${roleLabel}`; 
+    
     if(chartInstances.statusChart) chartInstances.statusChart.destroy(); 
-    let ctx1=document.getElementById('statusChart')?.getContext('2d'); 
-    if(ctx1) chartInstances.statusChart=new Chart(ctx1,{type:'doughnut',data:{labels:['Lulus','Proses'],datasets:[{data:[lulus,proses],backgroundColor:['#10b981','#f59e0b']}]}}); 
+    let ctx1 = document.getElementById('statusChart')?.getContext('2d'); 
+    if(ctx1) chartInstances.statusChart = new Chart(ctx1, {
+        type: 'doughnut', 
+        data: { 
+            labels: ['Lulus', 'Proses', 'Belum'], 
+            datasets: [{ data: [lulus, proses, belum], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'] }]
+        }
+    }); 
+    
     if(chartInstances.nilaiChart) chartInstances.nilaiChart.destroy(); 
-    let ctx2=document.getElementById('nilaiChart')?.getContext('2d'); 
-    if(ctx2) chartInstances.nilaiChart=new Chart(ctx2,{type:'bar',data:{labels:['Mumtaz','Jayyid Jiddan','Jayyid'],datasets:[{label:'Jumlah Santri',data:[mumtaz,jayyidJ,jayyid],backgroundColor:'#10b981'}]}}); 
+    let ctx2 = document.getElementById('nilaiChart')?.getContext('2d'); 
+    if(ctx2) chartInstances.nilaiChart = new Chart(ctx2, {
+        type: 'bar', 
+        data: { 
+            labels: ['Mumtaz', 'Jayyid Jiddan', 'Jayyid'], 
+            datasets: [{ label: 'Jumlah Santri', data: [mumtaz, jayyidJ, jayyid], backgroundColor: '#10b981' }]
+        }
+    }); 
 }
 
 function updateLaporanContent() { 
-    let filterKelas=document.getElementById('filterKelas').value; 
-    let filtered=santri.filter(s=>!filterKelas||s.kelas===filterKelas); 
-    let lulus=0, proses=0, mumtaz=0, jayyidJ=0, jayyid=0; 
-    filtered.forEach(s=>{ let st=getStatus(s); if(st==='Lulus') lulus++; else proses++; if(s.nilaiSurat==='Mumtaz') mumtaz++; else if(s.nilaiSurat==='Jayyid Jiddan') jayyidJ++; else if(s.nilaiSurat==='Jayyid') jayyid++; }); 
-    let tanggal=new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}); 
-    document.getElementById('laporanTanggal').innerHTML=`Tanggal: ${tanggal}${filterKelas?` | Kelas: ${filterKelas}`:''}`; 
-    document.getElementById('laporanFooterTanggal').innerHTML=tanggal; 
-    document.getElementById('laporanTotalSantri').innerText=filtered.length; 
-    document.getElementById('laporanTotalLulus').innerText=lulus; 
-    document.getElementById('laporanTotalProses').innerText=proses; 
-    document.getElementById('laporanTotalBelum').innerText=0; 
+    let filterKelas = document.getElementById('filterKelas').value; 
+    let filtered = santri.filter(s => !filterKelas || s.kelas === filterKelas); 
+    let lulus = 0, proses = 0, belum = 0, mumtaz = 0, jayyidJ = 0, jayyid = 0; 
+    filtered.forEach(s => { 
+        let st = getStatus(s); 
+        if(st === 'Lulus') lulus++; 
+        else if(st === 'Proses') proses++; 
+        else belum++; 
+        if(s.nilaiSurat === 'Mumtaz') mumtaz++; 
+        else if(s.nilaiSurat === 'Jayyid Jiddan') jayyidJ++; 
+        else if(s.nilaiSurat === 'Jayyid') jayyid++; 
+    }); 
+    let tanggal = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'}); 
+    document.getElementById('laporanTanggal').innerHTML = `Tanggal: ${tanggal}${filterKelas ? ` | Kelas: ${filterKelas}` : ''}`; 
+    document.getElementById('laporanFooterTanggal').innerHTML = tanggal; 
+    document.getElementById('laporanTotalSantri').innerText = filtered.length; 
+    document.getElementById('laporanTotalLulus').innerText = lulus; 
+    document.getElementById('laporanTotalProses').innerText = proses; 
+    document.getElementById('laporanTotalBelum').innerText = belum; 
+    
     if(chartInstances.laporanStatusChart) chartInstances.laporanStatusChart.destroy(); 
-    let ctx1=document.getElementById('laporanStatusChart')?.getContext('2d'); 
-    if(ctx1) chartInstances.laporanStatusChart=new Chart(ctx1,{type:'doughnut',data:{labels:['Lulus','Proses'],datasets:[{data:[lulus,proses],backgroundColor:['#10b981','#f59e0b']}]}}); 
+    let ctx1 = document.getElementById('laporanStatusChart')?.getContext('2d'); 
+    if(ctx1) chartInstances.laporanStatusChart = new Chart(ctx1, {
+        type: 'doughnut', 
+        data: { 
+            labels: ['Lulus', 'Proses', 'Belum'], 
+            datasets: [{ data: [lulus, proses, belum], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'] }]
+        }
+    }); 
+    
     if(chartInstances.laporanNilaiChart) chartInstances.laporanNilaiChart.destroy(); 
-    let ctx2=document.getElementById('laporanNilaiChart')?.getContext('2d'); 
-    if(ctx2) chartInstances.laporanNilaiChart=new Chart(ctx2,{type:'bar',data:{labels:['Mumtaz','Jayyid Jiddan','Jayyid'],datasets:[{label:'Jumlah Santri',data:[mumtaz,jayyidJ,jayyid],backgroundColor:'#10b981'}]}}); 
-    let tbody=document.getElementById('laporanTableFull'); 
-    if(tbody) tbody.innerHTML=filtered.map((s,i)=>{ let st=getStatus(s), bc=st==='Lulus'?'badge-success':'badge-warning'; return `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2">${s.nama}</td><td class="p-2">${s.kelas}</td><td class="p-2">${s.nilaiSurat||'-'}</td><td class="p-2"><span class="${bc}">${st}</span></td></tr>`; }).join(''); 
+    let ctx2 = document.getElementById('laporanNilaiChart')?.getContext('2d'); 
+    if(ctx2) chartInstances.laporanNilaiChart = new Chart(ctx2, {
+        type: 'bar', 
+        data: { 
+            labels: ['Mumtaz', 'Jayyid Jiddan', 'Jayyid'], 
+            datasets: [{ label: 'Jumlah Santri', data: [mumtaz, jayyidJ, jayyid], backgroundColor: '#10b981' }]
+        }
+    }); 
+    
+    let tbody = document.getElementById('laporanTableFull'); 
+    if(tbody) tbody.innerHTML = filtered.map((s, i) => { 
+        let st = getStatus(s); 
+        let bc = st === 'Lulus' ? 'badge-success' : (st === 'Proses' ? 'badge-warning' : 'badge-danger'); 
+        return `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2">${s.nama}</td><td class="p-2">${s.kelas}</td><td class="p-2">${s.nilaiSurat||'-'}</td><td class="p-2"><span class="${bc}">${st}</span></td></tr>`; 
+    }).join(''); 
 }
 
 function printFullLaporan() { 
@@ -822,7 +902,7 @@ function printFullLaporan() {
         <html>
         <head><title>Laporan Mutqin BM</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-        <style>*{font-family:'Inter',sans-serif;}body{padding:30px;background:white;}.container{max-width:1200px;margin:0 auto;}.text-center{text-align:center;}.border-b{border-bottom:1px solid #e5e7eb;}.border{border:1px solid #e5e7eb;}.rounded-xl{border-radius:12px;}.p-4{padding:16px;}.p-6{padding:24px;}.mb-4{margin-bottom:16px;}.mb-6{margin-bottom:24px;}.mb-8{margin-bottom:32px;}.grid{display:grid;}.grid-cols-2{grid-template-columns:repeat(2,1fr);}.grid-cols-4{grid-template-columns:repeat(4,1fr);}.gap-4{gap:16px;}.gap-6{gap:24px;}.bg-blue-50{background:#eff6ff;}.bg-green-50{background:#f0fdf4;}.bg-yellow-50{background:#fefce8;}.bg-red-50{background:#fef2f2;}.bg-emerald-600{background:#059669;}.text-blue-600{color:#2563eb;}.text-green-600{color:#16a34a;}.text-yellow-600{color:#ca8a04;}.text-red-600{color:#dc2626;}.text-emerald-800{color:#065f46;}.text-white{color:white;}table{width:100%;border-collapse:collapse;}th,td{padding:10px;text-align:left;border-bottom:1px solid #e5e7eb;}th{background:#059669;color:white;}.badge-success{background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}.badge-warning{background:#fed7aa;color:#9a3412;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}@media print{body{padding:0;}}</style>
+        <style>*{font-family:'Inter',sans-serif;}body{padding:30px;background:white;}.container{max-width:1200px;margin:0 auto;}.text-center{text-align:center;}.border-b{border-bottom:1px solid #e5e7eb;}.border{border:1px solid #e5e7eb;}.rounded-xl{border-radius:12px;}.p-4{padding:16px;}.p-6{padding:24px;}.mb-4{margin-bottom:16px;}.mb-6{margin-bottom:24px;}.mb-8{margin-bottom:32px;}.grid{display:grid;}.grid-cols-2{grid-template-columns:repeat(2,1fr);}.grid-cols-4{grid-template-columns:repeat(4,1fr);}.gap-4{gap:16px;}.gap-6{gap:24px;}.bg-blue-50{background:#eff6ff;}.bg-green-50{background:#f0fdf4;}.bg-yellow-50{background:#fefce8;}.bg-red-50{background:#fef2f2;}.bg-emerald-600{background:#059669;}.text-blue-600{color:#2563eb;}.text-green-600{color:#16a34a;}.text-yellow-600{color:#ca8a04;}.text-red-600{color:#dc2626;}.text-emerald-800{color:#065f46;}.text-white{color:white;}table{width:100%;border-collapse:collapse;}th,td{padding:10px;text-align:left;border-bottom:1px solid #e5e7eb;}th{background:#059669;color:white;}.badge-success{background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}.badge-warning{background:#fed7aa;color:#9a3412;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}.badge-danger{background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}@media print{body{padding:0;}}</style>
         </head><body><div class="container">${printContent.innerHTML}</div><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);};<\/script></body></html>
     `);
     printWindow.document.close(); 
@@ -841,7 +921,7 @@ function renderSantri() {
     let html=''; 
     for(let kelas of sortedKelas){ 
         html+=`<div class="border-b"><div class="bg-emerald-50 p-3 font-semibold">📚 Kelas ${kelas} <span class="text-sm ml-2 text-gray-500">(${groups[kelas].length} santri)</span></div>`; 
-        groups[kelas].forEach((s,i)=>{ let st=getStatus(s), bc=st==='Lulus'?'badge-success':'badge-warning'; 
+        groups[kelas].forEach((s,i)=>{ let st=getStatus(s), bc=st==='Lulus'?'badge-success':(st==='Proses'?'badge-warning':'badge-danger'); 
         html+=`<div class="p-3 border-b flex justify-between items-center flex-wrap gap-2"><div class="flex items-center gap-3"><span class="w-6 text-gray-400">${i+1}.</span><span class="font-medium">${s.nama}</span></div><div class="flex gap-2"><span class="${bc}">${st}</span>`;
         if(currentUserRole === 'admin') {
             html+=`<button onclick="editSantri(${s.id})" class="text-blue-500 hover:text-blue-700"><i class="fas fa-edit"></i></button><button onclick="hapusSantri(${s.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>`;
@@ -885,7 +965,7 @@ function renderHafalanList() {
             </div>`;
         groups[kelas].forEach(s => {
             let st = getStatus(s);
-            let badgeClass = st === 'Lulus' ? 'badge-success' : 'badge-warning';
+            let badgeClass = st === 'Lulus' ? 'badge-success' : (st === 'Proses' ? 'badge-warning' : 'badge-danger');
             html += `<div class="santri-item clickable" data-id="${s.id}" data-nama="${s.nama}">
                 <div class="flex items-center gap-3">
                     <i class="fas fa-user-circle text-gray-400 text-lg"></i>
