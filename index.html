@@ -339,33 +339,47 @@ let profilData = {
 
 const daftarJuz = ['An-Naba','An-Nazi\'at','Abasa','At-Takwir','Al-Infitar','Al-Mutaffifin','Al-Insyiqaq','Al-Buruj','At-Tariq','Al-A\'la','Al-Ghasyiyah','Al-Fajr','Al-Balad','Asy-Syams','Al-Lail','Ad-Duha','Asy-Syarh','At-Tin','Al-Alaq','Al-Qadr','Al-Bayyinah','Az-Zalzalah','Al-Adiyat','Al-Qari\'ah','At-Takasur','Al-Asr','Al-Humazah','Al-Fil','Quraisy','Al-Ma\'un','Al-Kausar','Al-Kafirun','An-Nasr','Al-Lahab','Al-Ikhlas','Al-Falaq','An-Nas'];
 
-// TOTAL 54 ITEM: 3 surat + 6 aurad + 37 juz + 3 praktik + 2 madin + 3 sikap = 54
+// ==================== HITUNG PROGRESS YANG BENAR ====================
 function hitungProgress(s) {
     let total = 54;
     let done = 0;
-    if (s.yasin) done++;
-    if (s.waqiah) done++;
-    if (s.mulk) done++;
-    if (s.wirid) done++;
-    if (s.doaShalat) done++;
-    if (s.tahlilRingkas) done++;
-    if (s.tahlilLengkap) done++;
-    if (s.doaTahlil) done++;
-    if (s.tawasul) done++;
-    if (s.juz30) {
-        let juzDone = s.juz30.filter(v => v === true).length;
-        done += juzDone;
+    
+    // 3 Surat
+    if (s.yasin === true) done++;
+    if (s.waqiah === true) done++;
+    if (s.mulk === true) done++;
+    
+    // 6 Aurad
+    if (s.wirid === true) done++;
+    if (s.doaShalat === true) done++;
+    if (s.tahlilRingkas === true) done++;
+    if (s.tahlilLengkap === true) done++;
+    if (s.doaTahlil === true) done++;
+    if (s.tawasul === true) done++;
+    
+    // 37 Juz 30
+    if (s.juz30 && s.juz30.length === 37) {
+        for (let i = 0; i < 37; i++) {
+            if (s.juz30[i] === true) done++;
+        }
     }
-    if (s.praktikShalat) done++;
-    if (s.praktikJenazah) done++;
-    if (s.praktikKhotib) done++;
-    if (s.madinUla) done++;
-    if (s.madinWustho) done++;
-    if (s.sikapJamaah) done++;
-    if (s.sikapMadin) done++;
-    if (s.sikapFormal) done++;
+    
+    // 3 Praktik
+    if (s.praktikShalat === true) done++;
+    if (s.praktikJenazah === true) done++;
+    if (s.praktikKhotib === true) done++;
+    
+    // 2 Madin
+    if (s.madinUla === true) done++;
+    if (s.madinWustho === true) done++;
+    
+    // 3 Sikap
+    if (s.sikapJamaah === true) done++;
+    if (s.sikapMadin === true) done++;
+    if (s.sikapFormal === true) done++;
     
     let persen = Math.round((done / total) * 100);
+    console.log('Done: ' + done + ' / Total: ' + total + ' = ' + persen + '%');
     return persen;
 }
 
@@ -604,7 +618,7 @@ function setSyncStatus(text, isOnline) {
 
 // ==================== DATA LOCAL ====================
 function loadData() {
-    let saved = localStorage.getItem('mutqin_santri_final_v3');
+    let saved = localStorage.getItem('mutqin_santri_final_v4');
     if (saved) { try { santri = JSON.parse(saved); } catch(e) { santri = []; } }
     if (!santri.length) {
         santri = [
@@ -614,7 +628,7 @@ function loadData() {
         ];
     }
     
-    let savedProfil = localStorage.getItem('mutqin_profil_final_v3');
+    let savedProfil = localStorage.getItem('mutqin_profil_final_v4');
     if (savedProfil) { try { let p = JSON.parse(savedProfil); profilData = p; } catch(e) {} }
     
     document.getElementById('profilNama').value = profilData.nama || 'Pondok Pesantren Bahrul Maghfiroh';
@@ -622,16 +636,16 @@ function loadData() {
     document.getElementById('profilKapondok').value = profilData.kapondok || '';
     document.getElementById('profilAlamat').value = profilData.alamat || '';
     
-    let savedLogo = localStorage.getItem('mutqin_logo_final_v3');
+    let savedLogo = localStorage.getItem('mutqin_logo_final_v4');
     if (savedLogo) { logoBase64 = savedLogo; updateLogoDisplay(logoBase64); }
     
     refreshAll();
 }
 
 function saveData() { 
-    localStorage.setItem('mutqin_santri_final_v3', JSON.stringify(santri)); 
-    localStorage.setItem('mutqin_profil_final_v3', JSON.stringify(profilData)); 
-    if(logoBase64) localStorage.setItem('mutqin_logo_final_v3', logoBase64);
+    localStorage.setItem('mutqin_santri_final_v4', JSON.stringify(santri)); 
+    localStorage.setItem('mutqin_profil_final_v4', JSON.stringify(profilData)); 
+    if(logoBase64) localStorage.setItem('mutqin_logo_final_v4', logoBase64);
     refreshAll(); 
     showToast('Data tersimpan di lokal');
     setTimeout(() => { syncToCloud().catch(e => console.log('Auto sync gagal')); }, 500);
@@ -644,7 +658,7 @@ function saveProfil() {
         kapondok: document.getElementById('profilKapondok').value, 
         alamat: document.getElementById('profilAlamat').value 
     }; 
-    localStorage.setItem('mutqin_profil_final_v3', JSON.stringify(profilData)); 
+    localStorage.setItem('mutqin_profil_final_v4', JSON.stringify(profilData)); 
     saveProfilToCloud();
     showToast('Profil berhasil disimpan'); 
 }
@@ -666,7 +680,7 @@ function uploadLogo(input) {
         r.onload=e=>{ 
             logoBase64=e.target.result; 
             updateLogoDisplay(logoBase64); 
-            localStorage.setItem('mutqin_logo_final_v3',logoBase64); 
+            localStorage.setItem('mutqin_logo_final_v4',logoBase64); 
             showToast('Logo tersimpan'); 
         }; 
         r.readAsDataURL(input.files[0]); 
@@ -676,7 +690,7 @@ function uploadLogo(input) {
 function clearLogo() { 
     logoBase64=null; 
     updateLogoDisplay(null); 
-    localStorage.removeItem('mutqin_logo_final_v3'); 
+    localStorage.removeItem('mutqin_logo_final_v4'); 
     showToast('Logo dihapus'); 
 }
 
@@ -859,7 +873,6 @@ function renderSantriHafalanGroup() {
     let listDiv = document.getElementById('santriListHafalan');
     if(!listDiv) return;
     
-    // Tampilkan semua santri jika tidak ada pencarian
     let filtered = santri;
     if (searchTerm !== '') {
         filtered = santri.filter(s => s.nama.toLowerCase().includes(searchTerm) || s.kelas.toLowerCase().includes(searchTerm));
@@ -1087,7 +1100,11 @@ function simpanSurat(){
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
     let prog = hitungProgress(santri[idx]);
-    showToast('✅ Surat tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
+    if(prog >= 100) {
+        showToast('🎉 SELAMAT! Semua checklist tercentang! Status: LULUS (100%) 🎉', 'success');
+    } else {
+        showToast('✅ Surat tersimpan - Progress: ' + prog + '%', 'success');
+    }
     loadFormHafalan(); 
     renderSantriHafalanGroup();
 }
@@ -1105,7 +1122,11 @@ function simpanAurad(){
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
     let prog = hitungProgress(santri[idx]);
-    showToast('✅ Aurad tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
+    if(prog >= 100) {
+        showToast('🎉 SELAMAT! Semua checklist tercentang! Status: LULUS (100%) 🎉', 'success');
+    } else {
+        showToast('✅ Aurad tersimpan - Progress: ' + prog + '%', 'success');
+    }
     loadFormHafalan(); 
     renderSantriHafalanGroup();
 }
@@ -1118,7 +1139,11 @@ function simpanJuz(){
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
     let prog = hitungProgress(santri[idx]);
-    showToast('✅ Juz 30 tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
+    if(prog >= 100) {
+        showToast('🎉 SELAMAT! Semua checklist tercentang! Status: LULUS (100%) 🎉', 'success');
+    } else {
+        showToast('✅ Juz 30 tersimpan - Progress: ' + prog + '%', 'success');
+    }
     loadFormHafalan(); 
     renderSantriHafalanGroup();
 }
@@ -1133,7 +1158,11 @@ function simpanPraktik(){
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
     let prog = hitungProgress(santri[idx]);
-    showToast('✅ Praktik tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
+    if(prog >= 100) {
+        showToast('🎉 SELAMAT! Semua checklist tercentang! Status: LULUS (100%) 🎉', 'success');
+    } else {
+        showToast('✅ Praktik tersimpan - Progress: ' + prog + '%', 'success');
+    }
     loadFormHafalan(); 
     renderSantriHafalanGroup();
 }
@@ -1147,7 +1176,11 @@ function simpanMadin(){
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
     let prog = hitungProgress(santri[idx]);
-    showToast('✅ Madin tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
+    if(prog >= 100) {
+        showToast('🎉 SELAMAT! Semua checklist tercentang! Status: LULUS (100%) 🎉', 'success');
+    } else {
+        showToast('✅ Madin tersimpan - Progress: ' + prog + '%', 'success');
+    }
     loadFormHafalan(); 
     renderSantriHafalanGroup();
 }
@@ -1161,7 +1194,11 @@ function simpanSikap(){
     santri[idx].tanggalUpdate=new Date().toISOString(); 
     saveData(); 
     let prog = hitungProgress(santri[idx]);
-    showToast('✅ Sikap tersimpan - Progress: ' + prog + '%' + (prog >= 100 ? ' 🎉 LULUS!' : '')); 
+    if(prog >= 100) {
+        showToast('🎉 SELAMAT! Semua checklist tercentang! Status: LULUS (100%) 🎉', 'success');
+    } else {
+        showToast('✅ Sikap tersimpan - Progress: ' + prog + '%', 'success');
+    }
     loadFormHafalan(); 
     renderSantriHafalanGroup();
 }
