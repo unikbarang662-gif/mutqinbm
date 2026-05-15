@@ -87,6 +87,9 @@
         <input type="text" id="loginUser" class="w-full p-3 border rounded-lg mb-3" placeholder="Username">
         <input type="password" id="loginPass" class="w-full p-3 border rounded-lg mb-4" placeholder="Password">
         <button onclick="doLogin()" class="btn-primary w-full py-3 rounded-lg">Login</button>
+        <div class="text-center text-xs text-gray-400 mt-4">
+            <div>Guru: guru / guru123</div>
+        </div>
     </div>
 </div>
 
@@ -475,12 +478,25 @@ async function syncToCloud() {
     try {
         setSyncStatus('Menyimpan ke cloud...', true);
         document.getElementById('cloudStatus').innerHTML = '⏳ Menyimpan ke Google Sheets...';
-        const dataToSend = { action: 'save', santri: santri, profil: profilData, timestamp: new Date().toISOString() };
-        await fetch(APPS_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataToSend) });
+        const dataToSend = { 
+            action: 'save', 
+            santri: santri, 
+            profil: profilData, 
+            logo: logoBase64,
+            timestamp: new Date().toISOString() 
+        };
+        await fetch(APPS_SCRIPT_URL, { 
+            method: 'POST', 
+            mode: 'no-cors', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(dataToSend) 
+        });
         setSyncStatus('✅ Tersimpan ke cloud!', true);
         document.getElementById('cloudStatus').innerHTML = '✅ Data tersimpan di cloud';
         showToast('Data berhasil disimpan ke cloud!', 'success');
-    } catch(e) { showToast('Gagal sync ke cloud', 'error'); }
+    } catch(e) { 
+        showToast('Gagal sync ke cloud', 'error'); 
+    }
 }
 
 async function loadFromCloud() {
@@ -489,6 +505,7 @@ async function loadFromCloud() {
         document.getElementById('cloudStatus').innerHTML = '⏳ Memuat data...';
         const response = await fetch(`${APPS_SCRIPT_URL}?action=get`);
         const data = await response.json();
+        
         if (data && data.length > 1) {
             const rows = data.slice(1);
             santri = [];
@@ -512,20 +529,39 @@ async function loadFromCloud() {
                 }
             }
         }
+        
+        // Load profil dari cloud (menggunakan endpoint terpisah)
         try {
             const profilResponse = await fetch(`${APPS_SCRIPT_URL}?action=getProfil`);
             const profilDataCloud = await profilResponse.json();
-            if (profilDataCloud && profilDataCloud.nama) profilData = profilDataCloud;
+            if (profilDataCloud && profilDataCloud.nama) {
+                profilData = profilDataCloud;
+            }
         } catch(e) {}
+        
+        // Load logo dari cloud
+        try {
+            const logoResponse = await fetch(`${APPS_SCRIPT_URL}?action=getLogo`);
+            const logoData = await logoResponse.json();
+            if (logoData && logoData.logo) {
+                logoBase64 = logoData.logo;
+                updateLogoDisplay(logoBase64);
+                localStorage.setItem('mutqin_logo_final', logoBase64);
+            }
+        } catch(e) {}
+        
         document.getElementById('profilNama').value = profilData.nama || 'Pondok Pesantren Bahrul Maghfiroh';
         document.getElementById('profilPengasuh').value = profilData.pengasuh || '';
         document.getElementById('profilKapondok').value = profilData.kapondok || '';
         document.getElementById('profilAlamat').value = profilData.alamat || '';
+        
         saveData();
         setSyncStatus('✅ Load berhasil!', true);
         document.getElementById('cloudStatus').innerHTML = '✅ Data dimuat dari cloud';
         showToast('Data berhasil dimuat dari cloud!', 'success');
-    } catch(e) { showToast('Gagal load dari cloud', 'error'); }
+    } catch(e) { 
+        showToast('Gagal load dari cloud', 'error'); 
+    }
 }
 
 function setSyncStatus(text, isOnline) { 
@@ -549,14 +585,29 @@ function loadData() {
             { id: 4, nama: 'Khadijah', kelas: '6A', juz30: Array(37).fill(false), tanggalUpdate: new Date().toISOString() }
         ];
     }
+    
+    // Load profil dari localStorage
     let savedProfil = localStorage.getItem('mutqin_profil_final');
-    if (savedProfil) { try { let p = JSON.parse(savedProfil); profilData = p; } catch(e) {} }
+    if (savedProfil) { 
+        try { 
+            let p = JSON.parse(savedProfil); 
+            if (p.nama) profilData.nama = p.nama;
+            if (p.pengasuh) profilData.pengasuh = p.pengasuh;
+            if (p.kapondok) profilData.kapondok = p.kapondok;
+            if (p.alamat) profilData.alamat = p.alamat;
+        } catch(e) {} 
+    }
+    
     document.getElementById('profilNama').value = profilData.nama || 'Pondok Pesantren Bahrul Maghfiroh';
     document.getElementById('profilPengasuh').value = profilData.pengasuh || '';
     document.getElementById('profilKapondok').value = profilData.kapondok || '';
     document.getElementById('profilAlamat').value = profilData.alamat || '';
+    
     let savedLogo = localStorage.getItem('mutqin_logo_final');
-    if (savedLogo) { logoBase64 = savedLogo; updateLogoDisplay(logoBase64); }
+    if (savedLogo) { 
+        logoBase64 = savedLogo; 
+        updateLogoDisplay(logoBase64); 
+    }
     refreshAll();
 }
 
@@ -577,24 +628,44 @@ function saveProfil() {
         alamat: document.getElementById('profilAlamat').value 
     }; 
     localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData)); 
+    
+    // Simpan ke cloud juga
+    syncToCloud();
     showToast('Profil berhasil disimpan'); 
 }
 
 function updateLogoDisplay(data) { 
     let iconEl = document.getElementById('logoPreviewIcon'), imgEl = document.getElementById('logoPreviewImg'); 
-    if(data){ if(iconEl) iconEl.classList.add('hidden'); if(imgEl){ imgEl.classList.remove('hidden'); imgEl.src = data; } } 
-    else { if(iconEl) iconEl.classList.remove('hidden'); if(imgEl) imgEl.classList.add('hidden'); } 
+    if(data){ 
+        if(iconEl) iconEl.classList.add('hidden'); 
+        if(imgEl){ imgEl.classList.remove('hidden'); imgEl.src = data; } 
+    } else { 
+        if(iconEl) iconEl.classList.remove('hidden'); 
+        if(imgEl) imgEl.classList.add('hidden'); 
+    } 
 }
 
 function uploadLogo(input) { 
     if(input.files && input.files[0]){ 
         let r=new FileReader(); 
-        r.onload=e=>{ logoBase64=e.target.result; updateLogoDisplay(logoBase64); localStorage.setItem('mutqin_logo_final',logoBase64); showToast('Logo tersimpan'); }; 
+        r.onload=e=>{ 
+            logoBase64=e.target.result; 
+            updateLogoDisplay(logoBase64); 
+            localStorage.setItem('mutqin_logo_final',logoBase64); 
+            syncToCloud();
+            showToast('Logo tersimpan'); 
+        }; 
         r.readAsDataURL(input.files[0]); 
     } 
 }
 
-function clearLogo() { logoBase64=null; updateLogoDisplay(null); localStorage.removeItem('mutqin_logo_final'); showToast('Logo dihapus'); }
+function clearLogo() { 
+    logoBase64=null; 
+    updateLogoDisplay(null); 
+    localStorage.removeItem('mutqin_logo_final'); 
+    syncToCloud();
+    showToast('Logo dihapus'); 
+}
 
 function checkNotifications() {
     let baruLulus = santri.filter(s => hitungProgress(s) >= 100);
@@ -638,8 +709,45 @@ function generateSertifikatWithEdit(){
     let today=document.getElementById('editTanggalSertifikat').value || new Date().toLocaleDateString('id-ID'); 
     let nama=document.getElementById('editNamaSertifikat').value || currentSertifikatSantri.nama; 
     let extraText=document.getElementById('editTextSertifikat').value; 
-    let logoHtml=logoBase64?`<img src="${logoBase64}" class="w-16 h-16 mx-auto mb-2 rounded-full object-cover">`:'<i class="fas fa-graduation-cap text-emerald-600 text-5xl mb-2"></i>'; 
-    document.getElementById('sertifikatPreview').innerHTML=`<div class="text-center"><div id="sertifikatBox" class="certificate-box inline-block text-left"><div class="text-center">${logoHtml}<h2 class="text-xl font-bold">${profilData.nama}</h2></div><div class="border-b-2 border-emerald-600 w-24 mx-auto my-3"></div><p class="text-center text-gray-500 text-sm">SERTIFIKAT KELULUSAN</p><p class="text-center text-sm text-gray-500 mt-4">Diberikan kepada:</p><h3 class="text-center text-2xl font-bold my-3">${nama}</h3><p class="text-center text-sm">Sebagai tanda bahwa telah menyelesaikan pendidikan<br>dan memenuhi standar kelulusan di</p><p class="text-center font-semibold text-emerald-700 mt-2">${profilData.nama}</p>${extraText?`<p class="text-center text-sm mt-2">${extraText}</p>`:''}<div class="text-center bg-emerald-100 px-6 py-2 rounded-full inline-block w-full my-4"><span class="font-bold text-emerald-800">LULUS</span></div><p class="text-center text-xs text-gray-500">Malang, ${today}</p><div class="grid grid-cols-2 gap-4 mt-4 pt-3 border-t"><div><div class="border-t border-gray-400 pt-1 text-xs text-center">Pengasuh Pondok</div><div class="text-xs text-center mt-1 font-medium">${profilData.pengasuh||'_________________'}</div></div><div><div class="border-t border-gray-400 pt-1 text-xs text-center">Kepala Pondok</div><div class="text-xs text-center mt-1 font-medium">${profilData.kapondok||'_________________'}</div></div></div></div><button onclick="downloadSertifikat()" class="btn-primary px-4 py-2 rounded-lg mt-4">Download Sertifikat (PNG)</button></div>`; 
+    let logoHtml = (logoBase64 && logoBase64 !== 'null' && logoBase64 !== 'undefined') 
+        ? `<img src="${logoBase64}" class="w-16 h-16 mx-auto mb-2 rounded-full object-cover border-2 border-emerald-500">` 
+        : '<i class="fas fa-graduation-cap text-emerald-600 text-5xl mb-2"></i>';
+    let namaPesantren = (profilData.nama && profilData.nama !== 'null' && profilData.nama !== 'undefined') 
+        ? profilData.nama 
+        : 'Pondok Pesantren Bahrul Maghfiroh';
+    
+    document.getElementById('sertifikatPreview').innerHTML = `
+        <div class="text-center">
+            <div id="sertifikatBox" class="certificate-box inline-block text-left w-full max-w-md mx-auto">
+                <div class="text-center">
+                    ${logoHtml}
+                    <h2 class="text-xl font-bold text-emerald-800">${namaPesantren}</h2>
+                </div>
+                <div class="border-b-2 border-emerald-600 w-24 mx-auto my-3"></div>
+                <p class="text-center text-gray-500 text-sm">SERTIFIKAT KELULUSAN</p>
+                <p class="text-center text-sm text-gray-500 mt-4">Diberikan kepada:</p>
+                <h3 class="text-center text-2xl font-bold text-emerald-700 my-3">${nama}</h3>
+                <p class="text-center text-sm">Sebagai tanda bahwa telah menyelesaikan pendidikan<br>dan memenuhi standar kelulusan di</p>
+                <p class="text-center font-semibold text-emerald-700 mt-2">${namaPesantren}</p>
+                ${extraText ? `<p class="text-center text-sm mt-2">${extraText}</p>` : ''}
+                <div class="text-center bg-emerald-100 px-6 py-2 rounded-full inline-block w-full my-4">
+                    <span class="font-bold text-emerald-800">LULUS</span>
+                </div>
+                <p class="text-center text-xs text-gray-500">Malang, ${today}</p>
+                <div class="grid grid-cols-2 gap-4 mt-4 pt-3 border-t">
+                    <div>
+                        <div class="border-t border-gray-400 pt-1 text-xs text-center">Pengasuh Pondok</div>
+                        <div class="text-xs text-center mt-1 font-medium">${profilData.pengasuh || '_________________'}</div>
+                    </div>
+                    <div>
+                        <div class="border-t border-gray-400 pt-1 text-xs text-center">Kepala Pondok</div>
+                        <div class="text-xs text-center mt-1 font-medium">${profilData.kapondok || '_________________'}</div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="downloadSertifikat()" class="btn-primary px-4 py-2 rounded-lg mt-4">Download Sertifikat (PNG)</button>
+        </div>
+    `; 
 }
 
 function updateSertifikat(){ generateSertifikatWithEdit(); showToast('Sertifikat diperbarui'); }
@@ -910,7 +1018,7 @@ function simpanSurat(){
     santri[idx].nilaiSurat=document.getElementById('nilaiSurat').value; 
     santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
     let persen = hitungProgress(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS 100%! 🎉🎉🎉', 'success'); } 
+    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS! 🎉🎉🎉', 'success'); } 
     else { showToast('✅ Surat tersimpan - Progress: ' + persen + '%', 'success'); }
     loadFormHafalan(); renderHafalanList(); 
 }
@@ -926,7 +1034,7 @@ function simpanAurad(){
     santri[idx].nilaiAurad=document.getElementById('nilaiAurad').value; 
     santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
     let persen = hitungProgress(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS 100%! 🎉🎉🎉', 'success'); } 
+    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS! 🎉🎉🎉', 'success'); } 
     else { showToast('✅ Aurad tersimpan - Progress: ' + persen + '%', 'success'); }
     loadFormHafalan(); renderHafalanList(); 
 }
@@ -937,7 +1045,7 @@ function simpanJuz(){
     santri[idx].nilaiJuz=document.getElementById('nilaiJuz').value; 
     santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
     let persen = hitungProgress(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS 100%! 🎉🎉🎉', 'success'); } 
+    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS! 🎉🎉🎉', 'success'); } 
     else { showToast('✅ Juz 30 tersimpan - Progress: ' + persen + '%', 'success'); }
     loadFormHafalan(); renderHafalanList(); 
 }
@@ -950,7 +1058,7 @@ function simpanPraktik(){
     santri[idx].nilaiPraktik=document.getElementById('nilaiPraktik').value; 
     santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
     let persen = hitungProgress(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS 100%! 🎉🎉🎉', 'success'); } 
+    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS! 🎉🎉🎉', 'success'); } 
     else { showToast('✅ Praktik tersimpan - Progress: ' + persen + '%', 'success'); }
     loadFormHafalan(); renderHafalanList(); 
 }
@@ -962,7 +1070,7 @@ function simpanMadin(){
     if(wustho)santri[idx].madinWustho=wustho.checked; 
     santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
     let persen = hitungProgress(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS 100%! 🎉🎉🎉', 'success'); } 
+    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS! 🎉🎉🎉', 'success'); } 
     else { showToast('✅ Madin tersimpan - Progress: ' + persen + '%', 'success'); }
     loadFormHafalan(); renderHafalanList(); 
 }
@@ -974,7 +1082,7 @@ function simpanSikap(){
     santri[idx].sikapFormal=document.getElementById('sikapFormal').checked; 
     santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
     let persen = hitungProgress(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS 100%! 🎉🎉🎉', 'success'); } 
+    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS! 🎉🎉🎉', 'success'); } 
     else { showToast('✅ Sikap tersimpan - Progress: ' + persen + '%', 'success'); }
     loadFormHafalan(); renderHafalanList(); 
 }
