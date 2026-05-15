@@ -326,17 +326,25 @@ let profilData = {
 
 const daftarJuz = ['An-Naba','An-Nazi\'at','Abasa','At-Takwir','Al-Infitar','Al-Mutaffifin','Al-Insyiqaq','Al-Buruj','At-Tariq','Al-A\'la','Al-Ghasyiyah','Al-Fajr','Al-Balad','Asy-Syams','Al-Lail','Ad-Duha','Asy-Syarh','At-Tin','Al-Alaq','Al-Qadr','Al-Bayyinah','Az-Zalzalah','Al-Adiyat','Al-Qari\'ah','At-Takasur','Al-Asr','Al-Humazah','Al-Fil','Quraisy','Al-Ma\'un','Al-Kausar','Al-Kafirun','An-Nasr','Al-Lahab','Al-Ikhlas','Al-Falaq','An-Nas'];
 
-// ==================== HITUNG PROGRESS - TOTAL 54 ITEM (BENAR) ====================
+// ==================== HITUNG PROGRESS BERDASARKAN KELAS ====================
+function getTotalItemByKelas(kelas) {
+    let angkaKelas = parseInt(kelas.match(/\d+/)?.[0] || 6);
+    // Kelas 1-3: 53 item (tanpa Madin Wustho)
+    // Kelas 4-6: 54 item (dengan Madin Wustho)
+    if (angkaKelas <= 3) return 53;
+    return 54;
+}
+
 function hitungProgress(s) {
-    let total = 54;
+    let total = getTotalItemByKelas(s.kelas);
     let done = 0;
     
-    // 1. SURAT (3 item)
+    // 3 Surat
     if (s.yasin === true) done++;
     if (s.waqiah === true) done++;
     if (s.mulk === true) done++;
     
-    // 2. AURAD (6 item)
+    // 6 Aurad
     if (s.wirid === true) done++;
     if (s.doaShalat === true) done++;
     if (s.tahlilRingkas === true) done++;
@@ -344,29 +352,34 @@ function hitungProgress(s) {
     if (s.doaTahlil === true) done++;
     if (s.tawasul === true) done++;
     
-    // 3. JUZ 30 (37 item)
+    // 37 Juz 30
     if (s.juz30 && s.juz30.length === 37) {
         for (let i = 0; i < 37; i++) {
             if (s.juz30[i] === true) done++;
         }
     }
     
-    // 4. PRAKTIK (3 item)
+    // 3 Praktik
     if (s.praktikShalat === true) done++;
     if (s.praktikJenazah === true) done++;
     if (s.praktikKhotib === true) done++;
     
-    // 5. MADIN (2 item) - INI YANG SEBELUMNYA LEPAS!
+    // MADIN - HANYA ULA untuk semua kelas
     if (s.madinUla === true) done++;
-    if (s.madinWustho === true) done++;
     
-    // 6. SIKAP (3 item)
+    // MADIN WUSTHO - HANYA untuk kelas 4-6
+    let angkaKelas = parseInt(s.kelas.match(/\d+/)?.[0] || 6);
+    if (angkaKelas >= 4) {
+        if (s.madinWustho === true) done++;
+    }
+    
+    // 3 Sikap
     if (s.sikapJamaah === true) done++;
     if (s.sikapMadin === true) done++;
     if (s.sikapFormal === true) done++;
     
     let persen = Math.round((done / total) * 100);
-    console.log("✅ Progress: " + done + "/" + total + " = " + persen + "%");
+    console.log("Kelas: " + s.kelas + ", Done: " + done + "/" + total + " = " + persen + "%");
     return persen;
 }
 
@@ -548,9 +561,10 @@ function loadData() {
     if (!santri.length) {
         let contohJuz = Array(37).fill(true);
         santri = [
-            { id: 1, nama: 'Ahmad Maulana', kelas: '3A', yasin: true, waqiah: true, mulk: true, nilaiSurat: 'Mumtaz', wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, nilaiAurad: 'Mumtaz', juz30: [...contohJuz], nilaiJuz: 'Mumtaz', praktikShalat: true, praktikJenazah: true, praktikKhotib: true, nilaiPraktik: 'Mumtaz', madinUla: true, madinWustho: true, sikapJamaah: true, sikapMadin: true, sikapFormal: true, tanggalUpdate: new Date().toISOString() },
+            { id: 1, nama: 'Ahmad Maulana', kelas: '3A', yasin: true, waqiah: true, mulk: true, nilaiSurat: 'Mumtaz', wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, nilaiAurad: 'Mumtaz', juz30: [...contohJuz], nilaiJuz: 'Mumtaz', praktikShalat: true, praktikJenazah: true, praktikKhotib: true, nilaiPraktik: 'Mumtaz', madinUla: true, madinWustho: false, sikapJamaah: true, sikapMadin: true, sikapFormal: true, tanggalUpdate: new Date().toISOString() },
             { id: 2, nama: 'Fatimah Azzahra', kelas: '2B', yasin: true, nilaiSurat: 'Jayyid Jiddan', juz30: Array(37).fill(false), tanggalUpdate: new Date().toISOString() },
-            { id: 3, nama: 'Muhammad Rizki', kelas: '1A', juz30: Array(37).fill(false), tanggalUpdate: new Date().toISOString() }
+            { id: 3, nama: 'Muhammad Rizki', kelas: '1A', juz30: Array(37).fill(false), tanggalUpdate: new Date().toISOString() },
+            { id: 4, nama: 'Khadijah', kelas: '6A', juz30: Array(37).fill(false), tanggalUpdate: new Date().toISOString() }
         ];
     }
     let savedProfil = localStorage.getItem('mutqin_profil_final');
@@ -816,11 +830,17 @@ function loadFormHafalan() {
     daftarJuz.forEach((nama, i) => { juzHtml += `<label class="flex justify-between items-center p-2 bg-white rounded border text-sm"><span>${nama}</span><input type="checkbox" id="juz_${i}" class="juz-checkbox w-4 h-4" ${s.juz30[i] ? 'checked' : ''}></label>`; });
     juzHtml += `</div>`;
     
+    // MADIN - SESUAI KELAS
     let madinHtml = '';
     if (kelasNum <= 3) {
+        // Kelas 1-3: Hanya Madin Ula
         madinHtml = `<div class="grid grid-cols-1 gap-3"><label class="flex justify-between items-center p-3 bg-white rounded border"><span>✅ Lulus Madin Ula</span><input type="checkbox" id="madinUla" ${s.madinUla ? 'checked' : ''} class="w-5 h-5"></label></div>`;
     } else {
-        madinHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3"><label class="flex justify-between items-center p-3 bg-white rounded border"><span>✅ Lulus Madin Ula</span><input type="checkbox" id="madinUla" ${s.madinUla ? 'checked' : ''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>✅ Lulus Madin Wustho</span><input type="checkbox" id="madinWustho" ${s.madinWustho ? 'checked' : ''} class="w-5 h-5"></label></div>`;
+        // Kelas 4-6: Madin Ula + Madin Wustho
+        madinHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label class="flex justify-between items-center p-3 bg-white rounded border"><span>✅ Lulus Madin Ula</span><input type="checkbox" id="madinUla" ${s.madinUla ? 'checked' : ''} class="w-5 h-5"></label>
+            <label class="flex justify-between items-center p-3 bg-white rounded border"><span>✅ Lulus Madin Wustho</span><input type="checkbox" id="madinWustho" ${s.madinWustho ? 'checked' : ''} class="w-5 h-5"></label>
+        </div>`;
     }
     
     let html = `<div class="space-y-4">
@@ -912,7 +932,8 @@ function simpanPraktik(){
 function simpanMadin(){ 
     let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; 
     santri[idx].madinUla=document.getElementById('madinUla').checked; 
-    let wustho=document.getElementById('madinWustho'); if(wustho)santri[idx].madinWustho=wustho.checked; 
+    let wustho=document.getElementById('madinWustho'); 
+    if(wustho)santri[idx].madinWustho=wustho.checked; 
     santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
     let persen = hitungProgress(santri[idx]);
     if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS 100%! 🎉🎉🎉', 'success'); } 
@@ -936,7 +957,12 @@ function toggleAllSurat(){ let c=['yasin','waqiah','mulk']; let all=c.every(id=>
 function toggleAllAurad(){ let c=['wirid','doaShalat','tahlilRingkas','tahlilLengkap','doaTahlil','tawasul']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); if(!all)document.getElementById('nilaiAurad').value='Mumtaz'; }
 function toggleAllJuz(){ let sel=document.getElementById('selectAllJuz'); let cbs=document.querySelectorAll('.juz-checkbox'); cbs.forEach(cb=>cb.checked=sel.checked); if(sel.checked)document.getElementById('nilaiJuz').value='Mumtaz'; }
 function toggleAllPraktik(){ let c=['praktikShalat','praktikJenazah','praktikKhotib']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); if(!all)document.getElementById('nilaiPraktik').value='Mumtaz'; }
-function toggleAllMadin(){ let ula=document.getElementById('madinUla'); let wustho=document.getElementById('madinWustho'); if(ula)ula.checked=!ula.checked; if(wustho)wustho.checked=ula?ula.checked:false; }
+function toggleAllMadin(){ 
+    let ula=document.getElementById('madinUla'); 
+    let wustho=document.getElementById('madinWustho'); 
+    if(ula)ula.checked=!ula.checked; 
+    if(wustho)wustho.checked=ula?ula.checked:false; 
+}
 function toggleAllSikap(){ let c=['sikapJamaah','sikapMadin','sikapFormal']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
 
 function showPage(page){ 
