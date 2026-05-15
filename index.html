@@ -87,10 +87,6 @@
         <input type="text" id="loginUser" class="w-full p-3 border rounded-lg mb-3" placeholder="Username">
         <input type="password" id="loginPass" class="w-full p-3 border rounded-lg mb-4" placeholder="Password">
         <button onclick="doLogin()" class="btn-primary w-full py-3 rounded-lg">Login</button>
-        <div class="text-center text-xs text-gray-400 mt-4">
-            <div>Admin: admin / admin123</div>
-            <div>Guru: guru / guru123</div>
-        </div>
     </div>
 </div>
 
@@ -328,7 +324,7 @@ let profilData = {
 
 const daftarJuz = ['An-Naba','An-Nazi\'at','Abasa','At-Takwir','Al-Infitar','Al-Mutaffifin','Al-Insyiqaq','Al-Buruj','At-Tariq','Al-A\'la','Al-Ghasyiyah','Al-Fajr','Al-Balad','Asy-Syams','Al-Lail','Ad-Duha','Asy-Syarh','At-Tin','Al-Alaq','Al-Qadr','Al-Bayyinah','Az-Zalzalah','Al-Adiyat','Al-Qari\'ah','At-Takasur','Al-Asr','Al-Humazah','Al-Fil','Quraisy','Al-Ma\'un','Al-Kausar','Al-Kafirun','An-Nasr','Al-Lahab','Al-Ikhlas','Al-Falaq','An-Nas'];
 
-// ==================== HITUNG PROGRESS BERDASARKAN KELAS ====================
+// ==================== HITUNG PROGRESS ====================
 function getTotalItemByKelas(kelas) {
     let angkaKelas = parseInt(kelas.match(/\d+/)?.[0] || 6);
     if (angkaKelas <= 3) return 53;
@@ -732,13 +728,12 @@ function renderSantri() {
     container.innerHTML=html; 
 }
 
-// ==================== HAFALAN LIST - TAMPIL SEMUA SANTRI LANGSUNG ====================
+// ==================== HAFALAN LIST ====================
 function renderHafalanList() {
     let searchTerm = document.getElementById('searchSantriHafalan')?.value.toLowerCase() || '';
     let listDiv = document.getElementById('santriListHafalan');
     if(!listDiv) return;
     
-    // Filter berdasarkan pencarian
     let filtered = santri;
     if (searchTerm !== '') {
         filtered = santri.filter(s => s.nama.toLowerCase().includes(searchTerm) || s.kelas.toLowerCase().includes(searchTerm));
@@ -749,14 +744,12 @@ function renderHafalanList() {
         return;
     }
     
-    // Group berdasarkan kelas
     let groups = {};
     filtered.forEach(s => {
         if (!groups[s.kelas]) groups[s.kelas] = [];
         groups[s.kelas].push(s);
     });
     
-    // Urutkan kelas berdasarkan angka
     let sortedKelas = Object.keys(groups).sort((a,b)=>{ 
         let na=parseInt(a.match(/\d+/)?.[0]||0), nb=parseInt(b.match(/\d+/)?.[0]||0); 
         if(na!==nb) return na-nb; 
@@ -797,7 +790,6 @@ function renderHafalanList() {
     
     listDiv.innerHTML = html;
     
-    // Event listener untuk klik santri -> langsung ke form hafalan
     document.querySelectorAll('#santriListHafalan .santri-item').forEach(item => {
         item.addEventListener('click', function(e) {
             e.stopPropagation();
