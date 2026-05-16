@@ -388,6 +388,7 @@ let currentMapelSantriId = null;
 let logoBase64 = null;
 let chartInstances = {};
 let darkMode = localStorage.getItem('darkMode') === 'true';
+let autoSyncEnabled = true;
 
 let profilData = { 
     nama: 'Pondok Pesantren Bahrul Maghfiroh', 
@@ -487,8 +488,14 @@ function getNewSantri() {
 
 // ==================== CLOUD SYNC (GOOGLE SHEETS) ====================
 async function syncToCloud(showToastMsg = true) {
+    if (!navigator.onLine) {
+        if(showToastMsg) showToast('Tidak ada koneksi internet. Data disimpan di lokal.', 'warning');
+        setSyncStatus('Offline (No Internet)', 'offline');
+        return false;
+    }
+    
     try {
-        setSyncStatus('Menyimpan...', 'syncing');
+        setSyncStatus('Menyimpan ke cloud...', 'syncing');
         if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⏳ Menyimpan ke Google Sheets...';
         
         const dataToSend = {
@@ -511,26 +518,24 @@ async function syncToCloud(showToastMsg = true) {
         const result = await response.json();
         
         if (result && result.status === 'success') {
-            setSyncStatus('Tersimpan!', 'online');
+            setSyncStatus('Tersimpan di cloud!', 'online');
             if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '✅ Data tersimpan di cloud ' + new Date().toLocaleTimeString();
-            if(showToastMsg) showToast('Data berhasil disimpan ke cloud!', 'success');
+            if(showToastMsg) showToast('✅ Data berhasil disimpan ke cloud!', 'success');
             
-            // Simpan juga ke localStorage sebagai backup
             localStorage.setItem('mutqin_santri_final', JSON.stringify(santri));
             localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData));
             if(logoBase64) localStorage.setItem('mutqin_logo_final', logoBase64);
             
             return true;
         } else {
-            throw new Error('Response error');
+            throw new Error(result.message || 'Response error');
         }
     } catch(e) {
         console.error('Sync error:', e);
-        setSyncStatus('Offline', 'offline');
-        if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⚠️ Gagal sync. Data tersimpan di lokal.';
-        if(showToastMsg) showToast('Gagal sync ke cloud. Data tetap tersimpan di lokal. Pastikan koneksi internet aktif.', 'warning');
+        setSyncStatus('Gagal sync (CORS/Network)', 'offline');
+        if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⚠️ Gagal sync ke cloud. Data tersimpan di lokal.';
+        if(showToastMsg) showToast('⚠️ Gagal sync ke cloud. Data tetap tersimpan di lokal. Pastikan koneksi internet aktif dan CORS diizinkan.', 'warning');
         
-        // Tetap simpan ke localStorage
         localStorage.setItem('mutqin_santri_final', JSON.stringify(santri));
         localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData));
         if(logoBase64) localStorage.setItem('mutqin_logo_final', logoBase64);
@@ -540,9 +545,16 @@ async function syncToCloud(showToastMsg = true) {
 }
 
 async function loadFromCloud() {
+    if (!navigator.onLine) {
+        showToast('Tidak ada koneksi internet. Menggunakan data lokal.', 'warning');
+        loadLocalData();
+        setSyncStatus('Offline (No Internet)', 'offline');
+        return;
+    }
+    
     try {
-        setSyncStatus('Memuat...', 'syncing');
-        if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⏳ Memuat data dari cloud...';
+        setSyncStatus('Memuat dari cloud...', 'syncing');
+        if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⏳ Memuat data dari Google Sheets...';
         
         const response = await fetch(`${APPS_SCRIPT_URL}?action=get&t=${Date.now()}`, {
             method: 'GET',
@@ -556,7 +568,6 @@ async function loadFromCloud() {
         if (result && result.status === 'success' && result.data) {
             if (result.data.santri && Array.isArray(result.data.santri)) {
                 santri = result.data.santri;
-                // Pastikan setiap santri memiliki properti yang diperlukan
                 for(let s of santri) {
                     if(!s.mapelStatus) s.mapelStatus = {};
                     if(!s.juz30) s.juz30 = Array(37).fill(false);
@@ -582,24 +593,21 @@ async function loadFromCloud() {
                 localStorage.setItem('mutqin_logo_final', logoBase64);
             }
             
-            // Simpan ke localStorage
             localStorage.setItem('mutqin_santri_final', JSON.stringify(santri));
             localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData));
             
-            setSyncStatus('Online', 'online');
+            setSyncStatus('Online - Tersinkronisasi', 'online');
             if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '✅ Data dimuat dari cloud ' + new Date().toLocaleTimeString();
-            showToast('Data berhasil dimuat dari cloud!', 'success');
+            showToast('✅ Data berhasil dimuat dari cloud!', 'success');
             refreshAll();
         } else {
             throw new Error('Data tidak valid');
         }
     } catch(e) {
         console.error('Load error:', e);
-        setSyncStatus('Offline', 'offline');
+        setSyncStatus('Offline (Load Gagal)', 'offline');
         if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⚠️ Gagal memuat dari cloud. Menggunakan data lokal.';
-        showToast('Gagal load dari cloud. Menggunakan data lokal.', 'warning');
-        
-        // Load dari localStorage sebagai fallback
+        showToast('⚠️ Gagal load dari cloud. Menggunakan data lokal. Periksa koneksi internet.', 'warning');
         loadLocalData();
     }
 }
@@ -652,6 +660,9 @@ function loadLocalData() {
     }
     
     refreshAll();
+    if (navigator.onLine && autoSyncEnabled) {
+        setTimeout(() => syncToCloud(false), 2000);
+    }
 }
 
 function setSyncStatus(text, status) { 
@@ -733,12 +744,12 @@ function restoreData() {
     input.click();
 }
 
-function saveDataToLocal() {
+function saveDataToLocal(showNotif = true) {
     localStorage.setItem('mutqin_santri_final', JSON.stringify(santri)); 
     localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData)); 
     if(logoBase64) localStorage.setItem('mutqin_logo_final', logoBase64);
     refreshAll(); 
-    showToast('Data tersimpan di lokal');
+    if(showNotif) showToast('Data tersimpan di lokal');
 }
 
 function saveData() { 
@@ -748,8 +759,7 @@ function saveData() {
     refreshAll(); 
     showToast('Data tersimpan di lokal');
     
-    // Auto sync ke cloud jika online
-    if (navigator.onLine) {
+    if (autoSyncEnabled && navigator.onLine) {
         setTimeout(() => syncToCloud(false), 1000);
     }
 }
@@ -764,7 +774,7 @@ function saveProfil() {
     localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData)); 
     showToast('Profil berhasil disimpan'); 
     refreshAll();
-    if (navigator.onLine) setTimeout(() => syncToCloud(false), 500);
+    if (autoSyncEnabled && navigator.onLine) setTimeout(() => syncToCloud(false), 500);
 }
 
 function updateLogoDisplay(data) { 
@@ -786,7 +796,7 @@ function uploadLogo(input) {
             updateLogoDisplay(logoBase64); 
             localStorage.setItem('mutqin_logo_final',logoBase64); 
             showToast('Logo tersimpan'); 
-            if (navigator.onLine) setTimeout(() => syncToCloud(false), 500);
+            if (autoSyncEnabled && navigator.onLine) setTimeout(() => syncToCloud(false), 500);
         }; 
         r.readAsDataURL(input.files[0]); 
     } 
@@ -797,7 +807,7 @@ function clearLogo() {
     updateLogoDisplay(null); 
     localStorage.removeItem('mutqin_logo_final'); 
     showToast('Logo dihapus'); 
-    if (navigator.onLine) setTimeout(() => syncToCloud(false), 500);
+    if (autoSyncEnabled && navigator.onLine) setTimeout(() => syncToCloud(false), 500);
 }
 
 // ==================== FUNGSI UTAMA ====================
