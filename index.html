@@ -34,9 +34,9 @@
         .santri-item { padding: 12px 16px; padding-left: 35px; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
         .santri-item:hover { background: #d1fae5; }
         .certificate-box { background: white; border: 8px double #059669; border-radius: 16px; padding: 30px; }
-        .datetime-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 20px; color: white; margin-bottom: 20px; }
-        .date-large { font-size: 2rem; font-weight: bold; }
-        .time-large { font-size: 3rem; font-weight: bold; font-family: monospace; }
+        .datetime-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 12px 16px; color: white; margin-bottom: 16px; }
+        .date-small { font-size: 1rem; font-weight: bold; }
+        .time-small { font-size: 1.5rem; font-weight: bold; font-family: monospace; }
         .dark-mode { background: #1a1a2e; color: #eee; }
         .dark-mode .bg-white { background: #16213e !important; color: #eee; }
         .dark-mode .bg-gray-50 { background: #0f3460 !important; }
@@ -130,8 +130,8 @@
             <div id="pageDashboard" class="page">
                 <div class="datetime-card no-print">
                     <div class="flex justify-between items-center flex-wrap gap-3">
-                        <div><div class="date-large" id="fullDate"></div></div>
-                        <div class="text-right"><div class="time-large" id="currentTimeLarge"></div></div>
+                        <div><div class="date-small" id="fullDate"></div></div>
+                        <div class="text-right"><div class="time-small" id="currentTimeLarge"></div></div>
                     </div>
                 </div>
                 <h2 class="text-xl font-bold mb-4" id="welcomeText">Selamat Datang</h2>
@@ -146,7 +146,7 @@
                     <div class="dashboard-card bg-gradient-to-br from-red-500 to-red-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalBelumHafalan">0</div><div>Belum Hafalan</div></div>
                 </div>
                 
-                <!-- Statistik Tam-taman (Mapel) -->
+                <!-- Statistik Tam-taman -->
                 <h3 class="text-lg font-semibold mb-3 text-purple-700"><i class="fas fa-check-double mr-2"></i>📚 Presentasi Tam-taman (Validasi Mapel)</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
                     <div class="dashboard-card bg-gradient-to-br from-purple-500 to-purple-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalSantriMapel">0</div><div>Total Santri</div></div>
@@ -155,7 +155,7 @@
                     <div class="dashboard-card bg-gradient-to-br from-orange-500 to-orange-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalBelumMapel">0</div><div>Belum Mapel</div></div>
                 </div>
                 
-                <!-- Grafik dan Diagram -->
+                <!-- Grafik -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     <div class="bg-white rounded-xl p-4 shadow">
                         <h3 class="font-semibold text-center mb-3 text-blue-600">📊 Grafik Status Hafalan</h3>
@@ -319,13 +319,20 @@
                     </div>
                     <div class="mb-6 pb-4 border-b">
                         <h3 class="font-semibold mb-3"><i class="fas fa-cloud-upload-alt mr-2"></i> Sinkronisasi Cloud (Google Sheets)</h3>
-                        <p class="text-sm text-gray-500 mb-2">Simpan data ke Google Sheets atau muat dari cloud</p>
+                        <p class="text-sm text-gray-500 mb-2">Data akan tersimpan di Google Sheets dan bisa diakses dari HP/PC lain</p>
                         <div class="flex gap-3 mb-2">
                             <button onclick="syncToCloud()" class="btn-primary flex-1 py-2 rounded-lg"><i class="fas fa-cloud-upload-alt"></i> Simpan ke Cloud</button>
                             <button onclick="loadFromCloud()" class="btn-outline flex-1 py-2 rounded-lg"><i class="fas fa-cloud-download-alt"></i> Load dari Cloud</button>
                         </div>
-                        <p class="text-xs text-gray-400">Data akan tersimpan di Google Sheets dan bisa diakses dari HP/PC lain</p>
                         <div id="cloudStatus" class="text-xs text-center mt-2 text-gray-400"></div>
+                    </div>
+                    <div class="mb-6 pb-4 border-b">
+                        <h3 class="font-semibold mb-3"><i class="fas fa-database mr-2"></i> Backup File (Alternatif)</h3>
+                        <p class="text-sm text-gray-500 mb-2">Backup data ke file atau restore dari file backup</p>
+                        <div class="flex gap-3">
+                            <button onclick="backupData()" class="btn-outline flex-1 py-2 rounded-lg"><i class="fas fa-download"></i> Backup File</button>
+                            <button onclick="restoreData()" class="btn-outline flex-1 py-2 rounded-lg"><i class="fas fa-upload"></i> Restore File</button>
+                        </div>
                     </div>
                     <div class="pt-2">
                         <h3 class="font-semibold mb-3"><i class="fas fa-info-circle mr-2"></i> Tentang Aplikasi</h3>
@@ -367,7 +374,7 @@
 
 <script>
 // ==================== KONFIGURASI ====================
-// APPS SCRIPT URL ANDA SUDAH DIPASANGKAN
+// APPS SCRIPT URL ANDA
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPiNPUX08a2DnxodNOTNLlQaG74XY5i4GRSiaAwjnRSXTb8E4J8xYCX0rnkGpiJuGJKg/exec';
 
 let santri = [];
@@ -378,6 +385,7 @@ let currentMapelSantriId = null;
 let logoBase64 = null;
 let chartInstances = {};
 let darkMode = localStorage.getItem('darkMode') === 'true';
+let autoSyncEnabled = true;
 
 let profilData = { 
     nama: 'Pondok Pesantren Bahrul Maghfiroh', 
@@ -481,6 +489,7 @@ async function syncToCloud() {
         setSyncStatus('Menyimpan ke cloud...', true);
         document.getElementById('cloudStatus').innerHTML = '⏳ Menyimpan ke Google Sheets...';
         
+        // Persiapkan data untuk dikirim
         const dataToSend = {
             action: 'save',
             santri: santri,
@@ -489,13 +498,15 @@ async function syncToCloud() {
             timestamp: new Date().toISOString()
         };
         
-        await fetch(APPS_SCRIPT_URL, {
+        // Kirim data ke Google Sheets via fetch dengan method POST
+        const response = await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors',
+            mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(dataToSend)
         });
         
+        // Simpan juga ke localStorage sebagai cadangan
         localStorage.setItem('mutqin_santri_cloud', JSON.stringify(santri));
         localStorage.setItem('mutqin_profil_cloud', JSON.stringify(profilData));
         
@@ -503,9 +514,15 @@ async function syncToCloud() {
         document.getElementById('cloudStatus').innerHTML = '✅ Data tersimpan di cloud ' + new Date().toLocaleTimeString();
         showToast('Data berhasil disimpan ke cloud!', 'success');
     } catch(e) {
-        setSyncStatus('❌ Gagal sync', false);
-        document.getElementById('cloudStatus').innerHTML = '❌ Gagal menyimpan';
-        showToast('Gagal sync ke cloud', 'error');
+        console.error('Sync error:', e);
+        setSyncStatus('❌ Gagal sync (CORS)', false);
+        document.getElementById('cloudStatus').innerHTML = '❌ Gagal menyimpan. Coba lagi.';
+        showToast('Gagal sync ke cloud. Periksa koneksi internet.', 'error');
+        
+        // Simpan ke localStorage sebagai fallback
+        localStorage.setItem('mutqin_santri_cloud_backup', JSON.stringify(santri));
+        localStorage.setItem('mutqin_profil_cloud_backup', JSON.stringify(profilData));
+        showToast('Data disimpan ke lokal sebagai cadangan', 'warning');
     }
 }
 
@@ -514,7 +531,15 @@ async function loadFromCloud() {
         setSyncStatus('Memuat dari cloud...', true);
         document.getElementById('cloudStatus').innerHTML = '⏳ Memuat data dari Google Sheets...';
         
-        const response = await fetch(`${APPS_SCRIPT_URL}?action=get`);
+        const response = await fetch(`${APPS_SCRIPT_URL}?action=get`, {
+            method: 'GET',
+            mode: 'cors'
+        });
+        
+        if (!response.ok) {
+            throw new Error('Gagal mengambil data');
+        }
+        
         const data = await response.json();
         
         if (data && data.length > 1) {
@@ -561,7 +586,10 @@ async function loadFromCloud() {
         
         // Load profil dari cloud
         try {
-            const profilResponse = await fetch(`${APPS_SCRIPT_URL}?action=getProfil`);
+            const profilResponse = await fetch(`${APPS_SCRIPT_URL}?action=getProfil`, {
+                method: 'GET',
+                mode: 'cors'
+            });
             const profilDataCloud = await profilResponse.json();
             if (profilDataCloud && profilDataCloud.nama) {
                 profilData = profilDataCloud;
@@ -577,14 +605,32 @@ async function loadFromCloud() {
             }
         } catch(e) {}
         
+        // Inisialisasi mapelStatus
+        for (let s of santri) {
+            if (!s.mapelStatus) s.mapelStatus = {};
+        }
+        
         saveDataToLocal();
         setSyncStatus('✅ Load dari cloud berhasil!', true);
         document.getElementById('cloudStatus').innerHTML = '✅ Data dimuat dari cloud ' + new Date().toLocaleTimeString();
         showToast('Data berhasil dimuat dari cloud!', 'success');
     } catch(e) {
+        console.error('Load error:', e);
         setSyncStatus('❌ Gagal load', false);
         document.getElementById('cloudStatus').innerHTML = '⚠️ Gagal memuat, menggunakan data lokal';
-        showToast('Gagal load dari cloud', 'error');
+        showToast('Gagal load dari cloud. Periksa koneksi internet.', 'error');
+        
+        // Coba load dari backup lokal
+        const backupSantri = localStorage.getItem('mutqin_santri_cloud_backup');
+        const backupProfil = localStorage.getItem('mutqin_profil_cloud_backup');
+        if (backupSantri) {
+            try {
+                santri = JSON.parse(backupSantri);
+                if (backupProfil) profilData = JSON.parse(backupProfil);
+                saveDataToLocal();
+                showToast('Memuat data dari cadangan lokal', 'warning');
+            } catch(e) {}
+        }
     }
 }
 
@@ -607,6 +653,70 @@ function setSyncStatus(text, isOnline) {
         textSpan.innerHTML=text; 
     } 
     setTimeout(()=>{ if(textSpan.innerHTML===text && text !== 'Siap') textSpan.innerHTML='Siap'; },3000); 
+}
+
+// ==================== BACKUP & RESTORE FILE (ALTERNATIF) ====================
+function backupData() {
+    try {
+        const dataToBackup = {
+            santri: santri,
+            profil: profilData,
+            logo: logoBase64,
+            backupDate: new Date().toISOString(),
+            version: '3.0'
+        };
+        const jsonStr = JSON.stringify(dataToBackup, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `mutqin_backup_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('✅ Backup berhasil! File tersimpan', 'success');
+    } catch(e) {
+        showToast('❌ Backup gagal: ' + e.message, 'error');
+    }
+}
+
+function restoreData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                const restored = JSON.parse(ev.target.result);
+                if (restored.santri && Array.isArray(restored.santri)) {
+                    santri = restored.santri;
+                }
+                if (restored.profil) {
+                    profilData = restored.profil;
+                    document.getElementById('profilNama').value = profilData.nama || 'Pondok Pesantren Bahrul Maghfiroh';
+                    document.getElementById('profilPengasuh').value = profilData.pengasuh || '';
+                    document.getElementById('profilKapondok').value = profilData.kapondok || '';
+                    document.getElementById('profilAlamat').value = profilData.alamat || '';
+                }
+                if (restored.logo && restored.logo !== 'null') {
+                    logoBase64 = restored.logo;
+                    updateLogoDisplay(logoBase64);
+                    localStorage.setItem('mutqin_logo_final', logoBase64);
+                }
+                for (let s of santri) {
+                    if (!s.mapelStatus) s.mapelStatus = {};
+                }
+                saveDataToLocal();
+                showToast('✅ Restore berhasil! Data telah dipulihkan', 'success');
+            } catch(err) {
+                showToast('❌ File backup tidak valid', 'error');
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
 }
 
 // ==================== DATA LOCAL ====================
@@ -658,6 +768,11 @@ function saveData() {
     if(logoBase64) localStorage.setItem('mutqin_logo_final', logoBase64);
     refreshAll(); 
     showToast('Data tersimpan di lokal');
+    
+    // Auto sync ke cloud jika enabled
+    if (autoSyncEnabled) {
+        setTimeout(() => syncToCloud(), 1000);
+    }
 }
 
 function saveProfil() { 
@@ -670,6 +785,7 @@ function saveProfil() {
     localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData)); 
     showToast('Profil berhasil disimpan'); 
     refreshAll();
+    if (autoSyncEnabled) setTimeout(() => syncToCloud(), 500);
 }
 
 function updateLogoDisplay(data) { 
@@ -691,6 +807,7 @@ function uploadLogo(input) {
             updateLogoDisplay(logoBase64); 
             localStorage.setItem('mutqin_logo_final',logoBase64); 
             showToast('Logo tersimpan'); 
+            if (autoSyncEnabled) setTimeout(() => syncToCloud(), 500);
         }; 
         r.readAsDataURL(input.files[0]); 
     } 
@@ -701,6 +818,7 @@ function clearLogo() {
     updateLogoDisplay(null); 
     localStorage.removeItem('mutqin_logo_final'); 
     showToast('Logo dihapus'); 
+    if (autoSyncEnabled) setTimeout(() => syncToCloud(), 500);
 }
 
 function updateDateTime() { 
@@ -888,9 +1006,7 @@ function refreshAll() {
 }
 
 function updateDashboard() { 
-    // Statistik Hafalan
     let lulus = 0, prosesH = 0, belumH = 0, mumtaz = 0, jayyidJ = 0, jayyid = 0;
-    // Statistik Mapel
     let selesai = 0, prosesM = 0, belumM = 0;
     
     santri.forEach(s => { 
@@ -922,7 +1038,6 @@ function updateDashboard() {
     let roleLabel = currentUserRole === 'admin' ? 'Administrator' : 'Guru';
     document.getElementById('welcomeText').innerHTML = `Selamat Datang, ${roleLabel}`;
     
-    // Chart Hafalan
     if(chartInstances.statusChartHafalan) chartInstances.statusChartHafalan.destroy();
     let ctx1 = document.getElementById('statusChartHafalan')?.getContext('2d');
     if(ctx1) chartInstances.statusChartHafalan = new Chart(ctx1, { 
@@ -931,7 +1046,6 @@ function updateDashboard() {
         options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
     });
     
-    // Chart Mapel
     if(chartInstances.statusChartMapel) chartInstances.statusChartMapel.destroy();
     let ctx2 = document.getElementById('statusChartMapel')?.getContext('2d');
     if(ctx2) chartInstances.statusChartMapel = new Chart(ctx2, { 
@@ -940,7 +1054,6 @@ function updateDashboard() {
         options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
     });
     
-    // Diagram Nilai Hafalan
     if(chartInstances.nilaiChart) chartInstances.nilaiChart.destroy();
     let ctx3 = document.getElementById('nilaiChart')?.getContext('2d');
     if(ctx3) chartInstances.nilaiChart = new Chart(ctx3, { 
@@ -949,7 +1062,6 @@ function updateDashboard() {
         options: { responsive: true, maintainAspectRatio: true }
     });
     
-    // Diagram Progress Mapel
     let totalProgress = 0;
     santri.forEach(s => { totalProgress += hitungProgressMapel(s, s.kelas).persen; });
     let avgProgress = santri.length > 0 ? Math.round(totalProgress / santri.length) : 0;
