@@ -140,7 +140,6 @@
                 <h2 class="text-xl font-bold mb-4" id="welcomeText">Selamat Datang</h2>
                 <div id="notificationArea" class="mb-4"></div>
                 
-                <!-- Statistik Hafalan -->
                 <h3 class="text-lg font-semibold mb-3 text-blue-700"><i class="fas fa-book-open mr-2"></i>📖 Presentasi Hafalan Santri</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                     <div class="dashboard-card bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalSantriHafalan">0</div><div>Total Santri</div></div>
@@ -149,7 +148,6 @@
                     <div class="dashboard-card bg-gradient-to-br from-red-500 to-red-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalBelumHafalan">0</div><div>Belum Hafalan</div></div>
                 </div>
                 
-                <!-- Statistik Tam-taman -->
                 <h3 class="text-lg font-semibold mb-3 text-purple-700"><i class="fas fa-check-double mr-2"></i>📚 Presentasi Tam-taman (Validasi Mapel)</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
                     <div class="dashboard-card bg-gradient-to-br from-purple-500 to-purple-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalSantriMapel">0</div><div>Total Santri</div></div>
@@ -158,7 +156,6 @@
                     <div class="dashboard-card bg-gradient-to-br from-orange-500 to-orange-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalBelumMapel">0</div><div>Belum Mapel</div></div>
                 </div>
                 
-                <!-- Grafik -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     <div class="bg-white rounded-xl p-4 shadow">
                         <h3 class="font-semibold text-center mb-3 text-blue-600">📊 Grafik Status Hafalan</h3>
@@ -377,8 +374,8 @@
 
 <script>
 // ==================== KONFIGURASI ====================
-// URL APPS SCRIPT ANDA
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby7wXthxZTiIKdF5Qty6k75w08BfQ4GLmoFHr6otAoGl6ACwpprRWncp2zcdVx9Y4IZ/exec';
+// URL APPS SCRIPT ANDA - SUDAH DIPASANGKAN
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxatcU20mCT6L-1G96cNDxEwz1I9Dv2LOmKqN0s49bzsRxrtbQxmOvidgA2q7wkHUtv/exec';
 
 let santri = [];
 let currentUser = null;
@@ -486,7 +483,7 @@ function getNewSantri() {
     }; 
 }
 
-// ==================== CLOUD SYNC (GOOGLE SHEETS) ====================
+// ==================== CLOUD SYNC ====================
 async function syncToCloud(showToastMsg = true) {
     if (!navigator.onLine) {
         if(showToastMsg) showToast('Tidak ada koneksi internet. Data disimpan di lokal.', 'warning');
@@ -495,7 +492,7 @@ async function syncToCloud(showToastMsg = true) {
     }
     
     try {
-        setSyncStatus('Menyimpan ke cloud...', 'syncing');
+        setSyncStatus('Menyimpan...', 'syncing');
         if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⏳ Menyimpan ke Google Sheets...';
         
         const dataToSend = {
@@ -518,7 +515,7 @@ async function syncToCloud(showToastMsg = true) {
         const result = await response.json();
         
         if (result && result.status === 'success') {
-            setSyncStatus('Tersimpan di cloud!', 'online');
+            setSyncStatus('Tersimpan!', 'online');
             if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '✅ Data tersimpan di cloud ' + new Date().toLocaleTimeString();
             if(showToastMsg) showToast('✅ Data berhasil disimpan ke cloud!', 'success');
             
@@ -532,9 +529,9 @@ async function syncToCloud(showToastMsg = true) {
         }
     } catch(e) {
         console.error('Sync error:', e);
-        setSyncStatus('Gagal sync (CORS/Network)', 'offline');
-        if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⚠️ Gagal sync ke cloud. Data tersimpan di lokal.';
-        if(showToastMsg) showToast('⚠️ Gagal sync ke cloud. Data tetap tersimpan di lokal. Pastikan koneksi internet aktif dan CORS diizinkan.', 'warning');
+        setSyncStatus('Gagal sync', 'offline');
+        if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⚠️ Gagal sync. Data tersimpan di lokal.';
+        if(showToastMsg) showToast('⚠️ Gagal sync ke cloud. Data tetap tersimpan di lokal. Pastikan koneksi internet aktif.', 'warning');
         
         localStorage.setItem('mutqin_santri_final', JSON.stringify(santri));
         localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData));
@@ -553,8 +550,8 @@ async function loadFromCloud() {
     }
     
     try {
-        setSyncStatus('Memuat dari cloud...', 'syncing');
-        if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⏳ Memuat data dari Google Sheets...';
+        setSyncStatus('Memuat...', 'syncing');
+        if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⏳ Memuat data dari cloud...';
         
         const response = await fetch(`${APPS_SCRIPT_URL}?action=get&t=${Date.now()}`, {
             method: 'GET',
@@ -596,7 +593,7 @@ async function loadFromCloud() {
             localStorage.setItem('mutqin_santri_final', JSON.stringify(santri));
             localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData));
             
-            setSyncStatus('Online - Tersinkronisasi', 'online');
+            setSyncStatus('Online', 'online');
             if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '✅ Data dimuat dari cloud ' + new Date().toLocaleTimeString();
             showToast('✅ Data berhasil dimuat dari cloud!', 'success');
             refreshAll();
@@ -605,7 +602,7 @@ async function loadFromCloud() {
         }
     } catch(e) {
         console.error('Load error:', e);
-        setSyncStatus('Offline (Load Gagal)', 'offline');
+        setSyncStatus('Offline', 'offline');
         if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⚠️ Gagal memuat dari cloud. Menggunakan data lokal.';
         showToast('⚠️ Gagal load dari cloud. Menggunakan data lokal. Periksa koneksi internet.', 'warning');
         loadLocalData();
@@ -680,7 +677,7 @@ function setSyncStatus(text, status) {
     } 
 }
 
-// ==================== BACKUP & RESTORE FILE ====================
+// ==================== BACKUP & RESTORE ====================
 function backupData() {
     try {
         const dataToBackup = {
@@ -1400,7 +1397,7 @@ function toggleAllPraktik(){ let c=['praktikShalat','praktikJenazah','praktikKho
 function toggleAllMadin(){ let ula=document.getElementById('madinUla'); let wustho=document.getElementById('madinWustho'); if(ula)ula.checked=!ula.checked; if(wustho)wustho.checked=ula?ula.checked:false; }
 function toggleAllSikap(){ let c=['sikapJamaah','sikapMadin','sikapFormal']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
 
-// ==================== FORM MAPEL (TAM-TAMAN) ====================
+// ==================== FORM MAPEL ====================
 function loadFormMapel() {
     if (!currentMapelSantriId) return;
     let s = santri.find(x => x.id === currentMapelSantriId);
