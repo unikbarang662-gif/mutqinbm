@@ -95,7 +95,6 @@
         <input type="password" id="loginPass" class="w-full p-3 border rounded-lg mb-4" placeholder="Password">
         <button onclick="doLogin()" class="btn-primary w-full py-3 rounded-lg">Login</button>
         <div class="text-center text-xs text-gray-400 mt-4">
-            <div>Admin: admin / admin123</div>
             <div>Guru: guru / guru123</div>
         </div>
     </div>
@@ -138,7 +137,6 @@
                     </div>
                 </div>
                 <h2 class="text-xl font-bold mb-4" id="welcomeText">Selamat Datang</h2>
-                <div id="notificationArea" class="mb-4"></div>
                 
                 <h3 class="text-lg font-semibold mb-3 text-blue-700"><i class="fas fa-book-open mr-2"></i>📖 Presentasi Hafalan Santri</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
@@ -319,7 +317,7 @@
                     </div>
                     <div class="mb-6 pb-4 border-b">
                         <h3 class="font-semibold mb-3"><i class="fas fa-cloud-upload-alt mr-2"></i> Sinkronisasi Cloud (Google Sheets)</h3>
-                        <p class="text-sm text-gray-500 mb-2">Data akan tersimpan di Google Sheets dan bisa diakses dari HP/PC lain</p>
+                        <p class="text-sm text-gray-500 mb-2">Data akan tersimpan di cloud dan bisa diakses dari HP/PC lain</p>
                         <div class="flex gap-3 mb-2">
                             <button onclick="syncToCloud(true)" class="btn-primary flex-1 py-2 rounded-lg"><i class="fas fa-cloud-upload-alt"></i> Simpan ke Cloud</button>
                             <button onclick="loadFromCloud()" class="btn-outline flex-1 py-2 rounded-lg"><i class="fas fa-cloud-download-alt"></i> Muat dari Cloud</button>
@@ -374,8 +372,7 @@
 
 <script>
 // ==================== KONFIGURASI ====================
-// URL APPS SCRIPT ANDA - SUDAH DIPASANGKAN
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxatcU20mCT6L-1G96cNDxEwz1I9Dv2LOmKqN0s49bzsRxrtbQxmOvidgA2q7wkHUtv/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbO1Os74xdo03hJ90eYt9RRC44U4w1W0N-dn5_G_aVPEuG8YqN8dBnvom8Jky7qlJ_/exec';
 
 let santri = [];
 let currentUser = null;
@@ -385,7 +382,6 @@ let currentMapelSantriId = null;
 let logoBase64 = null;
 let chartInstances = {};
 let darkMode = localStorage.getItem('darkMode') === 'true';
-let autoSyncEnabled = true;
 
 let profilData = { 
     nama: 'Pondok Pesantren Bahrul Maghfiroh', 
@@ -452,10 +448,13 @@ function hitungProgressHafalan(s) {
     if (s.praktikJenazah === true) done++;
     if (s.praktikKhotib === true) done++;
     if (s.madinUla === true) done++;
+    
     let angkaKelas = parseInt(s.kelas.match(/\d+/)?.[0] || 6);
+    // KELAS 4-6: Madin Wustho juga wajib untuk lulus 100%
     if (angkaKelas >= 4) {
         if (s.madinWustho === true) done++;
     }
+    
     if (s.sikapJamaah === true) done++;
     if (s.sikapMadin === true) done++;
     if (s.sikapFormal === true) done++;
@@ -487,13 +486,13 @@ function getNewSantri() {
 async function syncToCloud(showToastMsg = true) {
     if (!navigator.onLine) {
         if(showToastMsg) showToast('Tidak ada koneksi internet. Data disimpan di lokal.', 'warning');
-        setSyncStatus('Offline (No Internet)', 'offline');
+        setSyncStatus('Offline', 'offline');
         return false;
     }
     
     try {
         setSyncStatus('Menyimpan...', 'syncing');
-        if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⏳ Menyimpan ke Google Sheets...';
+        if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⏳ Menyimpan ke cloud...';
         
         const dataToSend = {
             action: 'save',
@@ -531,7 +530,7 @@ async function syncToCloud(showToastMsg = true) {
         console.error('Sync error:', e);
         setSyncStatus('Gagal sync', 'offline');
         if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⚠️ Gagal sync. Data tersimpan di lokal.';
-        if(showToastMsg) showToast('⚠️ Gagal sync ke cloud. Data tetap tersimpan di lokal. Pastikan koneksi internet aktif.', 'warning');
+        if(showToastMsg) showToast('⚠️ Gagal sync ke cloud. Data tetap tersimpan di lokal.', 'warning');
         
         localStorage.setItem('mutqin_santri_final', JSON.stringify(santri));
         localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData));
@@ -545,7 +544,7 @@ async function loadFromCloud() {
     if (!navigator.onLine) {
         showToast('Tidak ada koneksi internet. Menggunakan data lokal.', 'warning');
         loadLocalData();
-        setSyncStatus('Offline (No Internet)', 'offline');
+        setSyncStatus('Offline', 'offline');
         return;
     }
     
@@ -572,7 +571,7 @@ async function loadFromCloud() {
                     if(s.nilaiAurad === undefined) s.nilaiAurad = 'Mumtaz';
                     if(s.nilaiJuz === undefined) s.nilaiJuz = 'Mumtaz';
                     if(s.nilaiPraktik === undefined) s.nilaiPraktik = 'Mumtaz';
-                    if(s.tanggalUpdate === undefined) s.tanggalUpdate = new Date().toISOString();
+                    if(s.madinWustho === undefined) s.madinWustho = false;
                 }
             }
             
@@ -587,11 +586,11 @@ async function loadFromCloud() {
             if (result.data.logo && result.data.logo !== 'null') {
                 logoBase64 = result.data.logo;
                 updateLogoDisplay(logoBase64);
-                localStorage.setItem('mutqin_logo_final', logoBase64);
             }
             
             localStorage.setItem('mutqin_santri_final', JSON.stringify(santri));
             localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData));
+            if(logoBase64) localStorage.setItem('mutqin_logo_final', logoBase64);
             
             setSyncStatus('Online', 'online');
             if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '✅ Data dimuat dari cloud ' + new Date().toLocaleTimeString();
@@ -604,7 +603,7 @@ async function loadFromCloud() {
         console.error('Load error:', e);
         setSyncStatus('Offline', 'offline');
         if(document.getElementById('cloudStatus')) document.getElementById('cloudStatus').innerHTML = '⚠️ Gagal memuat dari cloud. Menggunakan data lokal.';
-        showToast('⚠️ Gagal load dari cloud. Menggunakan data lokal. Periksa koneksi internet.', 'warning');
+        showToast('⚠️ Gagal load dari cloud. Menggunakan data lokal.', 'warning');
         loadLocalData();
     }
 }
@@ -625,7 +624,7 @@ function loadLocalData() {
             { id: 1, nama: 'Ahmad Maulana', kelas: '3A', yasin: true, waqiah: true, mulk: true, nilaiSurat: 'Mumtaz', wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, nilaiAurad: 'Mumtaz', juz30: [...contohJuz], nilaiJuz: 'Mumtaz', praktikShalat: true, praktikJenazah: true, praktikKhotib: true, nilaiPraktik: 'Mumtaz', madinUla: true, madinWustho: false, sikapJamaah: true, sikapMadin: true, sikapFormal: true, mapelStatus: {}, tanggalUpdate: new Date().toISOString() },
             { id: 2, nama: 'Fatimah Azzahra', kelas: '2B', yasin: true, nilaiSurat: 'Jayyid Jiddan', juz30: Array(37).fill(false), mapelStatus: {}, tanggalUpdate: new Date().toISOString() },
             { id: 3, nama: 'Muhammad Rizki', kelas: '1A', juz30: Array(37).fill(false), mapelStatus: {}, tanggalUpdate: new Date().toISOString() },
-            { id: 4, nama: 'Khadijah', kelas: '6A', juz30: Array(37).fill(false), mapelStatus: {}, tanggalUpdate: new Date().toISOString() }
+            { id: 4, nama: 'Khadijah', kelas: '6A', juz30: Array(37).fill(false), mapelStatus: {}, madinWustho: false, tanggalUpdate: new Date().toISOString() }
         ];
     }
     
@@ -654,12 +653,10 @@ function loadLocalData() {
     for (let s of santri) {
         if (!s.mapelStatus) s.mapelStatus = {};
         if (!s.juz30) s.juz30 = Array(37).fill(false);
+        if (s.madinWustho === undefined) s.madinWustho = false;
     }
     
     refreshAll();
-    if (navigator.onLine && autoSyncEnabled) {
-        setTimeout(() => syncToCloud(false), 2000);
-    }
 }
 
 function setSyncStatus(text, status) { 
@@ -695,7 +692,7 @@ function backupData() {
         a.download = `mutqin_backup_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        showToast('✅ Backup berhasil! File tersimpan', 'success');
+        showToast('✅ Backup berhasil!', 'success');
     } catch(e) {
         showToast('❌ Backup gagal: ' + e.message, 'error');
     }
@@ -729,9 +726,10 @@ function restoreData() {
                 for (let s of santri) {
                     if (!s.mapelStatus) s.mapelStatus = {};
                     if (!s.juz30) s.juz30 = Array(37).fill(false);
+                    if (s.madinWustho === undefined) s.madinWustho = false;
                 }
                 saveDataToLocal();
-                showToast('✅ Restore berhasil! Data telah dipulihkan', 'success');
+                showToast('✅ Restore berhasil!', 'success');
             } catch(err) {
                 showToast('❌ File backup tidak valid', 'error');
             }
@@ -741,12 +739,11 @@ function restoreData() {
     input.click();
 }
 
-function saveDataToLocal(showNotif = true) {
+function saveDataToLocal() {
     localStorage.setItem('mutqin_santri_final', JSON.stringify(santri)); 
     localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData)); 
     if(logoBase64) localStorage.setItem('mutqin_logo_final', logoBase64);
     refreshAll(); 
-    if(showNotif) showToast('Data tersimpan di lokal');
 }
 
 function saveData() { 
@@ -756,8 +753,8 @@ function saveData() {
     refreshAll(); 
     showToast('Data tersimpan di lokal');
     
-    if (autoSyncEnabled && navigator.onLine) {
-        setTimeout(() => syncToCloud(false), 1000);
+    if (navigator.onLine) {
+        setTimeout(() => syncToCloud(false), 500);
     }
 }
 
@@ -768,10 +765,8 @@ function saveProfil() {
         kapondok: document.getElementById('profilKapondok').value, 
         alamat: document.getElementById('profilAlamat').value 
     }; 
-    localStorage.setItem('mutqin_profil_final', JSON.stringify(profilData)); 
-    showToast('Profil berhasil disimpan'); 
-    refreshAll();
-    if (autoSyncEnabled && navigator.onLine) setTimeout(() => syncToCloud(false), 500);
+    saveData();
+    showToast('Profil berhasil disimpan');
 }
 
 function updateLogoDisplay(data) { 
@@ -791,9 +786,8 @@ function uploadLogo(input) {
         r.onload=e=>{ 
             logoBase64=e.target.result; 
             updateLogoDisplay(logoBase64); 
-            localStorage.setItem('mutqin_logo_final',logoBase64); 
+            saveData();
             showToast('Logo tersimpan'); 
-            if (autoSyncEnabled && navigator.onLine) setTimeout(() => syncToCloud(false), 500);
         }; 
         r.readAsDataURL(input.files[0]); 
     } 
@@ -802,9 +796,8 @@ function uploadLogo(input) {
 function clearLogo() { 
     logoBase64=null; 
     updateLogoDisplay(null); 
-    localStorage.removeItem('mutqin_logo_final'); 
+    saveData();
     showToast('Logo dihapus'); 
-    if (autoSyncEnabled && navigator.onLine) setTimeout(() => syncToCloud(false), 500);
 }
 
 // ==================== FUNGSI UTAMA ====================
@@ -917,8 +910,7 @@ function exportToExcel() {
 
 function exportLaporanToExcel(){ 
     let data=[]; 
-    let filtered=santri; 
-    filtered.forEach((s,i)=>{ 
+    santri.forEach((s,i)=>{ 
         data.push({ No:i+1, Nama:s.nama, Kelas:s.kelas, Nilai_Hafalan:s.nilaiSurat, Status_Hafalan:getStatusHafalan(s), Status_Mapel:getStatusMapel(s, s.kelas) }); 
     }); 
     let ws=XLSX.utils.json_to_sheet(data); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Laporan Lengkap'); 
@@ -1030,7 +1022,7 @@ function updateDashboard() {
     if(ctx1) chartInstances.statusChartHafalan = new Chart(ctx1, { 
         type: 'doughnut', 
         data: { labels: ['Lulus', 'Proses', 'Belum'], datasets: [{ data: [lulus, prosesH, belumH], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'] }] },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
+        options: { responsive: true, maintainAspectRatio: true }
     });
     
     if(chartInstances.statusChartMapel) chartInstances.statusChartMapel.destroy();
@@ -1038,7 +1030,7 @@ function updateDashboard() {
     if(ctx2) chartInstances.statusChartMapel = new Chart(ctx2, { 
         type: 'doughnut', 
         data: { labels: ['Selesai', 'Proses', 'Belum'], datasets: [{ data: [selesai, prosesM, belumM], backgroundColor: ['#8b5cf6', '#f59e0b', '#ef4444'] }] },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } }
+        options: { responsive: true, maintainAspectRatio: true }
     });
     
     if(chartInstances.nilaiChart) chartInstances.nilaiChart.destroy();
@@ -1114,8 +1106,8 @@ function printFullLaporan() {
         <html>
         <head><title>Laporan Mutqin BM</title>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-        <style>*{font-family:'Inter',sans-serif;}body{padding:30px;background:white;}.container{max-width:1200px;margin:0 auto;}.text-center{text-align:center;}.border-b{border-bottom:1px solid #e5e7eb;}.border{border:1px solid #e5e7eb;}.rounded-xl{border-radius:12px;}.p-4{padding:16px;}.p-6{padding:24px;}.mb-4{margin-bottom:16px;}.mb-6{margin-bottom:24px;}.mb-8{margin-bottom:32px;}.grid{display:grid;}.grid-cols-2{grid-template-columns:repeat(2,1fr);}.grid-cols-4{grid-template-columns:repeat(4,1fr);}.gap-4{gap:16px;}.gap-6{gap:24px;}.bg-blue-50{background:#eff6ff;}.bg-green-50{background:#f0fdf4;}.bg-yellow-50{background:#fefce8;}.bg-red-50{background:#fef2f2;}.bg-emerald-600{background:#059669;}.text-blue-600{color:#2563eb;}.text-green-600{color:#16a34a;}.text-yellow-600{color:#ca8a04;}.text-red-600{color:#dc2626;}.text-emerald-800{color:#065f46;}.text-white{color:white;}table{width:100%;border-collapse:collapse;}th,td{padding:10px;text-align:left;border-bottom:1px solid #e5e7eb;}th{background:#059669;color:white;}.badge-success{background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}.badge-warning{background:#fed7aa;color:#9a3412;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}.badge-danger{background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:20px;font-size:11px;display:inline-block;}@media print{body{padding:0;}}</style>
-        </head><body><div class="container">${printContent.innerHTML}</div><script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);};<\/script></body></html>
+        <style>*{font-family:'Inter',sans-serif;}body{padding:30px;background:white;}</style>
+        </head><body>${printContent.innerHTML}<script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);};<\/script></body></html>
     `);
     printWindow.document.close(); 
 }
@@ -1231,19 +1223,19 @@ function tambahSantri(){
     let nama=document.getElementById('tambahNama').value.trim(), kelas=document.getElementById('tambahKelas').value.trim(); 
     if(!nama){showToast('Nama wajib diisi','error');return;} if(!kelas){showToast('Kelas wajib diisi','error');return;} 
     let baru=getNewSantri(); baru.id=Date.now(); baru.nama=nama; baru.kelas=kelas; santri.push(baru); saveData(); closeModal(null,'tambahModal'); 
-    document.getElementById('tambahNama').value=''; document.getElementById('tambahKelas').value=''; showToast(`Santri ${nama} ditambahkan`); renderHafalanList(); renderMapelList();
+    document.getElementById('tambahNama').value=''; document.getElementById('tambahKelas').value=''; showToast(`Santri ${nama} ditambahkan`); 
 }
 
 function editSantri(id){ 
     if(currentUserRole !== 'admin') { showToast('Hanya admin yang dapat mengedit santri', 'error'); return; }
     let s=santri.find(x=>x.id===id); if(!s)return; 
     let namaBaru=prompt('Edit Nama:',s.nama); if(namaBaru) s.nama=namaBaru; 
-    let kelasBaru=prompt('Edit Kelas:',s.kelas); if(kelasBaru) s.kelas=kelasBaru; saveData(); showToast('Data diupdate'); renderHafalanList(); renderMapelList();
+    let kelasBaru=prompt('Edit Kelas:',s.kelas); if(kelasBaru) s.kelas=kelasBaru; saveData(); showToast('Data diupdate'); 
 }
 
 function hapusSantri(id){ 
     if(currentUserRole !== 'admin') { showToast('Hanya admin yang dapat menghapus santri', 'error'); return; }
-    if(confirm('Yakin hapus santri ini?')){ santri=santri.filter(s=>s.id!==id); saveData(); showToast('Santri dihapus'); renderHafalanList(); renderMapelList(); } 
+    if(confirm('Yakin hapus santri ini?')){ santri=santri.filter(s=>s.id!==id); saveData(); showToast('Santri dihapus'); } 
 }
 
 function importMassal(){ 
@@ -1254,7 +1246,7 @@ function importMassal(){
         let nama=parts[0].trim(), kelas=parts.slice(1).join(',').trim(); 
         if(nama && kelas){ let baru=getNewSantri(); baru.id=Date.now()+added; baru.nama=nama; baru.kelas=kelas; santri.push(baru); added++; } 
     } 
-    if(added>0){ saveData(); closeModal(null,'massalModal'); document.getElementById('massalData').value=''; showToast(`Berhasil import ${added} santri`); renderHafalanList(); renderMapelList(); } 
+    if(added>0){ saveData(); closeModal(null,'massalModal'); document.getElementById('massalData').value=''; showToast(`Berhasil import ${added} santri`); } 
     else { showToast('Tidak ada data valid. Format: Nama,Kelas','error'); } 
 }
 
@@ -1264,48 +1256,86 @@ function loadFormHafalan() {
     let s = santri.find(x => x.id === currentSantriId);
     if (!s) return;
     
-    let kelasNum = parseInt(s.kelas.match(/\d+/)?.[0] || 6);
+    let angkaKelas = parseInt(s.kelas.match(/\d+/)?.[0] || 6);
     
-    let juzHtml = `<div class="flex justify-between items-center mb-3"><span class="font-medium">Centang Semua Juz 30</span><input type="checkbox" id="selectAllJuz" onchange="toggleAllJuz()" class="w-5 h-5"></div><div class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-60 overflow-y-auto p-2 bg-gray-50 rounded-lg">`;
-    daftarJuz.forEach((nama, i) => { juzHtml += `<label class="flex justify-between items-center p-2 bg-white rounded border text-sm"><span>${nama}</span><input type="checkbox" id="juz_${i}" class="juz-checkbox w-4 h-4" ${s.juz30[i] ? 'checked' : ''}></label>`; });
-    juzHtml += `</div>`;
+    let html = `
+    <div class="space-y-4">
+        <!-- Surat Pilihan -->
+        <div class="bg-green-50 p-4 rounded-lg border">
+            <h3 class="font-bold mb-3">📖 1. Hafalan Surat Pilihan</h3>
+            <div class="grid grid-cols-3 gap-3">
+                <label class="flex justify-between items-center p-2 bg-white rounded border"><span>Surat Yasin</span><input type="checkbox" id="yasin" ${s.yasin ? 'checked' : ''} class="w-5 h-5"></label>
+                <label class="flex justify-between items-center p-2 bg-white rounded border"><span>Surat Al-Waqiah</span><input type="checkbox" id="waqiah" ${s.waqiah ? 'checked' : ''} class="w-5 h-5"></label>
+                <label class="flex justify-between items-center p-2 bg-white rounded border"><span>Surat Al-Mulk</span><input type="checkbox" id="mulk" ${s.mulk ? 'checked' : ''} class="w-5 h-5"></label>
+            </div>
+            <div class="mt-3 flex items-center gap-3"><span class="text-sm font-medium">Nilai:</span><select id="nilaiSurat" class="p-2 border rounded"><option ${s.nilaiSurat === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilaiSurat === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilaiSurat === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select></div>
+            <button onclick="simpanSurat()" class="btn-primary mt-3 w-full">Simpan Surat</button>
+        </div>
+        
+        <!-- Aurad & Wirid -->
+        <div class="bg-blue-50 p-4 rounded-lg border">
+            <h3 class="font-bold mb-3">📿 2. Hafalan Aurad & Wirid</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                <label class="flex items-center gap-2"><input type="checkbox" id="wirid" ${s.wirid ? 'checked' : ''}> Wirid</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="doaShalat" ${s.doaShalat ? 'checked' : ''}> Doa Shalat</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="tahlilRingkas" ${s.tahlilRingkas ? 'checked' : ''}> Tahlil Ringkas</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="tahlilLengkap" ${s.tahlilLengkap ? 'checked' : ''}> Tahlil Lengkap</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="doaTahlil" ${s.doaTahlil ? 'checked' : ''}> Doa Tahlil</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="tawasul" ${s.tawasul ? 'checked' : ''}> Tawasul</label>
+            </div>
+            <div class="mt-3 flex items-center gap-3"><span class="text-sm font-medium">Nilai:</span><select id="nilaiAurad" class="p-2 border rounded"><option ${s.nilaiAurad === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilaiAurad === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilaiAurad === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select></div>
+            <button onclick="simpanAurad()" class="btn-primary mt-3 w-full">Simpan Aurad</button>
+        </div>
+        
+        <!-- Juz 30 -->
+        <div class="bg-purple-50 p-4 rounded-lg border">
+            <h3 class="font-bold mb-3">📖 3. Hafalan Juz 30</h3>
+            <div class="grid grid-cols-3 gap-1 max-h-40 overflow-y-auto p-2 bg-white rounded">
+                ${daftarJuz.map((j, i) => `<label class="text-xs flex items-center gap-1"><input type="checkbox" id="juz_${i}" ${s.juz30[i] ? 'checked' : ''}> ${j}</label>`).join('')}
+            </div>
+            <div class="mt-3 flex items-center gap-3"><span class="text-sm font-medium">Nilai:</span><select id="nilaiJuz" class="p-2 border rounded"><option ${s.nilaiJuz === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilaiJuz === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilaiJuz === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select></div>
+            <button onclick="simpanJuz()" class="btn-primary mt-3 w-full">Simpan Juz 30</button>
+        </div>
+        
+        <!-- Praktik Ibadah -->
+        <div class="bg-orange-50 p-4 rounded-lg border">
+            <h3 class="font-bold mb-3">🕌 4. Praktik Ibadah</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <label class="flex items-center gap-2"><input type="checkbox" id="praktikShalat" ${s.praktikShalat ? 'checked' : ''}> Praktik Shalat</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="praktikJenazah" ${s.praktikJenazah ? 'checked' : ''}> Pengurusan Jenazah</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="praktikKhotib" ${s.praktikKhotib ? 'checked' : ''}> Praktik Khotib & Bilal</label>
+            </div>
+            <div class="mt-3 flex items-center gap-3"><span class="text-sm font-medium">Nilai:</span><select id="nilaiPraktik" class="p-2 border rounded"><option ${s.nilaiPraktik === 'Mumtaz' ? 'selected' : ''}>Mumtaz</option><option ${s.nilaiPraktik === 'Jayyid Jiddan' ? 'selected' : ''}>Jayyid Jiddan</option><option ${s.nilaiPraktik === 'Jayyid' ? 'selected' : ''}>Jayyid</option></select></div>
+            <button onclick="simpanPraktik()" class="btn-primary mt-3 w-full">Simpan Praktik</button>
+        </div>
+        
+        <!-- Pendidikan Madin - SESUAI KELAS -->
+        <div class="bg-teal-50 p-4 rounded-lg border">
+            <h3 class="font-bold mb-3">📚 5. Pendidikan Madin</h3>
+            <div class="space-y-2">
+                <label class="flex items-center gap-2"><input type="checkbox" id="madinUla" ${s.madinUla ? 'checked' : ''}> ✅ Lulus Madin Ula (Nilai 100%)</label>`;
     
-    let madinHtml = '';
-    if (kelasNum <= 3) {
-        madinHtml = `<div class="grid grid-cols-1 gap-3"><label class="flex justify-between items-center p-3 bg-white rounded border"><span>✅ Lulus Madin Ula</span><input type="checkbox" id="madinUla" ${s.madinUla ? 'checked' : ''} class="w-5 h-5"></label></div>`;
-    } else {
-        madinHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <label class="flex justify-between items-center p-3 bg-white rounded border"><span>✅ Lulus Madin Ula</span><input type="checkbox" id="madinUla" ${s.madinUla ? 'checked' : ''} class="w-5 h-5"></label>
-            <label class="flex justify-between items-center p-3 bg-white rounded border"><span>✅ Lulus Madin Wustho</span><input type="checkbox" id="madinWustho" ${s.madinWustho ? 'checked' : ''} class="w-5 h-5"></label>
-        </div>`;
+    // KELAS 4-6: Tampilkan Madin Wustho
+    if (angkaKelas >= 4) {
+        html += `<label class="flex items-center gap-2 mt-2"><input type="checkbox" id="madinWustho" ${s.madinWustho ? 'checked' : ''}> ✅ Lulus Madin Wustho (Nilai 100%)</label>`;
     }
     
-    let html = `<div class="space-y-4">
-        <div class="bg-green-50 p-4 rounded-lg border">
-            <div class="flex justify-between items-center mb-3"><h3 class="font-bold">1. Hafalan Surat Pilihan</h3><button onclick="toggleAllSurat()" class="btn-outline text-sm px-3 py-1 rounded">Centang Semua</button></div>
-            <div class="grid grid-cols-3 gap-3"><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Surat Yasin</span><input type="checkbox" id="yasin" ${s.yasin?'checked':''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Surat Al-Waqiah</span><input type="checkbox" id="waqiah" ${s.waqiah?'checked':''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Surat Al-Mulk</span><input type="checkbox" id="mulk" ${s.mulk?'checked':''} class="w-5 h-5"></label></div>
-            <div class="flex gap-3 mt-3 items-center flex-wrap"><span class="text-sm font-medium">Nilai:</span><select id="nilaiSurat" class="p-2 border rounded-lg"><option ${s.nilaiSurat==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiSurat==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiSurat==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanSurat()" class="btn-primary px-4 py-2 rounded-lg ml-auto"><i class="fas fa-save"></i> Simpan Surat</button></div>
+    html += `</div>
+            <div class="mt-3 text-sm text-gray-600 bg-yellow-50 p-2 rounded">
+                <i class="fas fa-info-circle"></i> Catatan: Untuk kelas 1-3 cukup Madin Ula saja. Kelas 4-6 harus Madin Ula dan Madin Wustho.
+            </div>
+            <button onclick="simpanMadin()" class="btn-primary mt-3 w-full">Simpan Madin</button>
         </div>
-        <div class="bg-blue-50 p-4 rounded-lg border">
-            <div class="flex justify-between items-center mb-3"><h3 class="font-bold">2. Hafalan Aurad & Wirid</h3><button onclick="toggleAllAurad()" class="btn-outline text-sm px-3 py-1 rounded">Centang Semua</button></div>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3"><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Wirid</span><input type="checkbox" id="wirid" ${s.wirid?'checked':''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Doa Shalat</span><input type="checkbox" id="doaShalat" ${s.doaShalat?'checked':''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Tahlil Ringkas</span><input type="checkbox" id="tahlilRingkas" ${s.tahlilRingkas?'checked':''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Tahlil Lengkap</span><input type="checkbox" id="tahlilLengkap" ${s.tahlilLengkap?'checked':''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Doa Tahlil</span><input type="checkbox" id="doaTahlil" ${s.doaTahlil?'checked':''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Tawasul</span><input type="checkbox" id="tawasul" ${s.tawasul?'checked':''} class="w-5 h-5"></label></div>
-            <div class="flex gap-3 mt-3 items-center flex-wrap"><span class="text-sm font-medium">Nilai:</span><select id="nilaiAurad" class="p-2 border rounded-lg"><option ${s.nilaiAurad==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiAurad==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiAurad==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanAurad()" class="btn-primary px-4 py-2 rounded-lg ml-auto"><i class="fas fa-save"></i> Simpan Aurad</button></div>
-        </div>
-        <div class="bg-purple-50 p-4 rounded-lg border"><h3 class="font-bold mb-3">3. Hafalan Juz 30</h3>${juzHtml}<div class="flex gap-3 mt-3 items-center flex-wrap"><span class="text-sm font-medium">Nilai:</span><select id="nilaiJuz" class="p-2 border rounded-lg"><option ${s.nilaiJuz==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiJuz==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiJuz==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanJuz()" class="btn-primary px-4 py-2 rounded-lg ml-auto"><i class="fas fa-save"></i> Simpan Juz 30</button></div></div>
-        <div class="bg-orange-50 p-4 rounded-lg border">
-            <div class="flex justify-between items-center mb-3"><h3 class="font-bold">4. Praktik Ibadah</h3><button onclick="toggleAllPraktik()" class="btn-outline text-sm px-3 py-1 rounded">Centang Semua</button></div>
-            <div class="grid grid-cols-3 gap-3"><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Praktik shalat</span><input type="checkbox" id="praktikShalat" ${s.praktikShalat?'checked':''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Pengurusan jenazah</span><input type="checkbox" id="praktikJenazah" ${s.praktikJenazah?'checked':''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Praktik khotib & bilal</span><input type="checkbox" id="praktikKhotib" ${s.praktikKhotib?'checked':''} class="w-5 h-5"></label></div>
-            <div class="flex gap-3 mt-3 items-center flex-wrap"><span class="text-sm font-medium">Nilai:</span><select id="nilaiPraktik" class="p-2 border rounded-lg"><option ${s.nilaiPraktik==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiPraktik==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiPraktik==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanPraktik()" class="btn-primary px-4 py-2 rounded-lg ml-auto"><i class="fas fa-save"></i> Simpan Praktik</button></div>
-        </div>
-        <div class="bg-teal-50 p-4 rounded-lg border">
-            <div class="flex justify-between items-center mb-3"><h3 class="font-bold">5. Pendidikan Madin</h3><button onclick="toggleAllMadin()" class="btn-outline text-sm px-3 py-1 rounded">Centang Semua</button></div>
-            ${madinHtml}
-            <button onclick="simpanMadin()" class="btn-primary px-4 py-2 rounded-lg mt-3"><i class="fas fa-save"></i> Simpan Madin</button>
-        </div>
+        
+        <!-- Sikap & Adab -->
         <div class="bg-rose-50 p-4 rounded-lg border">
-            <div class="flex justify-between items-center mb-3"><h3 class="font-bold">6. Sikap & Adab</h3><button onclick="toggleAllSikap()" class="btn-outline text-sm px-3 py-1 rounded">Centang Semua</button></div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3"><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Shalat 5 waktu berjamaah</span><input type="checkbox" id="sikapJamaah" ${s.sikapJamaah?'checked':''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Keaktifan sekolah madin</span><input type="checkbox" id="sikapMadin" ${s.sikapMadin?'checked':''} class="w-5 h-5"></label><label class="flex justify-between items-center p-3 bg-white rounded border"><span>Keaktifan sekolah formal</span><input type="checkbox" id="sikapFormal" ${s.sikapFormal?'checked':''} class="w-5 h-5"></label></div>
-            <button onclick="simpanSikap()" class="btn-primary px-4 py-2 rounded-lg mt-3"><i class="fas fa-save"></i> Simpan Sikap</button>
+            <h3 class="font-bold mb-3">⭐ 6. Sikap & Adab</h3>
+            <div class="space-y-2">
+                <label class="flex items-center gap-2"><input type="checkbox" id="sikapJamaah" ${s.sikapJamaah ? 'checked' : ''}> Shalat 5 Waktu Berjamaah</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="sikapMadin" ${s.sikapMadin ? 'checked' : ''}> Keaktifan Sekolah Madin</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="sikapFormal" ${s.sikapFormal ? 'checked' : ''}> Keaktifan Sekolah Formal</label>
+            </div>
+            <button onclick="simpanSikap()" class="btn-primary mt-3 w-full">Simpan Sikap</button>
         </div>
     </div>`;
     
@@ -1313,143 +1343,126 @@ function loadFormHafalan() {
     document.getElementById('formHafalan').innerHTML = html;
 }
 
-function simpanSurat(){ 
-    let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; 
-    santri[idx].yasin=document.getElementById('yasin').checked; 
-    santri[idx].waqiah=document.getElementById('waqiah').checked; 
-    santri[idx].mulk=document.getElementById('mulk').checked; 
-    santri[idx].nilaiSurat=document.getElementById('nilaiSurat').value; 
-    santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
+function simpanSurat() {
+    let idx = santri.findIndex(x => x.id === currentSantriId);
+    if (idx === -1) return;
+    santri[idx].yasin = document.getElementById('yasin').checked;
+    santri[idx].waqiah = document.getElementById('waqiah').checked;
+    santri[idx].mulk = document.getElementById('mulk').checked;
+    santri[idx].nilaiSurat = document.getElementById('nilaiSurat').value;
+    santri[idx].tanggalUpdate = new Date().toISOString();
+    saveData();
     let persen = hitungProgressHafalan(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS Hafalan! 🎉🎉🎉', 'success'); } 
-    else { showToast('✅ Surat tersimpan - Progress Hafalan: ' + persen + '%', 'success'); }
-    loadFormHafalan(); renderHafalanList(); 
+    if (persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
+    else showToast(`✅ Surat tersimpan - Progress Hafalan: ${persen}%`, 'success');
+    loadFormHafalan();
+    renderHafalanList();
 }
 
-function simpanAurad(){ 
-    let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; 
-    santri[idx].wirid=document.getElementById('wirid').checked; 
-    santri[idx].doaShalat=document.getElementById('doaShalat').checked; 
-    santri[idx].tahlilRingkas=document.getElementById('tahlilRingkas').checked; 
-    santri[idx].tahlilLengkap=document.getElementById('tahlilLengkap').checked; 
-    santri[idx].doaTahlil=document.getElementById('doaTahlil').checked; 
-    santri[idx].tawasul=document.getElementById('tawasul').checked; 
-    santri[idx].nilaiAurad=document.getElementById('nilaiAurad').value; 
-    santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
+function simpanAurad() {
+    let idx = santri.findIndex(x => x.id === currentSantriId);
+    if (idx === -1) return;
+    santri[idx].wirid = document.getElementById('wirid').checked;
+    santri[idx].doaShalat = document.getElementById('doaShalat').checked;
+    santri[idx].tahlilRingkas = document.getElementById('tahlilRingkas').checked;
+    santri[idx].tahlilLengkap = document.getElementById('tahlilLengkap').checked;
+    santri[idx].doaTahlil = document.getElementById('doaTahlil').checked;
+    santri[idx].tawasul = document.getElementById('tawasul').checked;
+    santri[idx].nilaiAurad = document.getElementById('nilaiAurad').value;
+    santri[idx].tanggalUpdate = new Date().toISOString();
+    saveData();
     let persen = hitungProgressHafalan(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS Hafalan! 🎉🎉🎉', 'success'); } 
-    else { showToast('✅ Aurad tersimpan - Progress Hafalan: ' + persen + '%', 'success'); }
-    loadFormHafalan(); renderHafalanList(); 
+    if (persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
+    else showToast(`✅ Aurad tersimpan - Progress Hafalan: ${persen}%`, 'success');
+    loadFormHafalan();
+    renderHafalanList();
 }
 
-function simpanJuz(){ 
-    let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; 
-    for(let i=0;i<37;i++){let cb=document.getElementById(`juz_${i}`);if(cb)santri[idx].juz30[i]=cb.checked;} 
-    santri[idx].nilaiJuz=document.getElementById('nilaiJuz').value; 
-    santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
+function simpanJuz() {
+    let idx = santri.findIndex(x => x.id === currentSantriId);
+    if (idx === -1) return;
+    for (let i = 0; i < 37; i++) {
+        let cb = document.getElementById(`juz_${i}`);
+        if (cb) santri[idx].juz30[i] = cb.checked;
+    }
+    santri[idx].nilaiJuz = document.getElementById('nilaiJuz').value;
+    santri[idx].tanggalUpdate = new Date().toISOString();
+    saveData();
     let persen = hitungProgressHafalan(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS Hafalan! 🎉🎉🎉', 'success'); } 
-    else { showToast('✅ Juz 30 tersimpan - Progress Hafalan: ' + persen + '%', 'success'); }
-    loadFormHafalan(); renderHafalanList(); 
+    if (persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
+    else showToast(`✅ Juz 30 tersimpan - Progress Hafalan: ${persen}%`, 'success');
+    loadFormHafalan();
+    renderHafalanList();
 }
 
-function simpanPraktik(){ 
-    let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; 
-    santri[idx].praktikShalat=document.getElementById('praktikShalat').checked; 
-    santri[idx].praktikJenazah=document.getElementById('praktikJenazah').checked; 
-    santri[idx].praktikKhotib=document.getElementById('praktikKhotib').checked; 
-    santri[idx].nilaiPraktik=document.getElementById('nilaiPraktik').value; 
-    santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
+function simpanPraktik() {
+    let idx = santri.findIndex(x => x.id === currentSantriId);
+    if (idx === -1) return;
+    santri[idx].praktikShalat = document.getElementById('praktikShalat').checked;
+    santri[idx].praktikJenazah = document.getElementById('praktikJenazah').checked;
+    santri[idx].praktikKhotib = document.getElementById('praktikKhotib').checked;
+    santri[idx].nilaiPraktik = document.getElementById('nilaiPraktik').value;
+    santri[idx].tanggalUpdate = new Date().toISOString();
+    saveData();
     let persen = hitungProgressHafalan(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS Hafalan! 🎉🎉🎉', 'success'); } 
-    else { showToast('✅ Praktik tersimpan - Progress Hafalan: ' + persen + '%', 'success'); }
-    loadFormHafalan(); renderHafalanList(); 
+    if (persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
+    else showToast(`✅ Praktik tersimpan - Progress Hafalan: ${persen}%`, 'success');
+    loadFormHafalan();
+    renderHafalanList();
 }
 
-function simpanMadin(){ 
-    let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; 
-    santri[idx].madinUla=document.getElementById('madinUla').checked; 
-    let wustho=document.getElementById('madinWustho'); 
-    if(wustho)santri[idx].madinWustho=wustho.checked; 
-    santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
+function simpanMadin() {
+    let idx = santri.findIndex(x => x.id === currentSantriId);
+    if (idx === -1) return;
+    santri[idx].madinUla = document.getElementById('madinUla').checked;
+    let wustho = document.getElementById('madinWustho');
+    if (wustho) santri[idx].madinWustho = wustho.checked;
+    santri[idx].tanggalUpdate = new Date().toISOString();
+    saveData();
     let persen = hitungProgressHafalan(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS Hafalan! 🎉🎉🎉', 'success'); } 
-    else { showToast('✅ Madin tersimpan - Progress Hafalan: ' + persen + '%', 'success'); }
-    loadFormHafalan(); renderHafalanList(); 
+    if (persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
+    else showToast(`✅ Madin tersimpan - Progress Hafalan: ${persen}%`, 'success');
+    loadFormHafalan();
+    renderHafalanList();
 }
 
-function simpanSikap(){ 
-    let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; 
-    santri[idx].sikapJamaah=document.getElementById('sikapJamaah').checked; 
-    santri[idx].sikapMadin=document.getElementById('sikapMadin').checked; 
-    santri[idx].sikapFormal=document.getElementById('sikapFormal').checked; 
-    santri[idx].tanggalUpdate=new Date().toISOString(); saveData(); 
+function simpanSikap() {
+    let idx = santri.findIndex(x => x.id === currentSantriId);
+    if (idx === -1) return;
+    santri[idx].sikapJamaah = document.getElementById('sikapJamaah').checked;
+    santri[idx].sikapMadin = document.getElementById('sikapMadin').checked;
+    santri[idx].sikapFormal = document.getElementById('sikapFormal').checked;
+    santri[idx].tanggalUpdate = new Date().toISOString();
+    saveData();
     let persen = hitungProgressHafalan(santri[idx]);
-    if(persen >= 100) { showToast('🎉🎉🎉 SELAMAT! Santri LULUS Hafalan! 🎉🎉🎉', 'success'); } 
-    else { showToast('✅ Sikap tersimpan - Progress Hafalan: ' + persen + '%', 'success'); }
-    loadFormHafalan(); renderHafalanList(); 
+    if (persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
+    else showToast(`✅ Sikap tersimpan - Progress Hafalan: ${persen}%`, 'success');
+    loadFormHafalan();
+    renderHafalanList();
 }
-
-function toggleAllSurat(){ let c=['yasin','waqiah','mulk']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); if(!all)document.getElementById('nilaiSurat').value='Mumtaz'; }
-function toggleAllAurad(){ let c=['wirid','doaShalat','tahlilRingkas','tahlilLengkap','doaTahlil','tawasul']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); if(!all)document.getElementById('nilaiAurad').value='Mumtaz'; }
-function toggleAllJuz(){ let sel=document.getElementById('selectAllJuz'); let cbs=document.querySelectorAll('.juz-checkbox'); cbs.forEach(cb=>cb.checked=sel.checked); if(sel.checked)document.getElementById('nilaiJuz').value='Mumtaz'; }
-function toggleAllPraktik(){ let c=['praktikShalat','praktikJenazah','praktikKhotib']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); if(!all)document.getElementById('nilaiPraktik').value='Mumtaz'; }
-function toggleAllMadin(){ let ula=document.getElementById('madinUla'); let wustho=document.getElementById('madinWustho'); if(ula)ula.checked=!ula.checked; if(wustho)wustho.checked=ula?ula.checked:false; }
-function toggleAllSikap(){ let c=['sikapJamaah','sikapMadin','sikapFormal']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
 
 // ==================== FORM MAPEL ====================
 function loadFormMapel() {
     if (!currentMapelSantriId) return;
     let s = santri.find(x => x.id === currentMapelSantriId);
     if (!s) return;
-    
     if (!s.mapelStatus) s.mapelStatus = {};
     
     let mapelList = mapelByKelas[s.kelas] || [];
     let { done, total, persen } = hitungProgressMapel(s, s.kelas);
     
-    let mapelHtml = `<div class="mb-4 flex justify-between items-center">
-        <div><span class="font-bold">Progress: ${persen}% (${done}/${total} selesai)</span></div>
-        <button onclick="checkAllMapel()" class="btn-outline text-sm px-3 py-1 rounded"><i class="fas fa-check-double mr-1"></i> Centang Semua</button>
-    </div>
-    <div class="mapel-grid">`;
-    
-    for (let mapel of mapelList) {
-        mapelHtml += `<div class="mapel-item">
-            <span>📖 ${mapel}</span>
-            <input type="checkbox" id="mapel_${mapel.replace(/\s/g, '_')}" class="mapel-checkbox w-5 h-5" ${s.mapelStatus[mapel] === true ? 'checked' : ''}>
-        </div>`;
-    }
-    mapelHtml += `</div>
-    <div class="mt-4 flex justify-end">
-        <button onclick="simpanMapel()" class="btn-primary px-4 py-2 rounded-lg"><i class="fas fa-save"></i> Simpan Validasi Mapel</button>
-    </div>`;
-    
     let html = `
-        <div class="bg-purple-50 p-4 rounded-lg border">
-            <h3 class="font-bold text-lg mb-2">📚 Validasi Mapel - Kelas ${s.kelas}</h3>
-            <p class="text-sm text-gray-500 mb-3">Santri: <strong>${s.nama}</strong></p>
-            ${mapelHtml}
+    <div class="bg-purple-50 p-4 rounded-lg border">
+        <h3 class="font-bold text-lg mb-2">📚 Validasi Mapel - Kelas ${s.kelas}</h3>
+        <p class="text-sm mb-3">Santri: <strong>${s.nama}</strong> | Progress: ${persen}% (${done}/${total} selesai)</p>
+        <div class="mapel-grid">
+            ${mapelList.map(m => `<div class="mapel-item"><span>📖 ${m}</span><input type="checkbox" id="mapel_${m.replace(/\s/g, '_')}" class="w-5 h-5" ${s.mapelStatus[m] ? 'checked' : ''}></div>`).join('')}
         </div>
-    `;
+        <button onclick="simpanMapel()" class="btn-primary mt-4 w-full">Simpan Validasi Mapel</button>
+    </div>`;
     
     document.getElementById('formMapel').classList.remove('hidden');
     document.getElementById('formMapel').innerHTML = html;
-}
-
-function checkAllMapel() {
-    let s = santri.find(x => x.id === currentMapelSantriId);
-    if (!s) return;
-    let mapelList = mapelByKelas[s.kelas] || [];
-    let allChecked = true;
-    for (let m of mapelList) {
-        let cb = document.getElementById(`mapel_${m.replace(/\s/g, '_')}`);
-        if (cb && !cb.checked) { allChecked = false; break; }
-    }
-    for (let m of mapelList) {
-        let cb = document.getElementById(`mapel_${m.replace(/\s/g, '_')}`);
-        if (cb) cb.checked = !allChecked;
-    }
 }
 
 function simpanMapel() {
@@ -1475,22 +1488,18 @@ function simpanMapel() {
     let persen = Math.round((completedCount / total) * 100);
     
     if (persen >= 100) {
-        showToast('🎉🎉🎉 SELAMAT! Semua mapel selesai! 🎉🎉🎉', 'success');
+        showToast('🎉 SELAMAT! Semua mapel selesai! 🎉', 'success');
     } else {
         showToast(`✅ Validasi Mapel tersimpan - Progress: ${persen}% (${completedCount}/${total})`, 'success');
     }
     
     loadFormMapel();
     renderMapelList();
-    updateDashboard();
-    updateLaporanContent();
 }
 
 function showPage(page){ 
     document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden')); 
     document.getElementById(`page${page.charAt(0).toUpperCase()+page.slice(1)}`).classList.remove('hidden'); 
-    document.querySelectorAll('.nav-item').forEach(item=>item.classList.remove('active')); 
-    if(window.event&&window.event.currentTarget) window.event.currentTarget.classList.add('active'); 
     if(page==='santri') renderSantri(); 
     if(page==='dashboard') updateDashboard(); 
     if(page==='laporan') updateLaporanContent(); 
@@ -1518,25 +1527,27 @@ function doLogin(){
     if(role === 'admin' && u === 'admin' && p === 'admin123'){ 
         currentUserRole = 'admin'; currentUser = u;
         document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden'); 
-        updateMenuByRole(); loadLocalData(); showToast(`Selamat datang Admin!`, 'success'); 
+        updateMenuByRole(); loadLocalData(); showToast('Selamat datang Admin!', 'success'); 
         setSyncStatus('Online', 'online');
-        if (navigator.onLine) {
-            setTimeout(() => loadFromCloud(), 1000);
-        }
+        if (navigator.onLine) setTimeout(() => loadFromCloud(), 1000);
     } 
     else if(role === 'guru' && u === 'guru' && p === 'guru123'){ 
         currentUserRole = 'guru'; currentUser = u;
         document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden'); 
-        updateMenuByRole(); loadLocalData(); showToast(`Selamat datang Guru!`, 'success'); 
+        updateMenuByRole(); loadLocalData(); showToast('Selamat datang Guru!', 'success'); 
         setSyncStatus('Online', 'online');
-        if (navigator.onLine) {
-            setTimeout(() => loadFromCloud(), 1000);
-        }
+        if (navigator.onLine) setTimeout(() => loadFromCloud(), 1000);
     }
     else { let err=document.getElementById('loginError'); err.innerText='Username atau password salah!'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),2000); } 
 }
 
-function doLogout(){ document.getElementById('mainApp').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); document.getElementById('loginUser').value=''; document.getElementById('loginPass').value=''; setRole('admin'); }
+function doLogout(){ 
+    document.getElementById('mainApp').classList.add('hidden'); 
+    document.getElementById('loginScreen').classList.remove('hidden'); 
+    document.getElementById('loginUser').value=''; 
+    document.getElementById('loginPass').value=''; 
+    setRole('admin'); 
+}
 
 loadLocalData();
 </script>
