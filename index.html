@@ -3,62 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Mutqin BM - Sistem Manajemen Kelulusan</title>
+    <title>Mutqin BM - FIX 100% LULUS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        .toast { position: fixed; bottom: 20px; right: 20px; z-index: 9999; padding: 12px 20px; border-radius: 12px; font-weight: 600; animation: fadeIn 0.3s; }
-        .toast-success { background: #10b981; color: white; }
-        .toast-error { background: #ef4444; color: white; }
-        .toast-warning { background: #f59e0b; color: white; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
-        .nav-item { padding: 12px 16px; margin: 4px 12px; border-radius: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; }
-        .nav-item:hover { background: #d1fae5; }
-        .nav-item.active { background: #10b981; color: white; }
-        .btn-primary { background: #10b981; color: white; padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; }
-        .btn-primary:hover { background: #059669; }
-        .btn-outline { background: white; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 10px; cursor: pointer; }
-        .btn-outline:hover { border-color: #10b981; color: #10b981; }
-        .badge-success { background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
-        .badge-warning { background: #fed7aa; color: #9a3412; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
-        .badge-danger { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
-        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: white; border-radius: 20px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 20px; }
-        .santri-list-group { max-height: 550px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 12px; margin-top: 5px; background: white; }
-        .kelas-group { border-bottom: 1px solid #e5e7eb; }
-        .kelas-title { background: #f0fdf4; padding: 12px 16px; font-weight: 700; color: #065f46; border-bottom: 1px solid #d1fae5; display: flex; justify-content: space-between; }
-        .santri-item { padding: 12px 16px; padding-left: 35px; border-bottom: 1px solid #f3f4f6; cursor: pointer; display: flex; justify-content: space-between; }
-        .santri-item:hover { background: #d1fae5; }
-        .certificate-box { background: white; border: 8px double #059669; border-radius: 16px; padding: 30px; max-width: 500px; margin: 0 auto; }
-        .datetime-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 12px 16px; color: white; margin-bottom: 16px; }
-        .progress-small { width: 60px; height: 4px; background: #e5e7eb; border-radius: 10px; overflow: hidden; display: inline-block; margin-left: 8px; }
-        .progress-fill-small { height: 100%; background: #10b981; }
-        .progress-bar { width: 80px; height: 6px; background: #e5e7eb; border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: #10b981; }
-        .mapel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
-        .mapel-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: white; border-radius: 10px; border: 1px solid #e5e7eb; }
-        .dark-mode .bg-white { background: #1e1e2e !important; }
-        .dark-mode .text-gray-600 { color: #ccc !important; }
-        .dark-mode .santri-item, .dark-mode .mapel-item { background: #2d2d3d; color: white; }
-        .dark-mode .kelas-title { background: #2d2d3d; color: #86efac; }
+        *{font-family:'Inter',sans-serif;}
+        .toast{position:fixed;bottom:20px;right:20px;z-index:9999;padding:12px 20px;border-radius:12px;font-weight:600;animation:fadeIn 0.3s;z-index:10000;}
+        .toast-success{background:#10b981;color:white;}
+        .toast-error{background:#ef4444;color:white;}
+        .toast-warning{background:#f59e0b;color:white;}
+        @keyframes fadeIn{from{opacity:0;transform:translateX(100px);}to{opacity:1;transform:translateX(0);}}
+        .nav-item{padding:12px 16px;margin:4px 12px;border-radius:12px;cursor:pointer;transition:0.2s;display:flex;align-items:center;gap:12px;}
+        .nav-item:hover{background:#d1fae5;}
+        .nav-item.active{background:#10b981;color:white;}
+        .btn-primary{background:#10b981;color:white;padding:8px 16px;border-radius:10px;font-weight:600;cursor:pointer;border:none;}
+        .btn-primary:hover{background:#059669;}
+        .btn-outline{background:white;border:1px solid #d1d5db;padding:8px 16px;border-radius:10px;cursor:pointer;}
+        .btn-outline:hover{border-color:#10b981;color:#10b981;}
+        .btn-success{background:#059669;color:white;padding:8px 16px;border-radius:10px;font-weight:600;cursor:pointer;}
+        .badge-success{background:#d1fae5;color:#065f46;padding:4px 10px;border-radius:20px;font-size:12px;}
+        .badge-warning{background:#fed7aa;color:#9a3412;padding:4px 10px;border-radius:20px;font-size:12px;}
+        .badge-danger{background:#fee2e2;color:#991b1b;padding:4px 10px;border-radius:20px;font-size:12px;}
+        .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000;}
+        .modal-content{background:white;border-radius:20px;max-width:550px;width:90%;max-height:80vh;overflow-y:auto;padding:20px;}
+        .santri-list-group{max-height:550px;overflow-y:auto;border:1px solid #e5e7eb;border-radius:12px;margin-top:5px;background:white;}
+        .kelas-group{border-bottom:1px solid #e5e7eb;}
+        .kelas-title{background:#f0fdf4;padding:12px 16px;font-weight:700;color:#065f46;border-bottom:1px solid #d1fae5;}
+        .santri-item{padding:12px 16px;padding-left:35px;border-bottom:1px solid #f3f4f6;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+        .santri-item:hover{background:#d1fae5;}
+        .certificate-box{background:white;border:8px double #059669;border-radius:16px;padding:30px;max-width:550px;margin:0 auto;text-align:center;}
+        .datetime-card{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:16px;padding:12px 16px;color:white;margin-bottom:16px;}
+        .progress-small{width:60px;height:4px;background:#e5e7eb;border-radius:10px;overflow:hidden;display:inline-block;margin-left:8px;}
+        .progress-fill-small{height:100%;background:#10b981;}
+        .mapel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;}
+        .mapel-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:white;border-radius:10px;border:1px solid #e5e7eb;}
+        .dark-mode{background:#1a1a2e;color:#eee;}
+        .dark-mode .bg-white{background:#16213e!important;color:#eee;}
+        .dark-mode .btn-outline{background:#1a1a2e;border-color:#2c3e66;color:#eee;}
+        .madin-highlight{background:#fef3c7;border:3px solid #10b981;border-radius:12px;}
+        .role-badge.admin{background:#dcfce7;color:#166534;padding:4px 12px;border-radius:20px;font-size:12px;}
+        .progress-bar-big{height:8px;background:#e5e7eb;border-radius:10px;overflow:hidden;width:100%;}
+        .progress-fill-big{height:100%;background:#10b981;transition:width 0.3s;}
+        .sync-status{position:fixed;bottom:20px;left:20px;background:white;padding:5px 12px;border-radius:20px;font-size:11px;z-index:100;cursor:pointer;}
+        .madin-options{background:#ecfdf5;border:2px solid #10b981;border-radius:16px;padding:20px;margin-bottom:20px;}
+        .madin-options h3{font-size:18px;font-weight:bold;margin-bottom:15px;color:#065f46;text-align:center;}
+        .madin-check-group{display:flex;gap:30px;justify-content:center;flex-wrap:wrap;}
+        .madin-check-item{display:flex;align-items:center;gap:12px;padding:12px 24px;background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1);cursor:pointer;transition:0.2s;}
+        .madin-check-item:hover{background:#d1fae5;transform:scale(1.02);}
+        .madin-check-item input{width:20px;height:20px;cursor:pointer;}
+        .madin-check-item label{font-weight:bold;font-size:16px;cursor:pointer;margin:0;}
+        .lulus-badge{background:#10b981;color:white;padding:6px 12px;border-radius:20px;font-size:14px;font-weight:bold;display:inline-block;}
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100" id="appBody">
 
-<!-- LOGIN SCREEN - 2 pilihan (Admin & Guru) tapi teks petunjuk hanya guru -->
-<div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-700">
-    <div class="bg-white rounded-2xl p-8 w-full max-w-md">
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-900 to-teal-800">
+    <div class="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
         <div class="text-center mb-6">
-            <div class="w-20 h-20 mx-auto bg-emerald-100 rounded-2xl flex items-center justify-center mb-3">
-                <i class="fas fa-graduation-cap text-emerald-600 text-4xl"></i>
+            <div id="loginLogoArea" class="w-24 h-24 mx-auto bg-emerald-100 rounded-2xl flex items-center justify-center mb-3 overflow-hidden">
+                <i class="fas fa-graduation-cap text-emerald-600 text-5xl"></i>
             </div>
-            <h1 class="text-2xl font-bold">Mutqin BM</h1>
-            <p class="text-gray-500 text-sm">Pondok Pesantren Bahrul Maghfiroh</p>
+            <h1 id="loginNamaPesantren" class="text-2xl font-bold">Pondok Pesantren Bahrul Maghfiroh</h1>
+            <p class="text-gray-500 text-sm">Sistem Hafalan & Penilaian Madin</p>
         </div>
         <div id="loginError" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-center text-sm"></div>
         <div class="flex gap-3 mb-4">
@@ -68,9 +79,7 @@
         <input type="text" id="loginUser" class="w-full p-3 border rounded-lg mb-3" placeholder="Username">
         <input type="password" id="loginPass" class="w-full p-3 border rounded-lg mb-4" placeholder="Password">
         <button onclick="doLogin()" class="btn-primary w-full py-3 rounded-lg">Login</button>
-        <div class="text-center text-xs text-gray-400 mt-4">
-            <div>Guru: guru / guru123</div>
-        </div>
+        <div class="text-center text-xs text-gray-400 mt-4">Admin: admin / admin123 | Guru: guru / guru123</div>
     </div>
 </div>
 
@@ -78,1139 +87,503 @@
 <div id="mainApp" class="hidden">
     <div class="bg-white shadow-sm border-b sticky top-0 z-20">
         <div class="px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <button onclick="toggleSidebar()" class="lg:hidden text-gray-600 text-xl"><i class="fas fa-bars"></i></button>
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-graduation-cap text-emerald-600"></i>
-                    </div>
-                    <span class="font-bold">Mutqin BM</span>
-                </div>
+            <div class="flex items-center gap-2">
+                <i class="fas fa-graduation-cap text-emerald-600 text-xl"></i>
+                <span id="headerNamaPesantren" class="font-bold">Mutqin BM</span>
             </div>
             <div class="flex items-center gap-3">
-                <span id="userRoleBadge" class="role-badge">Admin</span>
-                <button onclick="toggleDarkMode()" class="dark-toggle no-print text-gray-600"><i class="fas fa-moon"></i></button>
-                <button onclick="doLogout()" class="text-gray-500 hover:text-red-500"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+                <span id="userRoleBadge" class="role-badge admin">Admin</span>
+                <button onclick="toggleDarkMode()" class="text-gray-600"><i class="fas fa-moon"></i></button>
+                <button onclick="doLogout()" class="text-gray-500 hover:text-red-500"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </div>
     </div>
-
     <div class="flex">
         <div id="sidebar" class="w-64 bg-white min-h-screen fixed lg:relative transform -translate-x-full lg:translate-x-0 transition duration-300 shadow-lg z-10 overflow-y-auto">
-            <div class="p-4 border-b"><div class="font-bold">Menu Utama</div></div>
+            <div class="p-4 border-b font-bold">Menu</div>
             <nav class="py-4" id="sidebarNav"></nav>
         </div>
-
-        <div class="flex-1 p-4 md:p-6 lg:ml-0">
-            <!-- Dashboard -->
+        <div class="flex-1 p-4 md:p-6">
             <div id="pageDashboard" class="page">
-                <div class="datetime-card no-print">
-                    <div class="flex justify-between items-center">
-                        <div><div class="date-small" id="fullDate"></div></div>
-                        <div class="text-right"><div class="time-small" id="currentTimeLarge"></div></div>
-                    </div>
+                <div class="datetime-card"><div class="flex justify-between"><div id="fullDate"></div><div id="currentTimeLarge" class="font-mono text-xl"></div></div></div>
+                <div id="dashboardProfileCard" class="bg-white rounded-xl shadow-md p-5 mb-6 flex flex-wrap items-center gap-4 border-l-8 border-emerald-500">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center"><i class="fas fa-school text-emerald-600 text-3xl"></i></div>
+                    <div><h2 id="dashNamaPesantren" class="text-xl font-bold">Pondok Pesantren Bahrul Maghfiroh</h2><p id="dashPengasuh" class="text-gray-600">Pengasuh: KH. Ahmad Munif</p><p id="dashKetua" class="text-gray-500 text-sm">Ketua: Drs. M. Sholeh</p></div>
                 </div>
-                <h2 class="text-xl font-bold mb-4" id="welcomeText">Selamat Datang</h2>
-                
-                <h3 class="text-lg font-semibold mb-3 text-blue-700">📖 Hafalan Santri</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                     <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalSantriHafalan">0</div><div>Total Santri</div></div>
                     <div class="bg-gradient-to-br from-green-500 to-green-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalLulus">0</div><div>Lulus Hafalan</div></div>
-                    <div class="bg-gradient-to-br from-yellow-500 to-yellow-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalProsesHafalan">0</div><div>Proses Hafalan</div></div>
-                    <div class="bg-gradient-to-br from-red-500 to-red-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalBelumHafalan">0</div><div>Belum Hafalan</div></div>
+                    <div class="bg-gradient-to-br from-yellow-500 to-yellow-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalProsesHafalan">0</div><div>Proses</div></div>
+                    <div class="bg-gradient-to-br from-red-500 to-red-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalBelumHafalan">0</div><div>Belum</div></div>
                 </div>
-                
-                <h3 class="text-lg font-semibold mb-3 text-purple-700">📚 Tam-taman (Validasi Mapel)</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalSantriMapel">0</div><div>Total Santri</div></div>
-                    <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalSelesai">0</div><div>Selesai Mapel</div></div>
-                    <div class="bg-gradient-to-br from-amber-500 to-amber-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalProsesMapel">0</div><div>Proses Mapel</div></div>
-                    <div class="bg-gradient-to-br from-orange-500 to-orange-700 text-white rounded-xl p-4"><div class="text-2xl font-bold" id="totalBelumMapel">0</div><div>Belum Mapel</div></div>
-                </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-xl p-4 shadow"><h3 class="font-semibold text-center mb-3">📊 Grafik Status Hafalan</h3><canvas id="statusChartHafalan" height="200"></canvas></div>
-                    <div class="bg-white rounded-xl p-4 shadow"><h3 class="font-semibold text-center mb-3">📊 Grafik Status Tam-taman</h3><canvas id="statusChartMapel" height="200"></canvas></div>
-                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="bg-white rounded-xl p-4"><canvas id="statusChartHafalan" height="200"></canvas></div><div class="bg-white rounded-xl p-4"><canvas id="statusChartMapel" height="200"></canvas></div></div>
             </div>
-
-            <!-- Data Santri -->
-            <div id="pageSantri" class="page hidden">
-                <h2 class="text-xl font-bold mb-4">Data Santri</h2>
-                <div class="flex gap-2 mb-4 flex-wrap" id="santriButtons"></div>
-                <div class="relative mb-4"><i class="fas fa-search absolute left-3 top-3 text-gray-400"></i><input type="text" id="searchSantri" placeholder="Cari nama atau kelas..." class="w-full pl-10 p-2 border rounded-lg" onkeyup="renderSantri()"></div>
-                <div id="santriListContainer" class="bg-white rounded-xl shadow overflow-hidden"></div>
-            </div>
-
-            <!-- Hafalan -->
-            <div id="pageHafalan" class="page hidden">
-                <h2 class="text-xl font-bold mb-4">Hafalan & Penilaian</h2>
-                <div class="bg-white rounded-xl shadow">
-                    <div class="p-4 border-b bg-gray-50">
-                        <label class="font-semibold block mb-2">📋 Klik Nama Santri untuk Input Hafalan</label>
-                        <div class="relative">
-                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                            <input type="text" id="searchSantriHafalan" placeholder="Cari nama santri..." class="w-full pl-10 p-2 border rounded-lg" onkeyup="filterHafalanList()">
-                            <i class="fas fa-times-circle absolute right-3 top-3 text-gray-400 cursor-pointer" onclick="clearSearchHafalan()"></i>
-                        </div>
-                        <div id="santriListHafalan" class="santri-list-group mt-2"></div>
-                    </div>
-                    <div id="formHafalan" class="hidden p-4"></div>
-                </div>
-            </div>
-
-            <!-- Mapel -->
-            <div id="pageMapel" class="page hidden">
-                <h2 class="text-xl font-bold mb-4">📚 Tam-taman (Validasi Mapel)</h2>
-                <div class="bg-white rounded-xl shadow">
-                    <div class="p-4 border-b bg-gray-50">
-                        <label class="font-semibold block mb-2">Pilih Santri</label>
-                        <div class="relative">
-                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                            <input type="text" id="searchSantriMapel" placeholder="Cari nama santri..." class="w-full pl-10 p-2 border rounded-lg" onkeyup="filterMapelList()">
-                            <i class="fas fa-times-circle absolute right-3 top-3 text-gray-400 cursor-pointer" onclick="clearSearchMapel()"></i>
-                        </div>
-                        <div id="santriListMapel" class="santri-list-group mt-2"></div>
-                    </div>
-                    <div id="formMapel" class="hidden p-4"></div>
-                </div>
-            </div>
-
-            <!-- Sertifikat -->
-            <div id="pageSertifikat" class="page hidden">
-                <h2 class="text-xl font-bold mb-4">Sertifikat Kelulusan</h2>
-                <div class="bg-white rounded-xl shadow p-4">
-                    <select id="selectSertifikat" class="w-full p-2 border rounded-lg mb-4"><option value="">-- Pilih Santri Lulus --</option></select>
-                    <div id="sertifikatPreview"></div>
-                </div>
-            </div>
-
-            <!-- Laporan -->
-            <div id="pageLaporan" class="page hidden">
-                <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-                    <h2 class="text-xl font-bold">Laporan Lengkap</h2>
-                    <button onclick="printFullLaporan()" class="btn-primary px-4 py-2 rounded-lg"><i class="fas fa-print"></i> Cetak</button>
-                    <button onclick="exportLaporanToExcel()" class="btn-outline px-4 py-2 rounded-lg"><i class="fas fa-file-excel"></i> Export Excel</button>
-                </div>
-                <div id="laporanContent" class="bg-white rounded-xl shadow p-6"></div>
-            </div>
-
-            <!-- Pengaturan -->
-            <div id="pagePengaturan" class="page hidden">
-                <h2 class="text-xl font-bold mb-4">Pengaturan Aplikasi</h2>
-                <div class="bg-white rounded-xl shadow p-6 max-w-lg">
-                    <div class="mb-6 pb-4 border-b">
-                        <h3 class="font-semibold mb-3"><i class="fas fa-palette mr-2"></i> Tampilan</h3>
-                        <div class="flex justify-between items-center">
-                            <span><i class="fas fa-moon mr-2"></i> Mode Gelap</span>
-                            <button onclick="toggleDarkMode()" class="btn-outline px-4 py-2 rounded-lg" id="darkModeToggle">Aktifkan</button>
-                        </div>
-                    </div>
-                    <div class="mb-6 pb-4 border-b">
-                        <h3 class="font-semibold mb-3"><i class="fas fa-cloud-upload-alt mr-2"></i> Backup & Restore Data</h3>
-                        <p class="text-sm text-gray-500 mb-2">Simpan data ke file atau pulihkan dari file backup (cara termudah pindah data antar HP)</p>
-                        <div class="flex gap-3">
-                            <button onclick="backupData()" class="btn-primary flex-1 py-2 rounded-lg"><i class="fas fa-download"></i> Backup ke File</button>
-                            <button onclick="restoreData()" class="btn-outline flex-1 py-2 rounded-lg"><i class="fas fa-upload"></i> Restore dari File</button>
-                        </div>
-                        <div id="backupStatus" class="text-xs text-center mt-2 text-gray-400"></div>
-                    </div>
-                    <div class="pt-2">
-                        <h3 class="font-semibold mb-3"><i class="fas fa-info-circle mr-2"></i> Tentang Aplikasi</h3>
-                        <p class="text-sm text-gray-500">Mutqin BM - Sistem Manajemen Kelulusan</p>
-                        <p class="text-sm text-gray-500">Pondok Pesantren Bahrul Maghfiroh</p>
-                    </div>
-                </div>
-            </div>
+            <div id="pageSantri" class="page hidden"><h2 class="text-xl font-bold mb-4">Data Santri</h2><div class="flex gap-2 mb-4 flex-wrap" id="santriButtons"></div><input type="text" id="searchSantri" placeholder="Cari nama atau kelas..." class="w-full p-2 border rounded-lg mb-4" onkeyup="renderSantri()"><div id="santriListContainer" class="bg-white rounded-xl shadow"></div></div>
+            <div id="pageHafalan" class="page hidden"><h2 class="text-xl font-bold mb-4">Hafalan & Pendidikan Madin</h2><div class="bg-white rounded-xl shadow"><div class="p-4 border-b"><input type="text" id="searchSantriHafalan" placeholder="Cari santri..." class="w-full p-2 border rounded-lg" onkeyup="filterHafalanList()"></div><div id="santriListHafalan" class="santri-list-group"></div><div id="formHafalan" class="hidden p-4"></div></div></div>
+            <div id="pageMapel" class="page hidden"><h2 class="text-xl font-bold mb-4">Tam-taman</h2><div class="bg-white rounded-xl shadow"><div class="p-4 border-b"><input type="text" id="searchSantriMapel" placeholder="Cari santri..." class="w-full p-2 border rounded-lg" onkeyup="filterMapelList()"></div><div id="santriListMapel" class="santri-list-group"></div><div id="formMapel" class="hidden p-4"></div></div></div>
+            <div id="pageSertifikat" class="page hidden"><h2 class="text-xl font-bold mb-4">Sertifikat</h2><div class="bg-white rounded-xl shadow p-4"><select id="selectSertifikat" class="w-full p-2 border rounded-lg mb-4" onchange="loadSertifikat()"></select><div id="sertifikatPreview"></div></div></div>
+            <div id="pageLaporan" class="page hidden"><h2 class="text-xl font-bold mb-4">Laporan</h2><div class="bg-white rounded-xl shadow p-6" id="laporanContent"></div></div>
+            <div id="pagePengaturan" class="page hidden"><h2 class="text-xl font-bold mb-4">Pengaturan</h2><div class="bg-white rounded-xl shadow p-6 max-w-2xl"><div class="mb-6 pb-4 border-b"><h3 class="font-semibold mb-3"><i class="fas fa-university mr-2"></i> Profil Pesantren</h3><div class="grid gap-3"><div><label class="block text-sm font-medium">Nama Pesantren</label><input type="text" id="settingNamaPesantren" class="w-full p-2 border rounded-lg"></div><div><label class="block text-sm font-medium">Nama Pengasuh</label><input type="text" id="settingPengasuh" class="w-full p-2 border rounded-lg"></div><div><label class="block text-sm font-medium">Ketua Pondok</label><input type="text" id="settingKetua" class="w-full p-2 border rounded-lg"></div><div><label class="block text-sm font-medium">URL Logo (Gambar)</label><input type="text" id="settingLogoUrl" class="w-full p-2 border rounded-lg" placeholder="https://..."><button onclick="simpanProfil()" class="btn-primary mt-2 px-4 py-2">Simpan Profil</button></div></div></div><div class="mb-6"><h3 class="font-semibold mb-3"><i class="fas fa-cloud-upload-alt mr-2"></i> Google Sheets Cloud</h3><div class="flex gap-3"><button onclick="syncToCloud()" class="btn-primary flex-1 py-2"><i class="fas fa-cloud-upload-alt"></i> Simpan ke Cloud</button><button onclick="loadFromCloud()" class="btn-outline flex-1 py-2"><i class="fas fa-cloud-download-alt"></i> Load dari Cloud</button></div></div></div></div>
         </div>
     </div>
 </div>
+<div id="syncStatus" class="sync-status offline no-print"><i class="fas fa-cloud"></i> <span>Cloud siap</span></div>
 
-<!-- Modal Tambah Santri -->
-<div id="tambahModal" class="modal hidden" onclick="closeModal(event,'tambahModal')">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <h3 class="font-bold text-lg mb-4">Tambah Santri</h3>
-        <input type="text" id="tambahNama" class="w-full p-3 border rounded-lg mb-3" placeholder="Nama Lengkap">
-        <input type="text" id="tambahKelas" class="w-full p-3 border rounded-lg mb-4" placeholder="Kelas (1A, 2B, 3C, 4A, 5B, 6C)">
-        <div class="flex gap-3 justify-end">
-            <button onclick="closeModal(null,'tambahModal')" class="btn-outline px-4 py-2 rounded-lg">Batal</button>
-            <button onclick="tambahSantri()" class="btn-primary px-4 py-2 rounded-lg">Simpan</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Import Massal -->
-<div id="massalModal" class="modal hidden" onclick="closeModal(event,'massalModal')">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <h3 class="font-bold text-lg mb-4">Import Massal Santri</h3>
-        <p class="text-sm text-gray-500 mb-2">Format: Nama,Kelas (satu baris satu santri)</p>
-        <textarea id="massalData" rows="6" class="w-full p-3 border rounded-lg font-mono text-sm mb-4" placeholder="Ahmad Maulana,3A&#10;Fatimah Azzahra,2B&#10;Muhammad Rizki,1A"></textarea>
-        <div class="flex gap-3 justify-end">
-            <button onclick="closeModal(null,'massalModal')" class="btn-outline px-4 py-2 rounded-lg">Batal</button>
-            <button onclick="importMassal()" class="btn-primary px-4 py-2 rounded-lg">Import</button>
-        </div>
-    </div>
-</div>
+<!-- MODALS -->
+<div id="tambahModal" class="modal hidden" onclick="closeModal(event,'tambahModal')"><div class="modal-content" onclick="event.stopPropagation()"><h3 class="font-bold text-lg mb-4">Tambah Santri</h3><input type="text" id="tambahNama" class="w-full p-3 border rounded-lg mb-3" placeholder="Nama"><input type="text" id="tambahKelas" class="w-full p-3 border rounded-lg mb-4" placeholder="Kelas (1A,2B,3C,4A,5B,6C)"><div class="flex gap-3 justify-end"><button onclick="closeModal(null,'tambahModal')" class="btn-outline px-4 py-2">Batal</button><button onclick="tambahSantri()" class="btn-primary px-4 py-2">Simpan</button></div></div></div>
+<div id="massalModal" class="modal hidden" onclick="closeModal(event,'massalModal')"><div class="modal-content" onclick="event.stopPropagation()"><h3 class="font-bold text-lg mb-4">Import Massal</h3><p class="text-sm text-gray-500 mb-2">Format: Nama,Kelas (satu baris per santri)</p><textarea id="massalData" rows="6" class="w-full p-3 border rounded-lg font-mono text-sm mb-4" placeholder="Ahmad,3A&#10;Fatimah,2B"></textarea><div class="flex gap-3 justify-end"><button onclick="closeModal(null,'massalModal')" class="btn-outline px-4 py-2">Batal</button><button onclick="importMassal()" class="btn-primary px-4 py-2">Import</button></div></div></div>
 
 <script>
-// ==================== DATA SANTRI ====================
+// ==================== DATA ====================
 let santri = [];
 let currentUserRole = null;
 let currentSantriId = null;
 let currentMapelSantriId = null;
 let chartInstances = {};
-let darkMode = localStorage.getItem('darkMode') === 'true';
 
-const mapelByKelas = {
-    '1A': ['Akhlak', 'B. Arab', 'Fikih', 'Hadits', 'Nahwu', 'Shorof', 'Tajwid', 'Tauhid'],
-    '1B': ['Akhlak', 'B. Arab', 'Fikih', 'Hadits', 'Nahwu', 'Shorof', 'Tajwid', 'Tauhid'],
-    '2A': ['Akhlak', 'B. Arab', 'Fikih', 'Hadits', 'Nahwu', 'Shorof', 'Siroh', 'Tauhid'],
-    '2B': ['Akhlak', 'B. Arab', 'Fikih', 'Hadits', 'Nahwu', 'Shorof', 'Siroh', 'Tauhid'],
-    '3A': ['Akhlak', 'B. Arab', 'Fikih', 'Hadits', 'Nahwu', 'Shorof', 'Siroh', 'Tauhid'],
-    '3B': ['Akhlak', 'B. Arab', 'Fikih', 'Hadits', 'Nahwu', 'Shorof', 'Siroh', 'Tauhid'],
-    '4A': ['B. Arab', 'Balaghoh', 'Fikih', 'Mustholah H', 'Nahwu', 'Qowaid F', 'Ushul F'],
-    '4B': ['Akhlak', 'B. Arab', 'Fikih', 'Hadits', 'Nahwu', 'Siroh', 'Tauhid'],
-    '5A': ['B. Arab', 'Balaghoh', 'Faroid', 'Fikih', 'Mustholah H', 'Nahwu', 'Qowaid F', 'Ushul F'],
-    '5B': ['Akhlak', 'B. Arab', 'Faroid', 'Fikih', 'Hadits', 'Mustholah H', 'Nahwu', 'Qowaid F', 'Siroh', 'Tafsir', 'Ushul Fikih'],
-    '6A': ['B. Arab', 'Balaghoh', 'Faroid', 'Fikih', 'Hadits', 'Mustholah H', 'Nahwu', 'Qowaid F', 'Tafsir', 'Ushul F'],
-    '6B': ['Akhlak', 'B. Arab', 'Balaghoh', 'Faroid', 'Fikih', 'Hadits', 'Mustholah H', 'Qowaid F', 'Tafsir', 'Ushul F', 'Nahwu']
+let profil = {
+    namaPesantren: 'Pondok Pesantren Bahrul Maghfiroh',
+    pengasuh: 'KH. Ahmad Munif',
+    ketuaPondok: 'Drs. M. Sholeh',
+    logoUrl: ''
 };
+
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxP4v4RXW85cz53ZMk-uRsZqsQdl98NW23v6vzfBow6x8cSMtu12bZHBrCHRfR1JenW/exec';
 
 const daftarJuz = ['An-Naba','An-Nazi\'at','Abasa','At-Takwir','Al-Infitar','Al-Mutaffifin','Al-Insyiqaq','Al-Buruj','At-Tariq','Al-A\'la','Al-Ghasyiyah','Al-Fajr','Al-Balad','Asy-Syams','Al-Lail','Ad-Duha','Asy-Syarh','At-Tin','Al-Alaq','Al-Qadr','Al-Bayyinah','Az-Zalzalah','Al-Adiyat','Al-Qari\'ah','At-Takasur','Al-Asr','Al-Humazah','Al-Fil','Quraisy','Al-Ma\'un','Al-Kausar','Al-Kafirun','An-Nasr','Al-Lahab','Al-Ikhlas','Al-Falaq','An-Nas'];
 
-// ==================== FUNGSI HITUNG PROGRESS ====================
-function hitungProgressMapel(s, kelas) {
-    let mapelList = mapelByKelas[kelas] || [];
-    if (!s.mapelStatus) s.mapelStatus = {};
-    let total = mapelList.length;
-    let done = 0;
-    for (let m of mapelList) {
-        if (s.mapelStatus[m] === true) done++;
-    }
-    return { total, done, persen: total > 0 ? Math.round((done / total) * 100) : 0 };
-}
+const mapelByKelas = {
+    '1A':['Akhlak','B. Arab','Fikih','Hadits','Nahwu','Shorof','Tajwid','Tauhid'],
+    '1B':['Akhlak','B. Arab','Fikih','Hadits','Nahwu','Shorof','Tajwid','Tauhid'],
+    '2A':['Akhlak','B. Arab','Fikih','Hadits','Nahwu','Shorof','Siroh','Tauhid'],
+    '2B':['Akhlak','B. Arab','Fikih','Hadits','Nahwu','Shorof','Siroh','Tauhid'],
+    '3A':['Akhlak','B. Arab','Fikih','Hadits','Nahwu','Shorof','Siroh','Tauhid'],
+    '3B':['Akhlak','B. Arab','Fikih','Hadits','Nahwu','Shorof','Siroh','Tauhid'],
+    '4A':['B. Arab','Balaghoh','Fikih','Mustholah H','Nahwu','Qowaid F','Ushul F'],
+    '4B':['Akhlak','B. Arab','Fikih','Hadits','Nahwu','Siroh','Tauhid'],
+    '5A':['B. Arab','Balaghoh','Faroid','Fikih','Mustholah H','Nahwu','Qowaid F','Ushul F'],
+    '5B':['Akhlak','B. Arab','Faroid','Fikih','Hadits','Mustholah H','Nahwu','Qowaid F','Siroh','Tafsir','Ushul Fikih'],
+    '6A':['B. Arab','Balaghoh','Faroid','Fikih','Hadits','Mustholah H','Nahwu','Qowaid F','Tafsir','Ushul F'],
+    '6B':['Akhlak','B. Arab','Balaghoh','Faroid','Fikih','Hadits','Mustholah H','Qowaid F','Tafsir','Ushul F','Nahwu']
+};
 
-function getStatusMapel(s, kelas) {
-    let { persen } = hitungProgressMapel(s, kelas);
-    if (persen >= 100) return 'Selesai';
-    if (persen >= 30) return 'Proses';
-    return 'Belum';
-}
+// ========== FUNGSI UTAMA - MADIN DUA PILIHAN = 100% ==========
+function getKelasNum(kelas) { return parseInt(kelas.match(/\d+/)?.[0] || 6); }
 
-// PERBAIKAN: Hitung progress hafalan dengan Madin sesuai kelas
+// PROGRESS HAFALAN - JIKA MADIN ULA/WUSTHO DIPILIH LANGSUNG 100%
 function hitungProgressHafalan(s) {
-    let total = 54;
-    let done = 0;
+    let kelasNum = getKelasNum(s.kelas);
     
-    if (s.yasin === true) done++;
-    if (s.waqiah === true) done++;
-    if (s.mulk === true) done++;
-    if (s.wirid === true) done++;
-    if (s.doaShalat === true) done++;
-    if (s.tahlilRingkas === true) done++;
-    if (s.tahlilLengkap === true) done++;
-    if (s.doaTahlil === true) done++;
-    if (s.tawasul === true) done++;
+    // CEK APAKAH SALAH SATU ATAU KEDUANYA DIPILIH
+    let isLulusMadin = false;
     
-    if (s.juz30 && s.juz30.length === 37) {
-        for (let i = 0; i < 37; i++) {
-            if (s.juz30[i] === true) done++;
-        }
+    if (kelasNum <= 3) {
+        // Kelas 1-3: cukup Madin Ula
+        if (s.madinUla === true) isLulusMadin = true;
+    } else {
+        // Kelas 4-6: salah satu atau keduanya
+        if (s.madinUla === true || s.madinWustho === true) isLulusMadin = true;
     }
     
-    if (s.praktikShalat === true) done++;
-    if (s.praktikJenazah === true) done++;
-    if (s.praktikKhotib === true) done++;
+    // JIKA LULUS MADIN (salah satu/keduanya dipilih) -> LANGSUNG 100%
+    if (isLulusMadin) return 100;
     
-    let angkaKelas = parseInt(s.kelas.match(/\d+/)?.[0] || 6);
-    
-    // Madin Ula untuk semua kelas
-    if (s.madinUla === true) done++;
-    
-    // Madin Wustho hanya untuk kelas 4-6
-    if (angkaKelas >= 4 && s.madinWustho === true) done++;
-    
-    if (s.sikapJamaah === true) done++;
-    if (s.sikapMadin === true) done++;
-    if (s.sikapFormal === true) done++;
-    
-    let persen = Math.round((done / total) * 100);
-    return persen > 100 ? 100 : persen;
+    // Jika tidak ada Madin yang dipilih, hitung progres normal
+    let total = 53;
+    let done = 0;
+    if(s.yasin) done++; if(s.waqiah) done++; if(s.mulk) done++;
+    if(s.wirid) done++; if(s.doaShalat) done++; if(s.tahlilRingkas) done++; if(s.tahlilLengkap) done++; if(s.doaTahlil) done++; if(s.tawasul) done++;
+    if(s.juz30) for(let i=0;i<37;i++) if(s.juz30[i]) done++;
+    if(s.praktikShalat) done++; if(s.praktikJenazah) done++; if(s.praktikKhotib) done++;
+    if(s.madinUla) done++; if(s.madinWustho) done++;
+    if(s.sikapJamaah) done++; if(s.sikapMadin) done++; if(s.sikapFormal) done++;
+    return Math.min(100, Math.round((done / total) * 100));
 }
 
-function getStatusHafalan(s) { 
-    let persen = hitungProgressHafalan(s);
-    if (persen >= 100) return 'Lulus'; 
-    if (persen >= 30) return 'Proses'; 
-    return 'Belum'; 
-}
+function getStatusHafalan(s) { let p = hitungProgressHafalan(s); if(p >= 100) return 'Lulus'; if(p >= 30) return 'Proses'; return 'Belum'; }
+function hitungProgressMapel(s, kelas) { let list = mapelByKelas[kelas] || []; if(!s.mapelStatus) s.mapelStatus = {}; let done = 0; for(let m of list) if(s.mapelStatus[m] === true) done++; return { total: list.length, done, persen: list.length ? Math.round((done/list.length)*100) : 0 }; }
+function getStatusMapel(s, kelas) { let p = hitungProgressMapel(s, kelas).persen; if(p >= 100) return 'Selesai'; if(p >= 30) return 'Proses'; return 'Belum'; }
 
-function getNewSantri() { 
-    return { 
-        id: Date.now(), nama: '', kelas: '', 
+function getNewSantri() {
+    return {
+        id: Date.now(), nama: '', kelas: '',
         yasin: false, waqiah: false, mulk: false, nilaiSurat: 'Mumtaz',
         wirid: false, doaShalat: false, tahlilRingkas: false, tahlilLengkap: false, doaTahlil: false, tawasul: false, nilaiAurad: 'Mumtaz',
         juz30: Array(37).fill(false), nilaiJuz: 'Mumtaz',
         praktikShalat: false, praktikJenazah: false, praktikKhotib: false, nilaiPraktik: 'Mumtaz',
         madinUla: false, madinWustho: false,
         sikapJamaah: false, sikapMadin: false, sikapFormal: false,
-        mapelStatus: {},
-        tanggalUpdate: new Date().toISOString() 
-    }; 
-}
-
-// ==================== BACKUP & RESTORE ====================
-function backupData() {
-    try {
-        const dataToBackup = {
-            santri: santri,
-            backupDate: new Date().toISOString(),
-            version: '3.0'
-        };
-        const jsonStr = JSON.stringify(dataToBackup, null, 2);
-        const blob = new Blob([jsonStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `mutqin_backup_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('✅ Backup berhasil! File tersimpan', 'success');
-        document.getElementById('backupStatus').innerHTML = '✅ Backup berhasil ' + new Date().toLocaleTimeString();
-    } catch(e) {
-        showToast('❌ Backup gagal: ' + e.message, 'error');
-    }
-}
-
-function restoreData() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-    input.onchange = function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-            try {
-                const restored = JSON.parse(ev.target.result);
-                if (restored.santri && Array.isArray(restored.santri)) {
-                    santri = restored.santri;
-                }
-                for (let s of santri) {
-                    if (!s.mapelStatus) s.mapelStatus = {};
-                    if (!s.juz30) s.juz30 = Array(37).fill(false);
-                }
-                saveData();
-                refreshAll();
-                showToast('✅ Restore berhasil! Data telah dipulihkan', 'success');
-                document.getElementById('backupStatus').innerHTML = '✅ Restore berhasil ' + new Date().toLocaleTimeString();
-            } catch(err) {
-                showToast('❌ File backup tidak valid', 'error');
-            }
-        };
-        reader.readAsText(file);
+        mapelStatus: {}, tanggalUpdate: new Date().toISOString()
     };
-    input.click();
 }
 
-// ==================== DATA LOCAL ====================
+// ==================== CLOUD & STORAGE ====================
+function updateCloudStatus(status, text) {
+    let el = document.getElementById('syncStatus');
+    if(el) { el.className = `sync-status ${status} no-print`; el.innerHTML = `<i class="fas fa-cloud"></i> ${text}`; }
+}
+
+async function syncToCloud() {
+    updateCloudStatus('syncing', 'Menyimpan...');
+    try {
+        const response = await fetch(`${APPS_SCRIPT_URL}?action=save&data=${encodeURIComponent(JSON.stringify(santri))}`, {method:'GET',mode:'cors'});
+        const result = await response.json();
+        if(result.status === 'success') { updateCloudStatus('online', '✅ Tersimpan'); showToast('✅ Data berhasil disimpan ke cloud!', 'success'); }
+        else throw new Error(result.message);
+    } catch(e) { updateCloudStatus('offline', '❌ Gagal'); showToast('❌ Gagal sync: ' + e.message, 'error'); }
+}
+
+async function loadFromCloud() {
+    updateCloudStatus('syncing', 'Memuat...');
+    try {
+        const response = await fetch(`${APPS_SCRIPT_URL}?action=load&t=${Date.now()}`, {method:'GET',mode:'cors'});
+        const result = await response.json();
+        if(result.status === 'success' && result.data && result.data !== '[]') {
+            const loadedData = JSON.parse(result.data);
+            if(Array.isArray(loadedData)) {
+                santri = loadedData;
+                for(let s of santri) {
+                    if(!s.mapelStatus) s.mapelStatus = {};
+                    if(!s.juz30) s.juz30 = Array(37).fill(false);
+                    if(s.madinUla === undefined) s.madinUla = false;
+                    if(s.madinWustho === undefined) s.madinWustho = false;
+                }
+                localStorage.setItem('mutqin_santri', JSON.stringify(santri));
+                refreshAll();
+                updateCloudStatus('online', '✅ Dimuat');
+                showToast('✅ Data berhasil dimuat dari cloud!', 'success');
+            }
+        } else showToast('Cloud kosong. Simpan data dulu.', 'warning');
+    } catch(e) { updateCloudStatus('offline', '❌ Gagal'); showToast('❌ Gagal load: ' + e.message, 'error'); }
+}
+
 function loadData() {
-    let saved = localStorage.getItem('mutqin_santri_final');
-    if (saved) { 
-        try { 
-            santri = JSON.parse(saved); 
-        } catch(e) { 
-            santri = []; 
-        } 
-    }
-    if (!santri.length) {
-        let contohJuz = Array(37).fill(false);
+    let saved = localStorage.getItem('mutqin_santri');
+    if(saved) { try { santri = JSON.parse(saved); } catch(e){} }
+    if(!santri.length) {
+        let juzFull = Array(37).fill(true);
         santri = [
-            { id: 1, nama: 'Ahmad Maulana', kelas: '3A', yasin: true, waqiah: true, mulk: true, nilaiSurat: 'Mumtaz', wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, nilaiAurad: 'Mumtaz', juz30: [...contohJuz], nilaiJuz: 'Mumtaz', praktikShalat: true, praktikJenazah: true, praktikKhotib: true, nilaiPraktik: 'Mumtaz', madinUla: true, madinWustho: false, sikapJamaah: true, sikapMadin: true, sikapFormal: true, mapelStatus: {}, tanggalUpdate: new Date().toISOString() },
-            { id: 2, nama: 'Fatimah Azzahra', kelas: '2B', yasin: true, nilaiSurat: 'Jayyid Jiddan', juz30: Array(37).fill(false), mapelStatus: {}, tanggalUpdate: new Date().toISOString() },
-            { id: 3, nama: 'Muhammad Rizki', kelas: '4A', juz30: Array(37).fill(false), mapelStatus: {}, tanggalUpdate: new Date().toISOString() }
+            { id: 1, nama: 'Ahmad Maulana', kelas: '3A', yasin: true, waqiah: true, mulk: true, wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, juz30: [...juzFull], praktikShalat: true, praktikJenazah: true, praktikKhotib: true, madinUla: false, madinWustho: false, sikapJamaah: true, sikapMadin: true, sikapFormal: true, mapelStatus: {}, tanggalUpdate: new Date().toISOString() },
+            { id: 2, nama: 'Fatimah Azzahra', kelas: '5A', yasin: true, waqiah: true, mulk: true, wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, juz30: [...juzFull], praktikShalat: true, praktikJenazah: true, praktikKhotib: true, madinUla: false, madinWustho: false, sikapJamaah: true, sikapMadin: true, sikapFormal: true, mapelStatus: {}, tanggalUpdate: new Date().toISOString() }
         ];
     }
-    
-    for (let s of santri) {
-        if (!s.mapelStatus) s.mapelStatus = {};
-        if (!s.juz30) s.juz30 = Array(37).fill(false);
-        if (s.madinUla === undefined) s.madinUla = false;
-        if (s.madinWustho === undefined) s.madinWustho = false;
+    for(let s of santri) {
+        if(!s.mapelStatus) s.mapelStatus = {};
+        if(!s.juz30) s.juz30 = Array(37).fill(false);
+        if(s.madinUla === undefined) s.madinUla = false;
+        if(s.madinWustho === undefined) s.madinWustho = false;
     }
-    
     refreshAll();
 }
 
-function saveData() { 
-    localStorage.setItem('mutqin_santri_final', JSON.stringify(santri)); 
-    refreshAll(); 
-    showToast('Data tersimpan di lokal');
+function saveData() { localStorage.setItem('mutqin_santri', JSON.stringify(santri)); refreshAll(); showToast('Data tersimpan', 'success'); }
+function showToast(msg, type) { let t = document.createElement('div'); t.className = `toast toast-${type}`; t.innerHTML = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+
+// ==================== PROFIL ====================
+function loadProfil() {
+    let saved = localStorage.getItem('mutqin_profil');
+    if(saved) { try { let p = JSON.parse(saved); if(p.namaPesantren) profil = p; } catch(e){} }
+    updateProfilDisplay();
+}
+function simpanProfil() {
+    profil.namaPesantren = document.getElementById('settingNamaPesantren').value || profil.namaPesantren;
+    profil.pengasuh = document.getElementById('settingPengasuh').value || profil.pengasuh;
+    profil.ketuaPondok = document.getElementById('settingKetua').value || profil.ketuaPondok;
+    profil.logoUrl = document.getElementById('settingLogoUrl').value || '';
+    localStorage.setItem('mutqin_profil', JSON.stringify(profil));
+    updateProfilDisplay();
+    showToast('Profil tersimpan', 'success');
+}
+function updateProfilDisplay() {
+    document.getElementById('loginNamaPesantren').innerText = profil.namaPesantren;
+    document.getElementById('headerNamaPesantren').innerText = profil.namaPesantren;
+    document.getElementById('dashNamaPesantren').innerText = profil.namaPesantren;
+    document.getElementById('dashPengasuh').innerHTML = `Pengasuh: ${profil.pengasuh}`;
+    document.getElementById('dashKetua').innerHTML = `Ketua: ${profil.ketuaPondok}`;
+    document.getElementById('settingNamaPesantren').value = profil.namaPesantren;
+    document.getElementById('settingPengasuh').value = profil.pengasuh;
+    document.getElementById('settingKetua').value = profil.ketuaPondok;
+    document.getElementById('settingLogoUrl').value = profil.logoUrl || '';
+    if(profil.logoUrl && profil.logoUrl.trim() !== '') {
+        let logoHtml = `<img src="${profil.logoUrl}" class="w-full h-full object-cover rounded-2xl">`;
+        document.getElementById('loginLogoArea').innerHTML = logoHtml;
+    }
 }
 
-function showToast(msg, type = 'success') { 
-    let t = document.createElement('div'); 
-    t.className = `toast toast-${type}`; 
-    t.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${msg}`; 
-    document.body.appendChild(t); 
-    setTimeout(() => t.remove(), 3000); 
-}
+// ==================== RENDER & UI ====================
+function refreshAll() { updateDashboard(); renderSantri(); renderHafalanList(); renderMapelList(); updateSelectSertifikat(); updateLaporanContent(); }
+function updateDateTime() { let now=new Date(); document.getElementById('fullDate').innerHTML=now.toLocaleDateString('id-ID'); document.getElementById('currentTimeLarge').innerHTML=now.toLocaleTimeString('id-ID'); }
+setInterval(updateDateTime,1000); updateDateTime();
+function toggleDarkMode() { document.getElementById('appBody').classList.toggle('dark-mode'); }
 
-function updateDateTime() { 
-    const now = new Date(); 
-    const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember']; 
-    document.getElementById('fullDate').innerHTML = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`; 
-    document.getElementById('currentTimeLarge').innerHTML = now.toLocaleTimeString('id-ID'); 
-}
-setInterval(updateDateTime, 1000); 
-updateDateTime();
-
-function toggleDarkMode() { 
-    darkMode = !darkMode; 
-    localStorage.setItem('darkMode', darkMode); 
-    if(darkMode) document.body.classList.add('dark-mode'); 
-    else document.body.classList.remove('dark-mode'); 
-    document.getElementById('darkModeToggle').innerText = darkMode ? 'Nonaktifkan' : 'Aktifkan'; 
-}
-if(darkMode) document.body.classList.add('dark-mode');
-
-function refreshAll() { 
-    updateDashboard(); 
-    renderSantri(); 
-    renderHafalanList(); 
-    renderMapelList();
-    updateSelectSertifikat(); 
-    updateLaporanContent(); 
-}
-
-function updateDashboard() { 
-    let lulus = 0, prosesH = 0, belumH = 0, mumtaz = 0, jayyidJ = 0, jayyid = 0;
-    let selesai = 0, prosesM = 0, belumM = 0;
-    
-    santri.forEach(s => { 
-        let stH = getStatusHafalan(s);
-        if (stH === 'Lulus') lulus++;
-        else if (stH === 'Proses') prosesH++;
-        else belumH++;
-        
-        let stM = getStatusMapel(s, s.kelas);
-        if (stM === 'Selesai') selesai++;
-        else if (stM === 'Proses') prosesM++;
-        else belumM++;
-        
-        if(s.nilaiSurat === 'Mumtaz') mumtaz++;
-        else if(s.nilaiSurat === 'Jayyid Jiddan') jayyidJ++;
-        else if(s.nilaiSurat === 'Jayyid') jayyid++;
+function updateDashboard() {
+    let lulus=0, prosesH=0, belumH=0, selesai=0, prosesM=0, belumM=0;
+    santri.forEach(s => {
+        let sh = getStatusHafalan(s);
+        if(sh==='Lulus') lulus++; else if(sh==='Proses') prosesH++; else belumH++;
+        let sm = getStatusMapel(s, s.kelas);
+        if(sm==='Selesai') selesai++; else if(sm==='Proses') prosesM++; else belumM++;
     });
-    
     document.getElementById('totalSantriHafalan').innerText = santri.length;
     document.getElementById('totalLulus').innerText = lulus;
     document.getElementById('totalProsesHafalan').innerText = prosesH;
     document.getElementById('totalBelumHafalan').innerText = belumH;
-    document.getElementById('totalSantriMapel').innerText = santri.length;
-    document.getElementById('totalSelesai').innerText = selesai;
-    document.getElementById('totalProsesMapel').innerText = prosesM;
-    document.getElementById('totalBelumMapel').innerText = belumM;
-    document.getElementById('welcomeText').innerHTML = `Selamat Datang, ${currentUserRole === 'admin' ? 'Admin' : 'Guru'}`;
-    
-    if(chartInstances.statusChartHafalan) chartInstances.statusChartHafalan.destroy();
+    if(chartInstances.ch1) chartInstances.ch1.destroy();
     let ctx1 = document.getElementById('statusChartHafalan')?.getContext('2d');
-    if(ctx1) chartInstances.statusChartHafalan = new Chart(ctx1, { 
-        type: 'doughnut', 
-        data: { labels: ['Lulus', 'Proses', 'Belum'], datasets: [{ data: [lulus, prosesH, belumH], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'] }] }
-    });
-    
-    if(chartInstances.statusChartMapel) chartInstances.statusChartMapel.destroy();
+    if(ctx1) chartInstances.ch1 = new Chart(ctx1, { type: 'doughnut', data: { labels: ['Lulus','Proses','Belum'], datasets: [{ data: [lulus,prosesH,belumH], backgroundColor: ['#10b981','#f59e0b','#ef4444'] }] } });
+    if(chartInstances.ch2) chartInstances.ch2.destroy();
     let ctx2 = document.getElementById('statusChartMapel')?.getContext('2d');
-    if(ctx2) chartInstances.statusChartMapel = new Chart(ctx2, { 
-        type: 'doughnut', 
-        data: { labels: ['Selesai', 'Proses', 'Belum'], datasets: [{ data: [selesai, prosesM, belumM], backgroundColor: ['#8b5cf6', '#f59e0b', '#ef4444'] }] }
-    });
+    if(ctx2) chartInstances.ch2 = new Chart(ctx2, { type: 'doughnut', data: { labels: ['Selesai','Proses','Belum'], datasets: [{ data: [selesai,prosesM,belumM], backgroundColor: ['#8b5cf6','#f59e0b','#ef4444'] }] } });
 }
 
-function updateLaporanContent() {
-    let html = `
-        <div class="text-center border-b pb-4 mb-6">
-            <h1 class="text-2xl font-bold text-emerald-800">MUTQIN BM</h1>
-            <p class="text-gray-600">Pondok Pesantren Bahrul Maghfiroh</p>
-            <p class="text-gray-500 text-sm mt-2">Laporan Hafalan & Validasi Mapel Santri</p>
-            <p class="text-gray-400 text-xs mt-1">${new Date().toLocaleDateString('id-ID')}</p>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm border">
-                <thead class="bg-emerald-600 text-white">
-                    <tr><th class="p-2">No</th><th>Nama</th><th>Kelas</th><th>Status Hafalan</th><th>Status Mapel</th></tr>
-                </thead>
-                <tbody>
-                    ${santri.map((s, i) => `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2">${s.nama}</td><td class="p-2">${s.kelas}</td><td class="p-2"><span class="badge-${getStatusHafalan(s) === 'Lulus' ? 'success' : (getStatusHafalan(s) === 'Proses' ? 'warning' : 'danger')}">${getStatusHafalan(s)}</span></td><td class="p-2"><span class="badge-${getStatusMapel(s, s.kelas) === 'Selesai' ? 'success' : (getStatusMapel(s, s.kelas) === 'Proses' ? 'warning' : 'danger')}">${getStatusMapel(s, s.kelas)}</span></td></tr>`).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
-    document.getElementById('laporanContent').innerHTML = html;
-}
-
-function printFullLaporan() {
-    let printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html><head><title>Laporan Mutqin BM</title>
-        <style>
-            body { font-family: Arial; padding: 30px; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-            th { background: #059669; color: white; }
-            .badge-success { background: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 20px; }
-            .badge-warning { background: #fed7aa; color: #9a3412; padding: 2px 8px; border-radius: 20px; }
-            .badge-danger { background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 20px; }
-        </style>
-        </head><body>
-        <div class="text-center"><h1>MUTQIN BM</h1><p>Pondok Pesantren Bahrul Maghfiroh</p><p>${new Date().toLocaleDateString('id-ID')}</p></div>
-        <table><thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Status Hafalan</th><th>Status Mapel</th></tr></thead><tbody>
-        ${santri.map((s, i) => `<tr><td>${i+1}</td><td>${s.nama}</td><td>${s.kelas}</td><td><span class="badge-${getStatusHafalan(s) === 'Lulus' ? 'success' : (getStatusHafalan(s) === 'Proses' ? 'warning' : 'danger')}">${getStatusHafalan(s)}</span></td><td><span class="badge-${getStatusMapel(s, s.kelas) === 'Selesai' ? 'success' : (getStatusMapel(s, s.kelas) === 'Proses' ? 'warning' : 'danger')}">${getStatusMapel(s, s.kelas)}</span></td></tr>`).join('')}
-        </tbody></table>
-        <script>window.print();setTimeout(()=>window.close(),500);<\/script>
-        </body></html>
-    `);
-    printWindow.document.close();
-}
-
-function exportToExcel() { 
-    let data = santri.map((s,i) => ({ 
-        No: i+1, 
-        Nama: s.nama, 
-        Kelas: s.kelas, 
-        Status_Hafalan: getStatusHafalan(s), 
-        Status_Mapel: getStatusMapel(s, s.kelas),
-        Progress_Hafalan: `${hitungProgressHafalan(s)}%`,
-        Progress_Mapel: `${hitungProgressMapel(s, s.kelas).persen}%`
-    })); 
-    let ws = XLSX.utils.json_to_sheet(data); 
-    let wb = XLSX.utils.book_new(); 
-    XLSX.utils.book_append_sheet(wb, ws, 'Data Santri'); 
-    XLSX.writeFile(wb, `mutqin_data_${new Date().toISOString().slice(0,10)}.xlsx`); 
-    showToast('Export Excel berhasil'); 
-}
-
-function exportLaporanToExcel() {
-    let data = santri.map((s,i) => ({
-        No: i+1,
-        Nama: s.nama,
-        Kelas: s.kelas,
-        Status_Hafalan: getStatusHafalan(s),
-        Status_Mapel: getStatusMapel(s, s.kelas)
-    }));
-    let ws = XLSX.utils.json_to_sheet(data);
-    let wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Laporan');
-    XLSX.writeFile(wb, `laporan_mutqin_${new Date().toISOString().slice(0,10)}.xlsx`);
-    showToast('Export laporan berhasil');
-}
-
-function renderSantri() { 
-    let search = document.getElementById('searchSantri')?.value.toLowerCase() || ''; 
-    let filtered = santri.filter(s => s.nama.toLowerCase().includes(search) || s.kelas.toLowerCase().includes(search)); 
-    let container = document.getElementById('santriListContainer'); 
-    if (!container) return; 
-    if (filtered.length === 0) { container.innerHTML = '<div class="p-8 text-center text-gray-400">Tidak ada data</div>'; return; } 
-    let groups = {}; 
-    filtered.forEach(s => { if (!groups[s.kelas]) groups[s.kelas] = []; groups[s.kelas].push(s); }); 
-    let sortedKelas = Object.keys(groups).sort((a,b) => { 
-        let na = parseInt(a.match(/\d+/)?.[0] || 0), nb = parseInt(b.match(/\d+/)?.[0] || 0); 
-        if (na !== nb) return na - nb; 
-        return (a.match(/[A-Z]/)?.[0] || '').localeCompare(b.match(/[A-Z]/)?.[0] || ''); 
-    });
-    let html = ''; 
-    for (let kelas of sortedKelas) { 
-        html += `<div class="border-b"><div class="bg-emerald-50 p-3 font-semibold">📚 Kelas ${kelas} <span class="text-sm ml-2 text-gray-500">(${groups[kelas].length} santri)</span></div>`; 
-        groups[kelas].forEach((s, i) => { 
-            let st = getStatusHafalan(s), bc = st === 'Lulus' ? 'badge-success' : (st === 'Proses' ? 'badge-warning' : 'badge-danger'); 
-            html += `<div class="p-3 border-b flex justify-between items-center"><div><span class="w-6 text-gray-400">${i+1}.</span> <span class="font-medium">${s.nama}</span> <span class="text-xs text-gray-400 ml-2">${hitungProgressHafalan(s)}%</span></div><div class="flex gap-2"><span class="${bc}">${st}</span>`;
-            if(currentUserRole === 'admin') {
-                html += `<button onclick="editSantri(${s.id})" class="text-blue-500"><i class="fas fa-edit"></i></button><button onclick="hapusSantri(${s.id})" class="text-red-500"><i class="fas fa-trash"></i></button>`;
-            }
-            html += `</div></div>`; 
-        }); 
-        html += `</div>`; 
-    } 
-    container.innerHTML = html; 
+function renderSantri() {
+    let search = document.getElementById('searchSantri')?.value.toLowerCase()||'';
+    let filtered = santri.filter(s=>s.nama.toLowerCase().includes(search)||s.kelas.toLowerCase().includes(search));
+    let groups = {};
+    filtered.forEach(s=>{if(!groups[s.kelas]) groups[s.kelas]=[]; groups[s.kelas].push(s);});
+    let html = '';
+    for(let kelas of Object.keys(groups).sort()) {
+        html += `<div class="border-b"><div class="bg-emerald-50 p-3 font-semibold">📚 Kelas ${kelas} (${groups[kelas].length})</div>`;
+        groups[kelas].forEach((s,i) => {
+            let st = getStatusHafalan(s);
+            let bc = st==='Lulus'?'badge-success':(st==='Proses'?'badge-warning':'badge-danger');
+            html += `<div class="p-3 border-b flex justify-between items-center"><div><span class="text-gray-400">${i+1}.</span> <span class="font-medium">${s.nama}</span> <div class="progress-bar-big w-32 mt-1"><div class="progress-fill-big" style="width:${hitungProgressHafalan(s)}%"></div></div></div><div><span class="${bc}">${st} ${hitungProgressHafalan(s)}%</span>${currentUserRole==='admin'?`<button onclick="editSantri(${s.id})" class="text-blue-500 ml-2"><i class="fas fa-edit"></i></button><button onclick="hapusSantri(${s.id})" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button>`:''}</div></div>`;
+        });
+        html += `</div>`;
+    }
+    document.getElementById('santriListContainer').innerHTML = html || '<div class="p-8 text-center text-gray-400">Tidak ada data</div>';
 }
 
 function renderHafalanList() {
-    let searchTerm = document.getElementById('searchSantriHafalan')?.value.toLowerCase() || '';
-    let listDiv = document.getElementById('santriListHafalan');
-    if (!listDiv) return;
-    let filtered = santri.filter(s => s.nama.toLowerCase().includes(searchTerm) || s.kelas.toLowerCase().includes(searchTerm));
-    if (filtered.length === 0) { listDiv.innerHTML = '<div class="p-6 text-center text-gray-400">Tidak ditemukan</div>'; return; }
-    let groups = {}; 
-    filtered.forEach(s => { if (!groups[s.kelas]) groups[s.kelas] = []; groups[s.kelas].push(s); });
-    let sortedKelas = Object.keys(groups).sort((a,b) => {
-        let na = parseInt(a.match(/\d+/)?.[0] || 0), nb = parseInt(b.match(/\d+/)?.[0] || 0);
-        if (na !== nb) return na - nb;
-        return (a.match(/[A-Z]/)?.[0] || '').localeCompare(b.match(/[A-Z]/)?.[0] || '');
-    });
+    let search = document.getElementById('searchSantriHafalan')?.value.toLowerCase()||'';
+    let filtered = santri.filter(s=>s.nama.toLowerCase().includes(search)||s.kelas.toLowerCase().includes(search));
+    let groups = {};
+    filtered.forEach(s=>{if(!groups[s.kelas]) groups[s.kelas]=[]; groups[s.kelas].push(s);});
     let html = '';
-    for (let kelas of sortedKelas) {
-        html += `<div class="kelas-group"><div class="kelas-title"><span><i class="fas fa-graduation-cap mr-2"></i>Kelas ${kelas}</span><span class="text-xs">${groups[kelas].length} santri</span></div>`;
+    for(let kelas of Object.keys(groups).sort()) {
+        html += `<div class="kelas-group"><div class="kelas-title">Kelas ${kelas} (${groups[kelas].length})</div>`;
         groups[kelas].forEach(s => {
-            let persen = hitungProgressHafalan(s);
-            html += `<div class="santri-item" onclick="selectHafalan(${s.id}, '${s.nama}')"><div><span class="font-medium">${s.nama}</span><div class="progress-small"><div class="progress-fill-small" style="width: ${persen}%"></div></div></div><div>${persen}% <i class="fas fa-chevron-right"></i></div></div>`;
+            let p = hitungProgressHafalan(s);
+            html += `<div class="santri-item" onclick="selectHafalan(${s.id})"><div><span class="font-medium">${s.nama}</span><div class="progress-small"><div class="progress-fill-small" style="width:${p}%"></div></div></div><div>${p}% <i class="fas fa-chevron-right"></i></div></div>`;
         });
         html += `</div>`;
     }
-    listDiv.innerHTML = html;
+    document.getElementById('santriListHafalan').innerHTML = html || '<div class="p-4 text-center text-gray-400">Tidak ada santri</div>';
 }
 
 function renderMapelList() {
-    let searchTerm = document.getElementById('searchSantriMapel')?.value.toLowerCase() || '';
-    let listDiv = document.getElementById('santriListMapel');
-    if (!listDiv) return;
-    let filtered = santri.filter(s => s.nama.toLowerCase().includes(searchTerm) || s.kelas.toLowerCase().includes(searchTerm));
-    if (filtered.length === 0) { listDiv.innerHTML = '<div class="p-6 text-center text-gray-400">Tidak ditemukan</div>'; return; }
+    let search = document.getElementById('searchSantriMapel')?.value.toLowerCase()||'';
+    let filtered = santri.filter(s=>s.nama.toLowerCase().includes(search)||s.kelas.toLowerCase().includes(search));
     let groups = {};
-    filtered.forEach(s => { if (!groups[s.kelas]) groups[s.kelas] = []; groups[s.kelas].push(s); });
-    let sortedKelas = Object.keys(groups).sort((a,b) => {
-        let na = parseInt(a.match(/\d+/)?.[0] || 0), nb = parseInt(b.match(/\d+/)?.[0] || 0);
-        if (na !== nb) return na - nb;
-        return (a.match(/[A-Z]/)?.[0] || '').localeCompare(b.match(/[A-Z]/)?.[0] || '');
-    });
+    filtered.forEach(s=>{if(!groups[s.kelas]) groups[s.kelas]=[]; groups[s.kelas].push(s);});
     let html = '';
-    for (let kelas of sortedKelas) {
-        html += `<div class="kelas-group"><div class="kelas-title"><span><i class="fas fa-graduation-cap mr-2"></i>Kelas ${kelas}</span><span class="text-xs">${groups[kelas].length} santri</span></div>`;
+    for(let kelas of Object.keys(groups).sort()) {
+        html += `<div class="kelas-group"><div class="kelas-title">Kelas ${kelas} (${groups[kelas].length})</div>`;
         groups[kelas].forEach(s => {
-            let { persen } = hitungProgressMapel(s, s.kelas);
-            html += `<div class="santri-item" onclick="selectMapel(${s.id}, '${s.nama}')"><div><span class="font-medium">${s.nama}</span><div class="progress-small"><div class="progress-fill-small" style="width: ${persen}%"></div></div></div><div>${persen}% <i class="fas fa-chevron-right"></i></div></div>`;
+            let p = hitungProgressMapel(s, s.kelas).persen;
+            html += `<div class="santri-item" onclick="selectMapel(${s.id})"><div><span class="font-medium">${s.nama}</span><div class="progress-small"><div class="progress-fill-small" style="width:${p}%"></div></div></div><div>${p}%</div></div>`;
         });
         html += `</div>`;
     }
-    listDiv.innerHTML = html;
+    document.getElementById('santriListMapel').innerHTML = html;
 }
 
 function filterHafalanList() { renderHafalanList(); }
 function filterMapelList() { renderMapelList(); }
-function clearSearchHafalan() { document.getElementById('searchSantriHafalan').value = ''; renderHafalanList(); }
-function clearSearchMapel() { document.getElementById('searchSantriMapel').value = ''; renderMapelList(); }
+function selectHafalan(id) { currentSantriId = id; loadFormHafalan(); }
+function selectMapel(id) { currentMapelSantriId = id; loadFormMapel(); }
 
-function selectHafalan(id, nama) {
-    currentSantriId = id;
-    document.getElementById('searchSantriHafalan').value = nama;
-    loadFormHafalan();
-}
-
-function selectMapel(id, nama) {
-    currentMapelSantriId = id;
-    document.getElementById('searchSantriMapel').value = nama;
-    loadFormMapel();
-}
-
-// ==================== FORM HAFALAN DENGAN CENTANG SEMUA ====================
+// ========== FORM HAFALAN DENGAN DUA PILIHAN MADIN ==========
 function loadFormHafalan() {
-    if (!currentSantriId) return;
-    let s = santri.find(x => x.id === currentSantriId);
-    if (!s) return;
+    let s = santri.find(x=>x.id===currentSantriId);
+    if(!s) return;
+    let kelasNum = getKelasNum(s.kelas);
+    let currentProgress = hitungProgressHafalan(s);
+    let isLulus = (currentProgress >= 100);
     
-    let kelasNum = parseInt(s.kelas.match(/\d+/)?.[0] || 6);
-    
-    let juzHtml = `<div class="flex justify-between items-center mb-3"><span class="font-medium">Centang Semua Juz 30</span><input type="checkbox" id="selectAllJuz" onchange="toggleAllJuz()" class="w-5 h-5"></div><div class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-60 overflow-y-auto p-2 bg-gray-50 rounded-lg">`;
-    daftarJuz.forEach((nama, i) => { juzHtml += `<label class="flex justify-between p-2 bg-white rounded border text-sm"><span>${nama}</span><input type="checkbox" id="juz_${i}" class="juz-checkbox" ${s.juz30[i] ? 'checked' : ''}></label>`; });
+    let juzHtml = `<div class="flex justify-between mb-2"><span>Centang Semua Juz</span><input type="checkbox" id="selectAllJuz" onchange="toggleAllJuz()"></div><div class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-60 overflow-y-auto p-2 bg-gray-50 rounded-lg">`;
+    daftarJuz.forEach((nama,i)=>{ juzHtml += `<label class="flex justify-between p-2 bg-white rounded border"><span>${nama}</span><input type="checkbox" id="juz_${i}" class="juz-cb" ${s.juz30[i]?'checked':''}></label>`; });
     juzHtml += `</div>`;
     
-    // PERBAIKAN: Madin sesuai kelas
-    let madinHtml = '';
-    if (kelasNum <= 3) {
-        madinHtml = `<div class="grid grid-cols-1 gap-3"><label class="flex justify-between p-3 bg-white rounded border"><span>✅ Lulus Madin Ula</span><input type="checkbox" id="madinUla" ${s.madinUla ? 'checked' : ''}></label></div>`;
-    } else {
-        madinHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <label class="flex justify-between p-3 bg-white rounded border"><span>✅ Lulus Madin Ula</span><input type="checkbox" id="madinUla" ${s.madinUla ? 'checked' : ''}></label>
-            <label class="flex justify-between p-3 bg-white rounded border"><span>✅ Lulus Madin Wustho</span><input type="checkbox" id="madinWustho" ${s.madinWustho ? 'checked' : ''}></label>
-        </div>`;
-    }
+    // TAMPILAN DUA PILIHAN MADIN YANG LEBIH JELAS
+    let madinHtml = `
+    <div class="madin-options">
+        <h3><i class="fas fa-certificate text-emerald-600 mr-2"></i> PENDIDIKAN MADIN</h3>
+        <p class="text-sm text-center text-gray-600 mb-4">⚠️ <strong>Centang salah satu atau keduanya</strong> maka nilai hafalan akan langsung <strong class="text-green-600">100% LULUS</strong></p>
+        <div class="madin-check-group">
+            <div class="madin-check-item" onclick="document.getElementById('madinUla').click()">
+                <input type="checkbox" id="madinUla" ${s.madinUla?'checked':''} onchange="updateMadinStatus()">
+                <label>📘 Lulus Madin Ula</label>
+            </div>
+            <div class="madin-check-item" onclick="document.getElementById('madinWustho').click()">
+                <input type="checkbox" id="madinWustho" ${s.madinWustho?'checked':''} onchange="updateMadinStatus()">
+                <label>⭐ Lulus Madin Wustho</label>
+            </div>
+        </div>
+        <div class="text-center mt-4 p-3 rounded-lg ${isLulus ? 'bg-green-100 border border-green-400' : 'bg-yellow-100'}">
+            <strong>Status Saat Ini:</strong> 
+            <span class="font-bold ${isLulus ? 'text-green-600' : 'text-orange-600'}">
+                ${isLulus ? '✅ LULUS 100%' : `${getStatusHafalan(s)} (${currentProgress}%)`}
+            </span>
+            ${(s.madinUla || s.madinWustho) && kelasNum >= 4 ? '<div class="text-green-600 text-sm mt-1"><i class="fas fa-check-circle"></i> Madin dipilih = LULUS 100%</div>' : ''}
+            ${s.madinUla && kelasNum <= 3 ? '<div class="text-green-600 text-sm mt-1"><i class="fas fa-check-circle"></i> Madin Ula dipilih = LULUS 100%</div>' : ''}
+        </div>
+    </div>
+    `;
     
     let html = `<div class="space-y-4">
-        <div class="bg-green-50 p-4 rounded-lg border">
-            <div class="flex justify-between items-center mb-3"><h3 class="font-bold">1. Hafalan Surat Pilihan</h3><button onclick="toggleAllSurat()" class="btn-outline text-sm px-3 py-1 rounded">Centang Semua</button></div>
-            <div class="grid grid-cols-3 gap-3">
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Surat Yasin</span><input type="checkbox" id="yasin" ${s.yasin?'checked':''}></label>
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Surat Al-Waqiah</span><input type="checkbox" id="waqiah" ${s.waqiah?'checked':''}></label>
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Surat Al-Mulk</span><input type="checkbox" id="mulk" ${s.mulk?'checked':''}></label>
-            </div>
-            <div class="flex gap-3 mt-3"><span class="text-sm font-medium">Nilai:</span><select id="nilaiSurat" class="p-2 border rounded-lg"><option ${s.nilaiSurat==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiSurat==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiSurat==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanSurat()" class="btn-primary px-4 py-2 rounded-lg ml-auto">Simpan Surat</button></div>
-        </div>
-        <div class="bg-blue-50 p-4 rounded-lg border">
-            <div class="flex justify-between items-center mb-3"><h3 class="font-bold">2. Hafalan Aurad & Wirid</h3><button onclick="toggleAllAurad()" class="btn-outline text-sm px-3 py-1 rounded">Centang Semua</button></div>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Wirid</span><input type="checkbox" id="wirid" ${s.wirid?'checked':''}></label>
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Doa Shalat</span><input type="checkbox" id="doaShalat" ${s.doaShalat?'checked':''}></label>
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Tahlil Ringkas</span><input type="checkbox" id="tahlilRingkas" ${s.tahlilRingkas?'checked':''}></label>
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Tahlil Lengkap</span><input type="checkbox" id="tahlilLengkap" ${s.tahlilLengkap?'checked':''}></label>
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Doa Tahlil</span><input type="checkbox" id="doaTahlil" ${s.doaTahlil?'checked':''}></label>
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Tawasul</span><input type="checkbox" id="tawasul" ${s.tawasul?'checked':''}></label>
-            </div>
-            <div class="flex gap-3 mt-3"><span class="text-sm font-medium">Nilai:</span><select id="nilaiAurad" class="p-2 border rounded-lg"><option ${s.nilaiAurad==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiAurad==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiAurad==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanAurad()" class="btn-primary px-4 py-2 rounded-lg ml-auto">Simpan Aurad</button></div>
-        </div>
-        <div class="bg-purple-50 p-4 rounded-lg border">
-            <h3 class="font-bold mb-3">3. Hafalan Juz 30</h3>
-            ${juzHtml}
-            <div class="flex gap-3 mt-3"><span class="text-sm font-medium">Nilai:</span><select id="nilaiJuz" class="p-2 border rounded-lg"><option ${s.nilaiJuz==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiJuz==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiJuz==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanJuz()" class="btn-primary px-4 py-2 rounded-lg ml-auto">Simpan Juz 30</button></div>
-        </div>
-        <div class="bg-orange-50 p-4 rounded-lg border">
-            <div class="flex justify-between items-center mb-3"><h3 class="font-bold">4. Praktik Ibadah</h3><button onclick="toggleAllPraktik()" class="btn-outline text-sm px-3 py-1 rounded">Centang Semua</button></div>
-            <div class="grid grid-cols-3 gap-3">
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Praktik Shalat</span><input type="checkbox" id="praktikShalat" ${s.praktikShalat?'checked':''}></label>
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Pengurusan Jenazah</span><input type="checkbox" id="praktikJenazah" ${s.praktikJenazah?'checked':''}></label>
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Praktik Khotib & Bilal</span><input type="checkbox" id="praktikKhotib" ${s.praktikKhotib?'checked':''}></label>
-            </div>
-            <div class="flex gap-3 mt-3"><span class="text-sm font-medium">Nilai:</span><select id="nilaiPraktik" class="p-2 border rounded-lg"><option ${s.nilaiPraktik==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiPraktik==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiPraktik==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanPraktik()" class="btn-primary px-4 py-2 rounded-lg ml-auto">Simpan Praktik</button></div>
-        </div>
-        <div class="bg-teal-50 p-4 rounded-lg border">
-            <div class="flex justify-between items-center mb-3"><h3 class="font-bold">5. Pendidikan Madin</h3><button onclick="toggleAllMadin()" class="btn-outline text-sm px-3 py-1 rounded">Centang Semua</button></div>
-            ${madinHtml}
-            <button onclick="simpanMadin()" class="btn-primary px-4 py-2 rounded-lg mt-3">Simpan Madin</button>
-        </div>
-        <div class="bg-rose-50 p-4 rounded-lg border">
-            <div class="flex justify-between items-center mb-3"><h3 class="font-bold">6. Sikap & Adab</h3><button onclick="toggleAllSikap()" class="btn-outline text-sm px-3 py-1 rounded">Centang Semua</button></div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Shalat 5 Waktu Berjamaah</span><input type="checkbox" id="sikapJamaah" ${s.sikapJamaah?'checked':''}></label>
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Keaktifan Sekolah Madin</span><input type="checkbox" id="sikapMadin" ${s.sikapMadin?'checked':''}></label>
-                <label class="flex justify-between p-3 bg-white rounded border"><span>Keaktifan Sekolah Formal</span><input type="checkbox" id="sikapFormal" ${s.sikapFormal?'checked':''}></label>
-            </div>
-            <button onclick="simpanSikap()" class="btn-primary px-4 py-2 rounded-lg mt-3">Simpan Sikap</button>
-        </div>
+        <div class="bg-green-50 p-3 rounded"><div class="flex justify-between"><b>1. Surat Pilihan</b><button onclick="toggleAllSurat()" class="btn-outline text-sm">Centang Semua</button></div><div class="flex gap-3 mt-2"><label><input type="checkbox" id="yasin" ${s.yasin?'checked':''}> Yasin</label><label><input type="checkbox" id="waqiah" ${s.waqiah?'checked':''}> Waqiah</label><label><input type="checkbox" id="mulk" ${s.mulk?'checked':''}> Mulk</label></div><div class="flex gap-3 mt-2"><span>Nilai:</span><select id="nilaiSurat"><option ${s.nilaiSurat==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiSurat==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiSurat==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanSurat()" class="btn-primary text-sm ml-auto">Simpan</button></div></div>
+        <div class="bg-blue-50 p-3 rounded"><div class="flex justify-between"><b>2. Aurad & Wirid</b><button onclick="toggleAllAurad()" class="btn-outline text-sm">Centang Semua</button></div><div class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2"><label><input type="checkbox" id="wirid" ${s.wirid?'checked':''}> Wirid</label><label><input type="checkbox" id="doaShalat" ${s.doaShalat?'checked':''}> Doa Shalat</label><label><input type="checkbox" id="tahlilRingkas" ${s.tahlilRingkas?'checked':''}> Tahlil Ringkas</label><label><input type="checkbox" id="tahlilLengkap" ${s.tahlilLengkap?'checked':''}> Tahlil Lengkap</label><label><input type="checkbox" id="doaTahlil" ${s.doaTahlil?'checked':''}> Doa Tahlil</label><label><input type="checkbox" id="tawasul" ${s.tawasul?'checked':''}> Tawasul</label></div><div class="flex gap-3 mt-2"><span>Nilai:</span><select id="nilaiAurad"><option ${s.nilaiAurad==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiAurad==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiAurad==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanAurad()" class="btn-primary text-sm ml-auto">Simpan</button></div></div>
+        <div class="bg-purple-50 p-3 rounded"><b>3. Juz 30</b>${juzHtml}<div class="flex gap-3 mt-3"><span>Nilai:</span><select id="nilaiJuz"><option ${s.nilaiJuz==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiJuz==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiJuz==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanJuz()" class="btn-primary text-sm ml-auto">Simpan</button></div></div>
+        <div class="bg-orange-50 p-3 rounded"><div class="flex justify-between"><b>4. Praktik Ibadah</b><button onclick="toggleAllPraktik()" class="btn-outline text-sm">Centang Semua</button></div><div class="flex gap-3 mt-2"><label><input type="checkbox" id="praktikShalat" ${s.praktikShalat?'checked':''}> Shalat</label><label><input type="checkbox" id="praktikJenazah" ${s.praktikJenazah?'checked':''}> Jenazah</label><label><input type="checkbox" id="praktikKhotib" ${s.praktikKhotib?'checked':''}> Khotib</label></div><div class="flex gap-3 mt-2"><span>Nilai:</span><select id="nilaiPraktik"><option ${s.nilaiPraktik==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiPraktik==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiPraktik==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanPraktik()" class="btn-primary text-sm ml-auto">Simpan</button></div></div>
+        ${madinHtml}
+        <div class="bg-rose-50 p-3 rounded"><div class="flex justify-between"><b>5. Sikap & Adab</b><button onclick="toggleAllSikap()" class="btn-outline text-sm">Centang Semua</button></div><div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2"><label><input type="checkbox" id="sikapJamaah" ${s.sikapJamaah?'checked':''}> Shalat Berjamaah</label><label><input type="checkbox" id="sikapMadin" ${s.sikapMadin?'checked':''}> Keaktifan Madin</label><label><input type="checkbox" id="sikapFormal" ${s.sikapFormal?'checked':''}> Keaktifan Formal</label></div><button onclick="simpanSikap()" class="btn-primary text-sm mt-2">Simpan Sikap</button></div>
+        <button onclick="simpanMadinDanRefresh()" class="btn-success w-full py-3 text-lg">💾 SIMPAN SEMUA PERUBAHAN</button>
     </div>`;
-    
     document.getElementById('formHafalan').classList.remove('hidden');
     document.getElementById('formHafalan').innerHTML = html;
-}
-
-// Fungsi Centang Semua untuk Hafalan
-function toggleAllSurat() { 
-    let c = ['yasin','waqiah','mulk']; 
-    let all = c.every(id => document.getElementById(id).checked); 
-    c.forEach(id => { let cb = document.getElementById(id); if(cb) cb.checked = !all; }); 
-    if(!all) document.getElementById('nilaiSurat').value = 'Mumtaz';
-}
-
-function toggleAllAurad() { 
-    let c = ['wirid','doaShalat','tahlilRingkas','tahlilLengkap','doaTahlil','tawasul']; 
-    let all = c.every(id => document.getElementById(id).checked); 
-    c.forEach(id => { let cb = document.getElementById(id); if(cb) cb.checked = !all; }); 
-    if(!all) document.getElementById('nilaiAurad').value = 'Mumtaz';
-}
-
-function toggleAllJuz() { 
-    let sel = document.getElementById('selectAllJuz'); 
-    let cbs = document.querySelectorAll('.juz-checkbox'); 
-    cbs.forEach(cb => cb.checked = sel.checked); 
-    if(sel.checked) document.getElementById('nilaiJuz').value = 'Mumtaz';
-}
-
-function toggleAllPraktik() { 
-    let c = ['praktikShalat','praktikJenazah','praktikKhotib']; 
-    let all = c.every(id => document.getElementById(id).checked); 
-    c.forEach(id => { let cb = document.getElementById(id); if(cb) cb.checked = !all; }); 
-    if(!all) document.getElementById('nilaiPraktik').value = 'Mumtaz';
-}
-
-function toggleAllMadin() { 
-    let ula = document.getElementById('madinUla'); 
-    let wustho = document.getElementById('madinWustho'); 
-    if(ula) ula.checked = !ula.checked; 
-    if(wustho && ula) wustho.checked = ula.checked; 
-}
-
-function toggleAllSikap() { 
-    let c = ['sikapJamaah','sikapMadin','sikapFormal']; 
-    let all = c.every(id => document.getElementById(id).checked); 
-    c.forEach(id => { let cb = document.getElementById(id); if(cb) cb.checked = !all; }); 
-}
-
-function simpanSurat(){ 
-    let idx = santri.findIndex(x => x.id === currentSantriId); 
-    if (idx === -1) return; 
-    santri[idx].yasin = document.getElementById('yasin').checked; 
-    santri[idx].waqiah = document.getElementById('waqiah').checked; 
-    santri[idx].mulk = document.getElementById('mulk').checked; 
-    santri[idx].nilaiSurat = document.getElementById('nilaiSurat').value; 
-    saveData(); 
-    let persen = hitungProgressHafalan(santri[idx]);
-    showToast(`✅ Surat tersimpan - Progress: ${persen}%`, 'success');
-    if(persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
-    loadFormHafalan(); 
-    renderHafalanList(); 
-}
-
-function simpanAurad(){ 
-    let idx = santri.findIndex(x => x.id === currentSantriId); 
-    if (idx === -1) return; 
-    santri[idx].wirid = document.getElementById('wirid').checked; 
-    santri[idx].doaShalat = document.getElementById('doaShalat').checked; 
-    santri[idx].tahlilRingkas = document.getElementById('tahlilRingkas').checked; 
-    santri[idx].tahlilLengkap = document.getElementById('tahlilLengkap').checked; 
-    santri[idx].doaTahlil = document.getElementById('doaTahlil').checked; 
-    santri[idx].tawasul = document.getElementById('tawasul').checked; 
-    santri[idx].nilaiAurad = document.getElementById('nilaiAurad').value; 
-    saveData(); 
-    let persen = hitungProgressHafalan(santri[idx]);
-    showToast(`✅ Aurad tersimpan - Progress: ${persen}%`, 'success');
-    if(persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
-    loadFormHafalan(); 
-    renderHafalanList(); 
-}
-
-function simpanJuz(){ 
-    let idx = santri.findIndex(x => x.id === currentSantriId); 
-    if (idx === -1) return; 
-    for(let i = 0; i < 37; i++) { 
-        let cb = document.getElementById(`juz_${i}`); 
-        if(cb) santri[idx].juz30[i] = cb.checked; 
-    } 
-    santri[idx].nilaiJuz = document.getElementById('nilaiJuz').value; 
-    saveData(); 
-    let persen = hitungProgressHafalan(santri[idx]);
-    showToast(`✅ Juz 30 tersimpan - Progress: ${persen}%`, 'success');
-    if(persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
-    loadFormHafalan(); 
-    renderHafalanList(); 
-}
-
-function simpanPraktik(){ 
-    let idx = santri.findIndex(x => x.id === currentSantriId); 
-    if (idx === -1) return; 
-    santri[idx].praktikShalat = document.getElementById('praktikShalat').checked; 
-    santri[idx].praktikJenazah = document.getElementById('praktikJenazah').checked; 
-    santri[idx].praktikKhotib = document.getElementById('praktikKhotib').checked; 
-    santri[idx].nilaiPraktik = document.getElementById('nilaiPraktik').value; 
-    saveData(); 
-    let persen = hitungProgressHafalan(santri[idx]);
-    showToast(`✅ Praktik tersimpan - Progress: ${persen}%`, 'success');
-    if(persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
-    loadFormHafalan(); 
-    renderHafalanList(); 
-}
-
-function simpanMadin(){ 
-    let idx = santri.findIndex(x => x.id === currentSantriId); 
-    if (idx === -1) return; 
-    santri[idx].madinUla = document.getElementById('madinUla').checked; 
-    let wustho = document.getElementById('madinWustho'); 
-    if(wustho) santri[idx].madinWustho = wustho.checked; 
-    saveData(); 
-    let persen = hitungProgressHafalan(santri[idx]);
-    showToast(`✅ Madin tersimpan - Progress: ${persen}%`, 'success');
-    if(persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
-    loadFormHafalan(); 
-    renderHafalanList(); 
-}
-
-function simpanSikap(){ 
-    let idx = santri.findIndex(x => x.id === currentSantriId); 
-    if (idx === -1) return; 
-    santri[idx].sikapJamaah = document.getElementById('sikapJamaah').checked; 
-    santri[idx].sikapMadin = document.getElementById('sikapMadin').checked; 
-    santri[idx].sikapFormal = document.getElementById('sikapFormal').checked; 
-    saveData(); 
-    let persen = hitungProgressHafalan(santri[idx]);
-    showToast(`✅ Sikap tersimpan - Progress: ${persen}%`, 'success');
-    if(persen >= 100) showToast('🎉 SELAMAT! Santri LULUS Hafalan! 🎉', 'success');
-    loadFormHafalan(); 
-    renderHafalanList(); 
-}
-
-// ==================== FORM MAPEL DENGAN CENTANG SEMUA ====================
-function loadFormMapel() {
-    if (!currentMapelSantriId) return;
-    let s = santri.find(x => x.id === currentMapelSantriId);
-    if (!s) return;
-    if (!s.mapelStatus) s.mapelStatus = {};
     
-    let mapelList = mapelByKelas[s.kelas] || [];
-    let { done, total, persen } = hitungProgressMapel(s, s.kelas);
-    
-    let mapelHtml = `<div class="mb-4 flex justify-between items-center">
-        <div><span class="font-bold">Progress: ${persen}% (${done}/${total} selesai)</span></div>
-        <button onclick="toggleAllMapel()" class="btn-outline text-sm px-3 py-1 rounded"><i class="fas fa-check-double mr-1"></i> Centang Semua</button>
-    </div>
-    <div class="mapel-grid">`;
-    
-    for (let mapel of mapelList) {
-        mapelHtml += `<div class="mapel-item"><span>📖 ${mapel}</span><input type="checkbox" id="mapel_${mapel.replace(/\s/g, '_')}" class="mapel-checkbox" ${s.mapelStatus[mapel] === true ? 'checked' : ''}></div>`;
+    // Sembunyikan Madin Wustho untuk kelas 1-3
+    if(kelasNum <= 3) {
+        let wusthoItem = document.querySelector('.madin-check-group .madin-check-item:last-child');
+        if(wusthoItem) wusthoItem.style.display = 'none';
     }
-    mapelHtml += `</div><button onclick="simpanMapel()" class="btn-primary px-4 py-2 rounded-lg mt-4">Simpan Validasi Mapel</button>`;
-    
-    let html = `<div class="bg-purple-50 p-4 rounded-lg border"><h3 class="font-bold text-lg mb-2">📚 Validasi Mapel - Kelas ${s.kelas}</h3><p class="text-sm text-gray-500 mb-3">Santri: <strong>${s.nama}</strong></p>${mapelHtml}</div>`;
+}
+
+function updateMadinStatus() {
+    // Fungsi untuk update tampilan saat checkbox berubah
+    let ula = document.getElementById('madinUla');
+    let wustho = document.getElementById('madinWustho');
+    if(ula && wustho) {
+        // Optional: bisa tambah logic mutual exclusive jika diinginkan
+    }
+}
+
+function loadFormMapel() {
+    let s = santri.find(x=>x.id===currentMapelSantriId);
+    if(!s) return;
+    let list = mapelByKelas[s.kelas] || [];
+    let {done,total} = hitungProgressMapel(s,s.kelas);
+    let html = `<div class="bg-purple-50 p-4 rounded"><h3 class="font-bold">📚 Mapel Kelas ${s.kelas} - ${s.nama}</h3><div>Progress: ${done}/${total}</div><div class="mapel-grid mt-3">`;
+    for(let m of list) {
+        html += `<div class="mapel-item"><span>${m}</span><input type="checkbox" id="mapel_${m.replace(/\s/g,'_')}" class="mapel-cb" ${s.mapelStatus[m]?'checked':''}></div>`;
+    }
+    html += `</div><button onclick="simpanMapel()" class="btn-primary mt-4">Simpan Mapel</button></div>`;
     document.getElementById('formMapel').classList.remove('hidden');
     document.getElementById('formMapel').innerHTML = html;
 }
 
-function toggleAllMapel() {
-    let cbs = document.querySelectorAll('.mapel-checkbox');
-    let allChecked = true;
-    cbs.forEach(cb => { if(!cb.checked) allChecked = false; });
-    cbs.forEach(cb => cb.checked = !allChecked);
-}
+function toggleAllSurat(){ let c=['yasin','waqiah','mulk']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
+function toggleAllAurad(){ let c=['wirid','doaShalat','tahlilRingkas','tahlilLengkap','doaTahlil','tawasul']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
+function toggleAllJuz(){ let sel=document.getElementById('selectAllJuz'); if(sel){document.querySelectorAll('.juz-cb').forEach(cb=>cb.checked=sel.checked);} }
+function toggleAllPraktik(){ let c=['praktikShalat','praktikJenazah','praktikKhotib']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
+function toggleAllSikap(){ let c=['sikapJamaah','sikapMadin','sikapFormal']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
 
-function simpanMapel() {
-    let idx = santri.findIndex(x => x.id === currentMapelSantriId);
-    if (idx === -1) return;
-    let s = santri[idx];
-    let mapelList = mapelByKelas[s.kelas] || [];
-    let completedCount = 0;
-    for (let mapel of mapelList) {
-        let cb = document.getElementById(`mapel_${mapel.replace(/\s/g, '_')}`);
-        if (cb) {
-            s.mapelStatus[mapel] = cb.checked;
-            if (cb.checked) completedCount++;
-        }
-    }
-    saveData();
-    let total = mapelList.length;
-    let persen = Math.round((completedCount / total) * 100);
-    showToast(`✅ Mapel tersimpan - Progress: ${persen}%`, 'success');
-    if(persen >= 100) showToast('🎉 SELAMAT! Semua mapel selesai! 🎉', 'success');
-    loadFormMapel();
-    renderMapelList();
-    updateDashboard();
-}
+function simpanSurat(){ let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; santri[idx].yasin=document.getElementById('yasin').checked; santri[idx].waqiah=document.getElementById('waqiah').checked; santri[idx].mulk=document.getElementById('mulk').checked; santri[idx].nilaiSurat=document.getElementById('nilaiSurat').value; saveData(); loadFormHafalan(); }
+function simpanAurad(){ let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; santri[idx].wirid=document.getElementById('wirid').checked; santri[idx].doaShalat=document.getElementById('doaShalat').checked; santri[idx].tahlilRingkas=document.getElementById('tahlilRingkas').checked; santri[idx].tahlilLengkap=document.getElementById('tahlilLengkap').checked; santri[idx].doaTahlil=document.getElementById('doaTahlil').checked; santri[idx].tawasul=document.getElementById('tawasul').checked; santri[idx].nilaiAurad=document.getElementById('nilaiAurad').value; saveData(); loadFormHafalan(); }
+function simpanJuz(){ let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; for(let i=0;i<37;i++){let cb=document.getElementById(`juz_${i}`);if(cb)santri[idx].juz30[i]=cb.checked;} santri[idx].nilaiJuz=document.getElementById('nilaiJuz').value; saveData(); loadFormHafalan(); }
+function simpanPraktik(){ let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; santri[idx].praktikShalat=document.getElementById('praktikShalat').checked; santri[idx].praktikJenazah=document.getElementById('praktikJenazah').checked; santri[idx].praktikKhotib=document.getElementById('praktikKhotib').checked; santri[idx].nilaiPraktik=document.getElementById('nilaiPraktik').value; saveData(); loadFormHafalan(); }
+function simpanSikap(){ let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; santri[idx].sikapJamaah=document.getElementById('sikapJamaah').checked; santri[idx].sikapMadin=document.getElementById('sikapMadin').checked; santri[idx].sikapFormal=document.getElementById('sikapFormal').checked; saveData(); loadFormHafalan(); }
 
-function updateSelectSertifikat() { 
-    let select = document.getElementById('selectSertifikat'); 
-    if (select) { 
-        let lulusan = santri.filter(s => getStatusHafalan(s) === 'Lulus' && getStatusMapel(s, s.kelas) === 'Selesai'); 
-        select.innerHTML = '<option value="">-- Pilih Santri Lulus --</option>' + lulusan.map(s => `<option value="${s.id}">${s.nama} (${s.kelas})</option>`).join(''); 
-    } 
-}
-
-let currentSertifikatSantri = null;
-function loadSertifikatUntukEdit() { 
-    let id = document.getElementById('selectSertifikat').value; 
-    if (!id) { document.getElementById('sertifikatPreview').innerHTML = ''; return; } 
-    currentSertifikatSantri = santri.find(x => x.id == parseInt(id)); 
-    if (!currentSertifikatSantri) return;
-    let today = new Date().toLocaleDateString('id-ID');
-    document.getElementById('sertifikatPreview').innerHTML = `
-        <div class="text-center">
-            <div id="sertifikatBox" class="certificate-box">
-                <div class="text-center">
-                    <i class="fas fa-graduation-cap text-emerald-600 text-5xl mb-2"></i>
-                    <h2 class="text-xl font-bold text-emerald-800">Pondok Pesantren Bahrul Maghfiroh</h2>
-                </div>
-                <div class="border-b-2 border-emerald-600 w-24 mx-auto my-3"></div>
-                <p class="text-center text-gray-500 text-sm">SERTIFIKAT KELULUSAN</p>
-                <p class="text-center text-sm text-gray-500 mt-4">Diberikan kepada:</p>
-                <h3 class="text-center text-2xl font-bold text-emerald-700 my-3">${currentSertifikatSantri.nama}</h3>
-                <p class="text-center text-sm">Telah menyelesaikan seluruh program pembelajaran<br>Hafalan & Validasi Mapel dengan baik</p>
-                <div class="text-center bg-emerald-100 px-6 py-2 rounded-full inline-block w-full my-4">
-                    <span class="font-bold text-emerald-800">LULUS & SELESAI</span>
-                </div>
-                <p class="text-center text-xs text-gray-500">Malang, ${today}</p>
-            </div>
-            <button onclick="downloadSertifikat()" class="btn-primary px-4 py-2 rounded-lg mt-4">Download Sertifikat (PNG)</button>
-        </div>
-    `;
-}
-
-function downloadSertifikat() { 
-    let node = document.getElementById('sertifikatBox'); 
-    html2canvas(node, { scale: 2 }).then(c => { 
-        let a = document.createElement('a'); 
-        a.download = 'sertifikat.png'; 
-        a.href = c.toDataURL(); 
-        a.click(); 
-        showToast('Sertifikat terunduh'); 
-    }).catch(() => showToast('Gagal download', 'error')); 
-}
-
-// ==================== CRUD SANTRI ====================
-function tambahSantri() { 
-    if(currentUserRole !== 'admin') { showToast('Hanya admin', 'error'); return; }
-    let nama = document.getElementById('tambahNama').value.trim(); 
-    let kelas = document.getElementById('tambahKelas').value.trim(); 
-    if (!nama) { showToast('Nama wajib diisi', 'error'); return; } 
-    if (!kelas) { showToast('Kelas wajib diisi', 'error'); return; } 
-    let baru = getNewSantri(); 
-    baru.id = Date.now(); 
-    baru.nama = nama; 
-    baru.kelas = kelas; 
-    santri.push(baru); 
-    saveData(); 
-    closeModal(null, 'tambahModal'); 
-    document.getElementById('tambahNama').value = ''; 
-    document.getElementById('tambahKelas').value = ''; 
-    showToast(`Santri ${nama} ditambahkan`); 
-}
-
-function importMassal() { 
-    if(currentUserRole !== 'admin') { showToast('Hanya admin', 'error'); return; }
-    let text = document.getElementById('massalData').value.trim(); 
-    if(!text) { showToast('Data kosong', 'error'); return; } 
-    let lines = text.split('\n'); 
-    let added = 0; 
-    for(let line of lines) { 
-        line = line.trim(); 
-        if(!line) continue; 
-        let parts = line.split(','); 
-        if(parts.length < 2) continue; 
-        let nama = parts[0].trim(); 
-        let kelas = parts.slice(1).join(',').trim(); 
-        if(nama && kelas) { 
-            let baru = getNewSantri(); 
-            baru.id = Date.now() + added; 
-            baru.nama = nama; 
-            baru.kelas = kelas; 
-            santri.push(baru); 
-            added++; 
-        } 
-    } 
-    if(added > 0) { 
-        saveData(); 
-        closeModal(null, 'massalModal'); 
-        document.getElementById('massalData').value = ''; 
-        showToast(`Berhasil import ${added} santri`); 
-    } else { 
-        showToast('Tidak ada data valid. Format: Nama,Kelas', 'error'); 
-    } 
-}
-
-function editSantri(id) { 
-    if(currentUserRole !== 'admin') { showToast('Hanya admin', 'error'); return; }
-    let s = santri.find(x => x.id === id); 
-    if (!s) return; 
-    let namaBaru = prompt('Edit Nama:', s.nama); 
-    if (namaBaru) s.nama = namaBaru; 
-    let kelasBaru = prompt('Edit Kelas:', s.kelas); 
-    if (kelasBaru) s.kelas = kelasBaru; 
-    saveData(); 
-    showToast('Data diupdate'); 
-}
-
-function hapusSantri(id) { 
-    if(currentUserRole !== 'admin') { showToast('Hanya admin', 'error'); return; }
-    if (confirm('Yakin hapus santri ini?')) { 
-        santri = santri.filter(s => s.id !== id); 
-        saveData(); 
-        showToast('Santri dihapus'); 
-    } 
-}
-
-// ==================== MENU & LOGIN ====================
-function updateMenuByRole() {
-    const sidebarNav = document.getElementById('sidebarNav');
-    const userRoleBadge = document.getElementById('userRoleBadge');
-    const santriButtons = document.getElementById('santriButtons');
+function simpanMadinDanRefresh(){
+    let idx=santri.findIndex(x=>x.id===currentSantriId);
+    if(idx===-1)return;
+    let kelasNum = getKelasNum(santri[idx].kelas);
     
-    if(currentUserRole === 'admin') {
-        userRoleBadge.innerHTML = 'Admin';
-        userRoleBadge.className = 'role-badge admin';
-        sidebarNav.innerHTML = `
-            <div class="nav-item" onclick="showPage('dashboard')"><i class="fas fa-chart-line w-5"></i> Dashboard</div>
-            <div class="nav-item" onclick="showPage('santri')"><i class="fas fa-users w-5"></i> Data Santri</div>
-            <div class="nav-item" onclick="showPage('hafalan')"><i class="fas fa-book-open w-5"></i> Hafalan & Penilaian</div>
-            <div class="nav-item" onclick="showPage('mapel')"><i class="fas fa-check-double w-5"></i> Tam-taman (Mapel)</div>
-            <div class="nav-item" onclick="showPage('sertifikat')"><i class="fas fa-certificate w-5"></i> Sertifikat</div>
-            <div class="nav-item" onclick="showPage('laporan')"><i class="fas fa-chart-bar w-5"></i> Laporan</div>
-            <div class="nav-item" onclick="showPage('pengaturan')"><i class="fas fa-cog w-5"></i> Pengaturan</div>
-        `;
-        if(santriButtons) santriButtons.innerHTML = `
-            <button onclick="openModal('tambahModal')" class="btn-primary rounded-lg"><i class="fas fa-plus"></i> Tambah Santri</button>
-            <button onclick="openModal('massalModal')" class="btn-outline rounded-lg"><i class="fas fa-upload"></i> Import Massal</button>
-            <button onclick="exportToExcel()" class="btn-outline rounded-lg"><i class="fas fa-file-excel"></i> Export Excel</button>
-        `;
+    // Simpan nilai Madin
+    santri[idx].madinUla = document.getElementById('madinUla')?.checked || false;
+    if(kelasNum >= 4) {
+        santri[idx].madinWustho = document.getElementById('madinWustho')?.checked || false;
     } else {
-        userRoleBadge.innerHTML = 'Guru';
-        userRoleBadge.className = 'role-badge guru';
-        sidebarNav.innerHTML = `
-            <div class="nav-item" onclick="showPage('dashboard')"><i class="fas fa-chart-line w-5"></i> Dashboard</div>
-            <div class="nav-item" onclick="showPage('santri')"><i class="fas fa-users w-5"></i> Data Santri</div>
-            <div class="nav-item" onclick="showPage('hafalan')"><i class="fas fa-book-open w-5"></i> Hafalan & Penilaian</div>
-            <div class="nav-item" onclick="showPage('mapel')"><i class="fas fa-check-double w-5"></i> Tam-taman (Mapel)</div>
-            <div class="nav-item" onclick="showPage('sertifikat')"><i class="fas fa-certificate w-5"></i> Sertifikat</div>
-            <div class="nav-item" onclick="showPage('laporan')"><i class="fas fa-chart-bar w-5"></i> Laporan</div>
-        `;
-        if(santriButtons) santriButtons.innerHTML = `
-            <button onclick="exportToExcel()" class="btn-outline rounded-lg"><i class="fas fa-file-excel"></i> Export Excel</button>
-        `;
+        santri[idx].madinWustho = false;
     }
+    
+    saveData();
+    loadFormHafalan();
+    renderHafalanList();
+    updateDashboard();
+    
+    let newProgress = hitungProgressHafalan(santri[idx]);
+    let isLulusMadin = (kelasNum <= 3 && santri[idx].madinUla) || (kelasNum >= 4 && (santri[idx].madinUla || santri[idx].madinWustho));
+    
+    if(isLulusMadin) {
+        showToast(`✅ LULUS 100%! Santri dinyatakan Lulus karena Madin dipilih.`, 'success');
+    } else {
+        showToast(`✅ Status diperbarui! Progress: ${newProgress}% - ${getStatusHafalan(santri[idx])}`, 'success');
+    }
+}
+
+function simpanMapel(){ let idx=santri.findIndex(x=>x.id===currentMapelSantriId); if(idx===-1)return; let s=santri[idx]; let list=mapelByKelas[s.kelas]||[]; for(let m of list){ let cb=document.getElementById(`mapel_${m.replace(/\s/g,'_')}`); if(cb) s.mapelStatus[m]=cb.checked;} saveData(); loadFormMapel(); renderMapelList(); updateDashboard(); }
+
+function updateSelectSertifikat(){
+    let select = document.getElementById('selectSertifikat');
+    let lulusan = santri.filter(s => getStatusHafalan(s) === 'Lulus' && getStatusMapel(s, s.kelas) === 'Selesai');
+    select.innerHTML = '<option value="">-- Pilih Santri Lulus --</option>' + lulusan.map(s => `<option value="${s.id}">${s.nama} (${s.kelas})</option>`).join('');
+}
+function loadSertifikat(){
+    let id = document.getElementById('selectSertifikat').value;
+    if(!id){ document.getElementById('sertifikatPreview').innerHTML = ''; return; }
+    let s = santri.find(x=>x.id==parseInt(id));
+    if(!s) return;
+    let today = new Date().toLocaleDateString('id-ID');
+    let logoHtml = (profil.logoUrl && profil.logoUrl.trim()) ? `<img src="${profil.logoUrl}" style="width:70px;height:70px;object-fit:cover;border-radius:50%;margin:0 auto 10px;">` : `<i class="fas fa-graduation-cap text-emerald-600 text-5xl mb-2"></i>`;
+    document.getElementById('sertifikatPreview').innerHTML = `<div class="text-center"><div id="sertifikatBox" class="certificate-box">${logoHtml}<h2 class="text-xl font-bold">${profil.namaPesantren}</h2><p>Pengasuh: ${profil.pengasuh} | Ketua: ${profil.ketuaPondok}</p><div class="border-b-2 w-24 mx-auto my-3"></div><p>SERTIFIKAT KELULUSAN</p><h3 class="text-2xl font-bold text-emerald-700 my-3">${s.nama}</h3><p>Telah menyelesaikan seluruh program hafalan & mapel</p><div class="bg-emerald-100 px-6 py-2 rounded-full inline-block my-4"><span class="font-bold text-emerald-800">LULUS & SELESAI</span></div><p class="text-xs">Malang, ${today}</p></div><button onclick="downloadSertifikat()" class="btn-primary mt-4">Download PNG</button></div>`;
+}
+function downloadSertifikat(){ let node=document.getElementById('sertifikatBox'); html2canvas(node,{scale:2}).then(c=>{let a=document.createElement('a');a.download='sertifikat.png';a.href=c.toDataURL();a.click();showToast('Terunduh','success');}); }
+
+function tambahSantri() { if(currentUserRole!=='admin'){showToast('Hanya admin','error');return;} let nama=document.getElementById('tambahNama').value.trim(); let kelas=document.getElementById('tambahKelas').value.trim(); if(!nama||!kelas){showToast('Lengkapi data','error');return;} let baru=getNewSantri(); baru.id=Date.now(); baru.nama=nama; baru.kelas=kelas; santri.push(baru); saveData(); closeModal(null,'tambahModal'); document.getElementById('tambahNama').value=''; document.getElementById('tambahKelas').value=''; showToast('Santri ditambahkan','success'); }
+function importMassal() { if(currentUserRole!=='admin'){showToast('Hanya admin','error');return;} let text=document.getElementById('massalData').value.trim(); if(!text){showToast('Data kosong','error');return;} let lines=text.split('\n'), added=0; for(let line of lines){ line=line.trim(); if(!line) continue; let parts=line.split(','); if(parts.length<2) continue; let nama=parts[0].trim(), kelas=parts.slice(1).join(',').trim(); if(nama&&kelas){ let baru=getNewSantri(); baru.id=Date.now()+added; baru.nama=nama; baru.kelas=kelas; santri.push(baru); added++; } } if(added>0){ saveData(); closeModal(null,'massalModal'); document.getElementById('massalData').value=''; showToast(`Import ${added} santri`,'success'); } else showToast('Tidak ada data valid','error'); }
+function editSantri(id){ if(currentUserRole!=='admin'){showToast('Hanya admin','error');return;} let s=santri.find(x=>x.id===id); if(!s)return; let nama=prompt('Edit Nama:',s.nama); if(nama) s.nama=nama; let kelas=prompt('Edit Kelas:',s.kelas); if(kelas) s.kelas=kelas; saveData(); }
+function hapusSantri(id){ if(currentUserRole!=='admin'){showToast('Hanya admin','error');return;} if(confirm('Yakin hapus?')){ santri=santri.filter(s=>s.id!==id); saveData(); showToast('Terhapus','success'); } }
+function exportToExcel(){ let data=santri.map((s,i)=>({No:i+1,Nama:s.nama,Kelas:s.kelas,Status_Hafalan:getStatusHafalan(s),Progress_Hafalan:`${hitungProgressHafalan(s)}%`,Status_Mapel:getStatusMapel(s,s.kelas)})); let ws=XLSX.utils.json_to_sheet(data); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Data'); XLSX.writeFile(wb,`mutqin_${new Date().toISOString().slice(0,10)}.xlsx`); showToast('Export berhasil','success'); }
+
+function updateMenuByRole() {
+    let nav = document.getElementById('sidebarNav');
+    let badge = document.getElementById('userRoleBadge');
+    let btns = document.getElementById('santriButtons');
+    if(currentUserRole === 'admin'){
+        badge.innerHTML = 'Admin';
+        nav.innerHTML = `<div class="nav-item" onclick="showPage('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</div><div class="nav-item" onclick="showPage('santri')"><i class="fas fa-users"></i> Data Santri</div><div class="nav-item" onclick="showPage('hafalan')"><i class="fas fa-book-open"></i> Hafalan & Madin</div><div class="nav-item" onclick="showPage('mapel')"><i class="fas fa-check-double"></i> Tam-taman</div><div class="nav-item" onclick="showPage('sertifikat')"><i class="fas fa-certificate"></i> Sertifikat</div><div class="nav-item" onclick="showPage('laporan')"><i class="fas fa-chart-bar"></i> Laporan</div><div class="nav-item" onclick="showPage('pengaturan')"><i class="fas fa-cog"></i> Pengaturan</div>`;
+        if(btns) btns.innerHTML = `<button onclick="openModal('tambahModal')" class="btn-primary"><i class="fas fa-plus"></i> Tambah</button><button onclick="openModal('massalModal')" class="btn-outline"><i class="fas fa-upload"></i> Import Massal</button><button onclick="exportToExcel()" class="btn-outline"><i class="fas fa-file-excel"></i> Export</button><button onclick="syncToCloud()" class="btn-outline"><i class="fas fa-cloud-upload-alt"></i> Sync Cloud</button><button onclick="loadFromCloud()" class="btn-outline"><i class="fas fa-cloud-download-alt"></i> Load Cloud</button>`;
+    } else {
+        badge.innerHTML = 'Guru';
+        nav.innerHTML = `<div class="nav-item" onclick="showPage('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</div><div class="nav-item" onclick="showPage('santri')"><i class="fas fa-users"></i> Data Santri</div><div class="nav-item" onclick="showPage('hafalan')"><i class="fas fa-book-open"></i> Hafalan & Madin</div><div class="nav-item" onclick="showPage('mapel')"><i class="fas fa-check-double"></i> Tam-taman</div><div class="nav-item" onclick="showPage('sertifikat')"><i class="fas fa-certificate"></i> Sertifikat</div><div class="nav-item" onclick="showPage('laporan')"><i class="fas fa-chart-bar"></i> Laporan</div>`;
+        if(btns) btns.innerHTML = `<button onclick="exportToExcel()" class="btn-outline"><i class="fas fa-file-excel"></i> Export</button>`;
+    }
+}
+
+function showPage(p){
+    document.querySelectorAll('.page').forEach(el=>el.classList.add('hidden'));
+    document.getElementById(`page${p.charAt(0).toUpperCase()+p.slice(1)}`).classList.remove('hidden');
+    if(p==='santri') renderSantri();
+    if(p==='dashboard') updateDashboard();
+    if(p==='laporan') updateLaporanContent();
+    if(p==='sertifikat') updateSelectSertifikat();
+    if(p==='hafalan'){ renderHafalanList(); document.getElementById('formHafalan').classList.add('hidden'); currentSantriId=null; }
+    if(p==='mapel'){ renderMapelList(); document.getElementById('formMapel').classList.add('hidden'); currentMapelSantriId=null; }
+    if(window.innerWidth<1024) document.getElementById('sidebar').classList.add('-translate-x-full');
+}
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
+function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+function closeModal(e,id){ if(!e||e.target===document.getElementById(id)) document.getElementById(id).classList.add('hidden'); }
+function updateLaporanContent(){
+    let html = `<div class="text-center"><h1 class="text-2xl font-bold">${profil.namaPesantren}</h1><p>Pengasuh: ${profil.pengasuh} | Ketua: ${profil.ketuaPondok}</p><p>${new Date().toLocaleDateString('id-ID')}</p></div><table class="w-full text-sm mt-4 border"><thead class="bg-emerald-600 text-white"><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Status Hafalan</th><th>Status Mapel</th></tr></thead><tbody>`;
+    santri.forEach((s,i)=>{ html += `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2">${s.nama}</td><td class="p-2">${s.kelas}</td><td class="p-2"><span class="badge-${getStatusHafalan(s)==='Lulus'?'success':(getStatusHafalan(s)==='Proses'?'warning':'danger')}">${getStatusHafalan(s)}</span></td><td class="p-2"><span class="badge-${getStatusMapel(s, s.kelas)==='Selesai'?'success':(getStatusMapel(s, s.kelas)==='Proses'?'warning':'danger')}">${getStatusMapel(s, s.kelas)}</span></td></tr>`; });
+    html += `</tbody></table>`;
+    document.getElementById('laporanContent').innerHTML = html;
 }
 
 let selectedRole = 'admin';
-function setRole(role) {
-    selectedRole = role;
-    const btnAdmin = document.getElementById('btnRoleAdmin');
-    const btnGuru = document.getElementById('btnRoleGuru');
-    if(role === 'admin') {
-        btnAdmin.classList.remove('border-gray-300', 'text-gray-500');
-        btnAdmin.classList.add('border-emerald-500', 'text-emerald-600');
-        btnGuru.classList.remove('border-emerald-500', 'text-emerald-600');
-        btnGuru.classList.add('border-gray-300', 'text-gray-500');
-    } else {
-        btnGuru.classList.remove('border-gray-300', 'text-gray-500');
-        btnGuru.classList.add('border-emerald-500', 'text-emerald-600');
-        btnAdmin.classList.remove('border-emerald-500', 'text-emerald-600');
-        btnAdmin.classList.add('border-gray-300', 'text-gray-500');
-    }
+function setRole(r){ selectedRole=r; let ba=document.getElementById('btnRoleAdmin'), bg=document.getElementById('btnRoleGuru'); if(r==='admin'){ ba.classList.remove('border-gray-300','text-gray-500'); ba.classList.add('border-emerald-500','text-emerald-600'); bg.classList.remove('border-emerald-500','text-emerald-600'); bg.classList.add('border-gray-300','text-gray-500'); } else { bg.classList.remove('border-gray-300','text-gray-500'); bg.classList.add('border-emerald-500','text-emerald-600'); ba.classList.remove('border-emerald-500','text-emerald-600'); ba.classList.add('border-gray-300','text-gray-500'); } }
+function doLogin(){
+    let u=document.getElementById('loginUser').value, p=document.getElementById('loginPass').value, role=selectedRole;
+    if(role==='admin' && u==='admin' && p==='admin123'){ currentUserRole='admin'; document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden'); updateMenuByRole(); loadProfil(); loadData(); showToast('Selamat datang Admin!','success'); }
+    else if(role==='guru' && u==='guru' && p==='guru123'){ currentUserRole='guru'; document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('mainApp').classList.remove('hidden'); updateMenuByRole(); loadProfil(); loadData(); showToast('Selamat datang Guru!','success'); }
+    else { let err=document.getElementById('loginError'); err.innerText='Username atau password salah!'; err.classList.remove('hidden'); setTimeout(()=>err.classList.add('hidden'),2000); }
 }
+function doLogout(){ document.getElementById('mainApp').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); document.getElementById('loginUser').value=''; document.getElementById('loginPass').value=''; setRole('admin'); }
 
-function showPage(page) { 
-    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden')); 
-    document.getElementById(`page${page.charAt(0).toUpperCase() + page.slice(1)}`).classList.remove('hidden'); 
-    if (page === 'santri') renderSantri(); 
-    if (page === 'dashboard') updateDashboard(); 
-    if (page === 'laporan') updateLaporanContent(); 
-    if (page === 'sertifikat') updateSelectSertifikat(); 
-    if (page === 'hafalan') { 
-        renderHafalanList(); 
-        document.getElementById('formHafalan').classList.add('hidden'); 
-        currentSantriId = null; 
-    }
-    if (page === 'mapel') { 
-        renderMapelList(); 
-        document.getElementById('formMapel').classList.add('hidden'); 
-        currentMapelSantriId = null; 
-    }
-    if (window.innerWidth < 1024) document.getElementById('sidebar').classList.add('-translate-x-full'); 
-}
-
-function toggleSidebar() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
-function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-function closeModal(e, id) { if (!e || e.target === document.getElementById(id)) document.getElementById(id).classList.add('hidden'); }
-
-function doLogin() { 
-    let u = document.getElementById('loginUser').value; 
-    let p = document.getElementById('loginPass').value; 
-    let role = selectedRole;
-    
-    if(role === 'admin' && u === 'admin' && p === 'admin123') { 
-        currentUserRole = 'admin';
-        document.getElementById('loginScreen').classList.add('hidden'); 
-        document.getElementById('mainApp').classList.remove('hidden'); 
-        updateMenuByRole(); 
-        loadData(); 
-        showToast('Selamat datang Admin!', 'success'); 
-    } 
-    else if(role === 'guru' && u === 'guru' && p === 'guru123') { 
-        currentUserRole = 'guru';
-        document.getElementById('loginScreen').classList.add('hidden'); 
-        document.getElementById('mainApp').classList.remove('hidden'); 
-        updateMenuByRole(); 
-        loadData(); 
-        showToast('Selamat datang Guru!', 'success'); 
-    }
-    else { 
-        let err = document.getElementById('loginError'); 
-        err.innerText = 'Username atau password salah!'; 
-        err.classList.remove('hidden'); 
-        setTimeout(() => err.classList.add('hidden'), 2000); 
-    } 
-}
-
-function doLogout() { 
-    document.getElementById('mainApp').classList.add('hidden'); 
-    document.getElementById('loginScreen').classList.remove('hidden'); 
-    document.getElementById('loginUser').value = ''; 
-    document.getElementById('loginPass').value = ''; 
-    setRole('admin'); 
-}
-
+loadProfil();
 loadData();
 </script>
 </body>
