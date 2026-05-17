@@ -104,6 +104,7 @@
 
 <!-- MAIN APP -->
 <div id="mainApp" class="hidden">
+    <!-- Header same as before... -->
     <div class="bg-white shadow-sm border-b sticky top-0 z-20">
         <div class="px-4 py-3 flex justify-between items-center">
             <div class="flex items-center gap-3">
@@ -362,9 +363,8 @@
 </div>
 
 <script>
-// ==================== KONFIGURASI ====================
-// ⚠️⚠️⚠️ GANTI URL INI DENGAN URL APPS SCRIPT ANDA ⚠️⚠️⚠️
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0vXUFRGnHkU48WeeleJkDprn0-gdjlRd2h5GI7GY_cvCBOx_J5_NnoMD46tC-P0itoA/exec';
+// ==================== ⚠️ GANTI DENGAN URL APPS SCRIPT ANDA ⚠️ ====================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwobzkRDf-DEter4i66uWGKG3CqbNnuoQstaURkfmlZmp1bFi5tkqq4jS_LL9lHrD8j/exec';
 
 let santri = [];
 let currentUser = null;
@@ -473,60 +473,68 @@ function getNewSantri() {
 
 // ==================== CLOUD SYNC (GOOGLE SHEETS) ====================
 async function syncToCloud() {
-    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('YOUR_APPS_SCRIPT_URL')) {
-        showToast('⚠️ URL Apps Script belum diatur! Ganti const APPS_SCRIPT_URL di kode HTML', 'warning');
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('YOUR_APPS_SCRIPT_URL_HERE')) {
+        showToast('⚠️ URL Apps Script belum diatur! Ganti const APPS_SCRIPT_URL dengan URL hasil deploy Apps Script Anda', 'warning');
         return;
     }
 
     try {
         setSyncStatus('Menyimpan ke cloud...', 'syncing');
-        document.getElementById('cloudStatus').innerHTML = '⏳ Menyimpan ke Google Sheets...';
+        if (document.getElementById('cloudStatus')) {
+            document.getElementById('cloudStatus').innerHTML = '⏳ Menyimpan ke Google Sheets...';
+        }
 
-        const dataToSave = JSON.stringify({
+        const dataToSave = {
             santri: santri,
             profil: profilData,
             logo: logoBase64,
             timestamp: new Date().toISOString()
-        });
-
-        const response = await fetch(`${APPS_SCRIPT_URL}?action=save&data=${encodeURIComponent(dataToSave)}`, {
+        };
+        
+        const encodedData = encodeURIComponent(JSON.stringify(dataToSave));
+        const response = await fetch(`${APPS_SCRIPT_URL}?action=save&data=${encodedData}`, {
             method: 'GET',
-            mode: 'cors'
+            mode: 'cors',
+            cache: 'no-store'
         });
 
         const result = await response.json();
 
         if (result.status === 'success') {
             setSyncStatus('✅ Tersimpan!', 'online');
-            document.getElementById('cloudStatus').innerHTML = '✅ Data tersimpan di cloud ' + new Date().toLocaleTimeString();
+            if (document.getElementById('cloudStatus')) {
+                document.getElementById('cloudStatus').innerHTML = '✅ Data tersimpan di cloud ' + new Date().toLocaleTimeString();
+            }
             showToast('✅ Data berhasil disimpan ke cloud!', 'success');
-            
-            localStorage.setItem('mutqin_santri_cloud_backup', JSON.stringify(santri));
-            localStorage.setItem('mutqin_profil_cloud_backup', JSON.stringify(profilData));
         } else {
             throw new Error(result.message || 'Gagal menyimpan');
         }
     } catch (e) {
         console.error('Sync error:', e);
         setSyncStatus('❌ Gagal sync', 'offline');
-        document.getElementById('cloudStatus').innerHTML = '❌ Gagal menyimpan: ' + e.message;
-        showToast('❌ Gagal sync ke cloud! Periksa URL Apps Script', 'error');
+        if (document.getElementById('cloudStatus')) {
+            document.getElementById('cloudStatus').innerHTML = '❌ Gagal menyimpan: ' + e.message;
+        }
+        showToast('❌ Gagal sync ke cloud! Periksa koneksi dan URL Apps Script', 'error');
     }
 }
 
 async function loadFromCloud() {
-    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('YOUR_APPS_SCRIPT_URL')) {
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('YOUR_APPS_SCRIPT_URL_HERE')) {
         showToast('⚠️ URL Apps Script belum diatur!', 'warning');
         return;
     }
 
     try {
         setSyncStatus('Memuat dari cloud...', 'syncing');
-        document.getElementById('cloudStatus').innerHTML = '⏳ Memuat dari Google Sheets...';
+        if (document.getElementById('cloudStatus')) {
+            document.getElementById('cloudStatus').innerHTML = '⏳ Memuat dari Google Sheets...';
+        }
 
         const response = await fetch(`${APPS_SCRIPT_URL}?action=load&t=${Date.now()}`, {
             method: 'GET',
-            mode: 'cors'
+            mode: 'cors',
+            cache: 'no-store'
         });
 
         const result = await response.json();
@@ -549,7 +557,9 @@ async function loadFromCloud() {
             saveDataToLocal();
             refreshAll();
             setSyncStatus('✅ Dimuat!', 'online');
-            document.getElementById('cloudStatus').innerHTML = '✅ Data dimuat dari cloud ' + new Date().toLocaleTimeString();
+            if (document.getElementById('cloudStatus')) {
+                document.getElementById('cloudStatus').innerHTML = '✅ Data dimuat dari cloud ' + new Date().toLocaleTimeString();
+            }
             showToast('✅ Data berhasil dimuat dari cloud!', 'success');
         } else {
             throw new Error(result.message || 'Tidak ada data');
@@ -557,7 +567,9 @@ async function loadFromCloud() {
     } catch (e) {
         console.error('Load error:', e);
         setSyncStatus('❌ Gagal load', 'offline');
-        document.getElementById('cloudStatus').innerHTML = '⚠️ Gagal memuat, menggunakan data lokal';
+        if (document.getElementById('cloudStatus')) {
+            document.getElementById('cloudStatus').innerHTML = '⚠️ Gagal memuat, menggunakan data lokal';
+        }
         showToast('⚠️ Gagal load dari cloud, menggunakan data lokal', 'warning');
     }
 }
@@ -1035,7 +1047,7 @@ function updateLaporanContent() {
         let stM = getStatusMapel(s, s.kelas);
         let bcH = stH === 'Lulus' ? 'badge-success' : (stH === 'Proses' ? 'badge-warning' : 'badge-danger');
         let bcM = stM === 'Selesai' ? 'badge-success' : (stM === 'Proses' ? 'badge-warning' : 'badge-danger');
-        return `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2 font-medium">${s.nama}</td><td class="p-2">${s.kelas}</td><td class="p-2">${s.nilaiSurat||'-'}</td><td class="p-2"><span class="${bcH}">${stH}</span></td><td class="p-2"><span class="${bcM}">${stM}</span></td></tr>`;
+        return `<tr class="border-b"><td class="p-2">${i+1}</td><td class="p-2 font-medium">${s.nama}</td><td class="p-2">${s.kelas}</td><td class="p-2">${s.nilaiSurat||'-'}</td><td class="p-2"><span class="${bcH}">${stH}</span></td><td class="p-2"><span class="${bcM}">${stM}</span></td>`;
     }).join('');
 }
 
