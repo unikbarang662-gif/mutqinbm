@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Mutqin BM - FIX 100% LULUS</title>
+    <title>Mutqin BM - Hafalan & Madin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -44,11 +44,14 @@
         .dark-mode{background:#1a1a2e;color:#eee;}
         .dark-mode .bg-white{background:#16213e!important;color:#eee;}
         .dark-mode .btn-outline{background:#1a1a2e;border-color:#2c3e66;color:#eee;}
-        .madin-highlight{background:#fef3c7;border:3px solid #10b981;border-radius:12px;}
         .role-badge.admin{background:#dcfce7;color:#166534;padding:4px 12px;border-radius:20px;font-size:12px;}
         .progress-bar-big{height:8px;background:#e5e7eb;border-radius:10px;overflow:hidden;width:100%;}
         .progress-fill-big{height:100%;background:#10b981;transition:width 0.3s;}
         .sync-status{position:fixed;bottom:20px;left:20px;background:white;padding:5px 12px;border-radius:20px;font-size:11px;z-index:100;cursor:pointer;}
+        .madin-box{background:#fffbeb;border:2px solid #f59e0b;border-radius:16px;padding:16px;margin:16px 0;}
+        .madin-option{display:flex;align-items:center;gap:12px;padding:10px 20px;background:white;border-radius:12px;cursor:pointer;transition:0.2s;}
+        .madin-option:hover{background:#d1fae5;}
+        .madin-option input{width:20px;height:20px;cursor:pointer;}
     </style>
 </head>
 <body class="bg-gray-100" id="appBody">
@@ -159,16 +162,25 @@ const mapelByKelas = {
     '6B':['Akhlak','B. Arab','Balaghoh','Faroid','Fikih','Hadits','Mustholah H','Qowaid F','Tafsir','Ushul F','Nahwu']
 };
 
-// ========== FUNGSI UTAMA - MADIN CENTANG = LANGSUNG 100% ==========
 function getKelasNum(kelas) { return parseInt(kelas.match(/\d+/)?.[0] || 6); }
 
+// ========== FUNGSI HITUNG PROGRESS - PERBAIKAN UTAMA ==========
 function hitungProgressHafalan(s) {
     let kelasNum = getKelasNum(s.kelas);
-    // KELAS 1-3: Jika madinUla true -> 100%
-    if (kelasNum <= 3 && s.madinUla === true) return 100;
-    // KELAS 4-6: Jika madinWustho true -> 100%
-    if (kelasNum >= 4 && s.madinWustho === true) return 100;
     
+    // CEK: Jika salah satu atau keduanya dipilih -> LANGSUNG 100%
+    let isLulusMadin = false;
+    if (kelasNum <= 3) {
+        // Kelas 1,2,3: cukup Madin Ula
+        if (s.madinUla === true) isLulusMadin = true;
+    } else {
+        // Kelas 4,5,6: salah satu atau keduanya
+        if (s.madinUla === true || s.madinWustho === true) isLulusMadin = true;
+    }
+    
+    if (isLulusMadin) return 100;
+    
+    // Hitung normal jika tidak ada Madin yang dipilih
     let total = 53;
     let done = 0;
     if(s.yasin) done++; if(s.waqiah) done++; if(s.mulk) done++;
@@ -244,7 +256,7 @@ function loadData() {
         let juzFull = Array(37).fill(true);
         santri = [
             { id: 1, nama: 'Ahmad Maulana', kelas: '3A', yasin: true, waqiah: true, mulk: true, wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, juz30: [...juzFull], praktikShalat: true, praktikJenazah: true, praktikKhotib: true, madinUla: false, madinWustho: false, sikapJamaah: true, sikapMadin: true, sikapFormal: true, mapelStatus: {}, tanggalUpdate: new Date().toISOString() },
-            { id: 2, nama: 'Fatimah Azzahra', kelas: '5A', yasin: true, waqiah: true, mulk: true, wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, juz30: [...juzFull], praktikShalat: true, praktikJenazah: true, praktikKhotib: true, madinUla: true, madinWustho: false, sikapJamaah: true, sikapMadin: true, sikapFormal: true, mapelStatus: {}, tanggalUpdate: new Date().toISOString() }
+            { id: 2, nama: 'Fatimah Azzahra', kelas: '5A', yasin: true, waqiah: true, mulk: true, wirid: true, doaShalat: true, tahlilRingkas: true, tahlilLengkap: true, doaTahlil: true, tawasul: true, juz30: [...juzFull], praktikShalat: true, praktikJenazah: true, praktikKhotib: true, madinUla: false, madinWustho: false, sikapJamaah: true, sikapMadin: true, sikapFormal: true, mapelStatus: {}, tanggalUpdate: new Date().toISOString() }
         ];
     }
     for(let s of santri) {
@@ -308,10 +320,6 @@ function updateDashboard() {
     document.getElementById('totalLulus').innerText = lulus;
     document.getElementById('totalProsesHafalan').innerText = prosesH;
     document.getElementById('totalBelumHafalan').innerText = belumH;
-    document.getElementById('totalSantriMapel').innerText = santri.length;
-    document.getElementById('totalSelesai').innerText = selesai;
-    document.getElementById('totalProsesMapel').innerText = prosesM;
-    document.getElementById('totalBelumMapel').innerText = belumM;
     if(chartInstances.ch1) chartInstances.ch1.destroy();
     let ctx1 = document.getElementById('statusChartHafalan')?.getContext('2d');
     if(ctx1) chartInstances.ch1 = new Chart(ctx1, { type: 'doughnut', data: { labels: ['Lulus','Proses','Belum'], datasets: [{ data: [lulus,prosesH,belumH], backgroundColor: ['#10b981','#f59e0b','#ef4444'] }] } });
@@ -377,22 +385,43 @@ function filterMapelList() { renderMapelList(); }
 function selectHafalan(id) { currentSantriId = id; loadFormHafalan(); }
 function selectMapel(id) { currentMapelSantriId = id; loadFormMapel(); }
 
+// ========== FORM HAFALAN DENGAN DUA PILIHAN MADIN ==========
 function loadFormHafalan() {
     let s = santri.find(x=>x.id===currentSantriId);
     if(!s) return;
     let kelasNum = getKelasNum(s.kelas);
     let currentProgress = hitungProgressHafalan(s);
+    let isLulusMadin = false;
+    if(kelasNum <= 3) isLulusMadin = s.madinUla;
+    else isLulusMadin = (s.madinUla || s.madinWustho);
     
     let juzHtml = `<div class="flex justify-between mb-2"><span>Centang Semua Juz</span><input type="checkbox" id="selectAllJuz" onchange="toggleAllJuz()"></div><div class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-60 overflow-y-auto p-2 bg-gray-50 rounded-lg">`;
     daftarJuz.forEach((nama,i)=>{ juzHtml += `<label class="flex justify-between p-2 bg-white rounded border"><span>${nama}</span><input type="checkbox" id="juz_${i}" class="juz-cb" ${s.juz30[i]?'checked':''}></label>`; });
     juzHtml += `</div>`;
     
-    let madinHtml = '';
-    if(kelasNum <= 3) {
-        madinHtml = `<div class="madin-highlight p-4 rounded-lg text-center"><label class="flex justify-between items-center text-lg font-bold"><span class="text-emerald-700">✅ LULUS MADIN ULA (CENTANG INI = LANGSUNG 100%)</span><input type="checkbox" id="madinUla" ${s.madinUla?'checked':''}></label><p class="text-sm text-gray-600 mt-2">⚠️ Centang checkbox di atas = santri langsung LULUS 100%</p><div class="bg-yellow-100 p-2 rounded mt-2"><strong>Status saat ini:</strong> ${getStatusHafalan(s)} (${currentProgress}%) ${s.madinUla ? '<span class="text-green-600 font-bold">✓ AKAN JADI 100%</span>' : ''}</div></div>`;
-    } else {
-        madinHtml = `<div class="madin-highlight p-4 rounded-lg"><div class="grid grid-cols-2 gap-4"><label class="flex justify-between font-bold"><span>✅ Lulus Madin Ula</span><input type="checkbox" id="madinUla" ${s.madinUla?'checked':''}></label><label class="flex justify-between font-bold text-emerald-700"><span>⭐ LULUS MADIN WUSTHO (CENTANG = 100%)</span><input type="checkbox" id="madinWustho" ${s.madinWustho?'checked':''}></label></div><p class="text-sm text-gray-600 text-center mt-2">⚠️ Centang "LULUS MADIN WUSTHO" = santri langsung LULUS 100%</p><div class="bg-yellow-100 p-2 rounded mt-2 text-center"><strong>Status saat ini:</strong> ${getStatusHafalan(s)} (${currentProgress}%) ${s.madinWustho ? '<span class="text-green-600 font-bold">✓ AKAN JADI 100%</span>' : ''}</div></div>`;
-    }
+    // MADIN DUA PILIHAN - TAMPILAN SIMPLE
+    let madinHtml = `
+    <div class="madin-box">
+        <h3 class="font-bold text-center text-amber-700 mb-3">🎓 PENDIDIKAN MADIN</h3>
+        <p class="text-sm text-center text-gray-600 mb-4">⚠️ <strong class="text-red-600">CENTANG SALAH SATU ATAU KEDUANYA = LANGSUNG NILAI 100% LULUS</strong></p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <label class="madin-option">
+                <input type="checkbox" id="madinUla" ${s.madinUla ? 'checked' : ''}>
+                <span class="font-semibold">📘 Lulus Madin Ula</span>
+            </label>
+            ${kelasNum >= 4 ? `<label class="madin-option">
+                <input type="checkbox" id="madinWustho" ${s.madinWustho ? 'checked' : ''}>
+                <span class="font-semibold text-emerald-700">⭐ Lulus Madin Wustho</span>
+            </label>` : ''}
+        </div>
+        <div class="text-center mt-4 p-2 rounded-lg ${isLulusMadin ? 'bg-green-100 border border-green-400' : 'bg-gray-100'}">
+            <strong>STATUS HAFALAN:</strong> 
+            <span class="font-bold ${isLulusMadin ? 'text-green-600 text-lg' : 'text-gray-600'}">
+                ${isLulusMadin ? '✅ LULUS 100% (Madin dipilih)' : `${getStatusHafalan(s)} (${currentProgress}%)`}
+            </span>
+        </div>
+    </div>
+    `;
     
     let html = `<div class="space-y-4">
         <div class="bg-green-50 p-3 rounded"><div class="flex justify-between"><b>1. Surat Pilihan</b><button onclick="toggleAllSurat()" class="btn-outline text-sm">Centang Semua</button></div><div class="flex gap-3 mt-2"><label><input type="checkbox" id="yasin" ${s.yasin?'checked':''}> Yasin</label><label><input type="checkbox" id="waqiah" ${s.waqiah?'checked':''}> Waqiah</label><label><input type="checkbox" id="mulk" ${s.mulk?'checked':''}> Mulk</label></div><div class="flex gap-3 mt-2"><span>Nilai:</span><select id="nilaiSurat"><option ${s.nilaiSurat==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiSurat==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiSurat==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanSurat()" class="btn-primary text-sm ml-auto">Simpan</button></div></div>
@@ -401,7 +430,7 @@ function loadFormHafalan() {
         <div class="bg-orange-50 p-3 rounded"><div class="flex justify-between"><b>4. Praktik Ibadah</b><button onclick="toggleAllPraktik()" class="btn-outline text-sm">Centang Semua</button></div><div class="flex gap-3 mt-2"><label><input type="checkbox" id="praktikShalat" ${s.praktikShalat?'checked':''}> Shalat</label><label><input type="checkbox" id="praktikJenazah" ${s.praktikJenazah?'checked':''}> Jenazah</label><label><input type="checkbox" id="praktikKhotib" ${s.praktikKhotib?'checked':''}> Khotib</label></div><div class="flex gap-3 mt-2"><span>Nilai:</span><select id="nilaiPraktik"><option ${s.nilaiPraktik==='Mumtaz'?'selected':''}>Mumtaz</option><option ${s.nilaiPraktik==='Jayyid Jiddan'?'selected':''}>Jayyid Jiddan</option><option ${s.nilaiPraktik==='Jayyid'?'selected':''}>Jayyid</option></select><button onclick="simpanPraktik()" class="btn-primary text-sm ml-auto">Simpan</button></div></div>
         ${madinHtml}
         <div class="bg-rose-50 p-3 rounded"><div class="flex justify-between"><b>5. Sikap & Adab</b><button onclick="toggleAllSikap()" class="btn-outline text-sm">Centang Semua</button></div><div class="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2"><label><input type="checkbox" id="sikapJamaah" ${s.sikapJamaah?'checked':''}> Shalat Berjamaah</label><label><input type="checkbox" id="sikapMadin" ${s.sikapMadin?'checked':''}> Keaktifan Madin</label><label><input type="checkbox" id="sikapFormal" ${s.sikapFormal?'checked':''}> Keaktifan Formal</label></div><button onclick="simpanSikap()" class="btn-primary text-sm mt-2">Simpan Sikap</button></div>
-        <button onclick="simpanMadinDanRefresh()" class="btn-success w-full py-3 text-lg">💾 SIMPAN MADIN & UPDATE STATUS</button>
+        <button onclick="simpanMadinDanRefresh()" class="btn-success w-full py-3 text-lg">💾 SIMPAN SEMUA PERUBAHAN</button>
     </div>`;
     document.getElementById('formHafalan').classList.remove('hidden');
     document.getElementById('formHafalan').innerHTML = html;
@@ -423,7 +452,7 @@ function loadFormMapel() {
 
 function toggleAllSurat(){ let c=['yasin','waqiah','mulk']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
 function toggleAllAurad(){ let c=['wirid','doaShalat','tahlilRingkas','tahlilLengkap','doaTahlil','tawasul']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
-function toggleAllJuz(){ let sel=document.getElementById('selectAllJuz'); document.querySelectorAll('.juz-cb').forEach(cb=>cb.checked=sel.checked); }
+function toggleAllJuz(){ let sel=document.getElementById('selectAllJuz'); if(sel){document.querySelectorAll('.juz-cb').forEach(cb=>cb.checked=sel.checked);} }
 function toggleAllPraktik(){ let c=['praktikShalat','praktikJenazah','praktikKhotib']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
 function toggleAllSikap(){ let c=['sikapJamaah','sikapMadin','sikapFormal']; let all=c.every(id=>document.getElementById(id).checked); c.forEach(id=>{let cb=document.getElementById(id);if(cb)cb.checked=!all;}); }
 
@@ -432,19 +461,33 @@ function simpanAurad(){ let idx=santri.findIndex(x=>x.id===currentSantriId); if(
 function simpanJuz(){ let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; for(let i=0;i<37;i++){let cb=document.getElementById(`juz_${i}`);if(cb)santri[idx].juz30[i]=cb.checked;} santri[idx].nilaiJuz=document.getElementById('nilaiJuz').value; saveData(); loadFormHafalan(); }
 function simpanPraktik(){ let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; santri[idx].praktikShalat=document.getElementById('praktikShalat').checked; santri[idx].praktikJenazah=document.getElementById('praktikJenazah').checked; santri[idx].praktikKhotib=document.getElementById('praktikKhotib').checked; santri[idx].nilaiPraktik=document.getElementById('nilaiPraktik').value; saveData(); loadFormHafalan(); }
 function simpanSikap(){ let idx=santri.findIndex(x=>x.id===currentSantriId); if(idx===-1)return; santri[idx].sikapJamaah=document.getElementById('sikapJamaah').checked; santri[idx].sikapMadin=document.getElementById('sikapMadin').checked; santri[idx].sikapFormal=document.getElementById('sikapFormal').checked; saveData(); loadFormHafalan(); }
+
 function simpanMadinDanRefresh(){
     let idx=santri.findIndex(x=>x.id===currentSantriId);
     if(idx===-1)return;
+    let kelasNum = getKelasNum(santri[idx].kelas);
+    
     santri[idx].madinUla = document.getElementById('madinUla')?.checked || false;
-    let w = document.getElementById('madinWustho');
-    if(w) santri[idx].madinWustho = w.checked;
+    if(kelasNum >= 4) {
+        santri[idx].madinWustho = document.getElementById('madinWustho')?.checked || false;
+    } else {
+        santri[idx].madinWustho = false;
+    }
+    
     saveData();
     loadFormHafalan();
     renderHafalanList();
     updateDashboard();
-    let newProgress = hitungProgressHafalan(santri[idx]);
-    showToast(`✅ Status diperbarui! Progress: ${newProgress}% - ${getStatusHafalan(santri[idx])}`, 'success');
+    
+    let isLulus = (kelasNum <= 3 && santri[idx].madinUla) || (kelasNum >= 4 && (santri[idx].madinUla || santri[idx].madinWustho));
+    if(isLulus) {
+        showToast(`✅ LULUS 100%! ${santri[idx].nama} dinyatakan Lulus karena Madin dipilih.`, 'success');
+    } else {
+        let newProgress = hitungProgressHafalan(santri[idx]);
+        showToast(`✅ Status diperbarui! Progress: ${newProgress}%`, 'success');
+    }
 }
+
 function simpanMapel(){ let idx=santri.findIndex(x=>x.id===currentMapelSantriId); if(idx===-1)return; let s=santri[idx]; let list=mapelByKelas[s.kelas]||[]; for(let m of list){ let cb=document.getElementById(`mapel_${m.replace(/\s/g,'_')}`); if(cb) s.mapelStatus[m]=cb.checked;} saveData(); loadFormMapel(); renderMapelList(); updateDashboard(); }
 
 function updateSelectSertifikat(){
